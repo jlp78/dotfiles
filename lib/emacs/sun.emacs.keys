@@ -1,0 +1,51 @@
+l02 		 redraw-display
+l02 meta 	 prev-complex-command
+l02 meta-shift 	 rerun-prev-command
+
+l03 		 list-buffers
+
+l04 		 undo
+
+l05 		 ignore-key (SUNTOOLS HIDE/EXPOSE)
+
+l06 		 sun-select-region
+l06 control 	 copy-region-as-kill
+
+l07 		 ignore-key (SUNTOOLS OPEN/CLOSE)
+
+l08 		 sun-yank-selection
+l08 control 	 yank
+
+l09 		 research-forward
+l09 control 	 re-search-forward
+l09 control-meta re-search-backward
+l09 meta 	 research-backward
+
+l10 		 kill-region-and-unmark
+l10 control 	 (lambda () (interactive) (pop-mark 1))
+l10 meta 	 exchange-point-and-mark
+l10 shift 	 yank
+
+r07 		 beginning-of-buffer
+
+r09 		 scroll-down
+r09 shift 	 backward-page
+
+r11 		 recenter
+
+r13 		 end-of-buffer
+
+r15 		 scroll-up
+r15 shift 	 forward-page
+
+f03 		 scroll-down-in-place
+f03 shift 	 (lambda(n) (interactive "p") (scroll-down n))
+
+f04 		 scroll-up-in-place
+f04 shift 	 (lambda(n) (interactive "p") (scroll-up n))
+
+f06 		 shrink-window
+f06 shift 	 shrink-window-horizontally
+
+f07 		 enlarge-window
+f07 shift 	 enlarge-window-horizontally

@@ -1,0 +1,40 @@
+(defun fix-publics (pub-file-name)
+  "initialize public stuff"
+  (interactive "sNew public file: ")
+  (setq this-buffer (current-buffer))
+  (find-file-other-window pub-file-name)
+  (setq pub-buffer (current-buffer))
+  (set-buffer this-buffer)
+  (tags-search "PUBLIC")
+  (backward-word 1)
+  (set-mark (point))
+  (search-forward ";")
+  (exchange-point-and-mark)
+  (sit-for 1)
+  (exchange-point-and-mark)
+  )
+
+(defun find-next-public ()
+  "find next PUBLIC in a file, put mark at start of PUBLIC and point at ;."
+  (interactive)
+  (tags-loop-continue)
+  (backward-word 1)
+  (set-mark (point))
+  (search-forward ";")
+  (exchange-point-and-mark)
+  (sit-for 1)
+  (exchange-point-and-mark)
+  )
+
+(defun extract-public ()
+  "extract PUBLICs from a file and put them in another file."
+  (interactive)
+  (copy-region-as-kill (mark) (point))
+  (set-buffer pub-buffer)
+  (yank)
+  (insert-string "\n")
+  )
+
+(global-set-key "\C-x*mr" 'find-next-public)
+(global-set-key "\C-x*or" 'extract-public)
+

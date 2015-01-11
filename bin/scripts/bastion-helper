@@ -1,0 +1,50 @@
+#! /bin/sh
+#
+# bastion-helper
+#    use this as a ProxyCommand for ssh and it will decide if/when
+#    a bastion host is required and use it automatically
+
+host=$1
+port=$2
+
+case "x$port" in
+  x)
+    port=22
+    ;;
+esac
+
+case "x$host" in
+  x)
+    echo "usage: $0 host [port]"
+    exit 1
+    ;;
+esac
+
+
+# do we need to use a bastion host?  what network are we on?
+default_router=`netstat -rn | awk '/^default/ {print $2; exit;}'`
+wifi_network=`networksetup -getairportnetwork en0 | awk '{print $NF}'`
+
+bastion_required=0
+
+case "x$wifi_network" in
+  xbluehost)
+    bastion_required=1
+    ;;
+esac
+
+exec 2>/dev/null 3>/tmp/bastion-helper.log
+
+necho () {
+  echo "$@" >&3
+}
+
+necho "host $host port $port $bastion_required"
+
+if [ $bastion_required -eq 1 ]; then
+  necho "bastion required"
+  exec ssh -A -p 5190 zugzug.bluehost.com nc $host $port
+else
+  necho "bastion NOT required"
+  exec nc $host $port
+fi

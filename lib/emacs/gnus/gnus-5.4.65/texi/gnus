@@ -1,0 +1,312 @@
+Info file: gnus,    -*-Text-*-
+produced by `texinfo-format-buffer'
+from file `gnus.texi'
+using `texinfmt.el' version 2.32 of 19 November 1993.
+
+
+
+
+
+This file documents Gnus, the GNU Emacs newsreader.
+
+Copyright (C) 1995,96 Free Software Foundation, Inc.
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+
+
+
+
+
+Indirect:
+gnus-1: 820
+gnus-2: 50109
+gnus-3: 100519
+gnus-4: 150617
+gnus-5: 201303
+gnus-6: 252630
+gnus-7: 303149
+gnus-8: 353971
+gnus-9: 405250
+gnus-10: 456622
+gnus-11: 509239
+gnus-12: 613866
+
+Tag table:
+(Indirect)
+Node: Top820
+Node: Starting Up1929
+Node: Finding the News3085
+Node: The First Time5656
+Node: The Server is Down6547
+Node: Slave Gnusae7784
+Node: Fetching a Group9396
+Node: New Groups9848
+Node: Checking New Groups10688
+Node: Subscription Methods12604
+Node: Filtering New Groups14623
+Node: Changing Servers16457
+Node: Startup Files18163
+Node: Auto Save21460
+Node: The Active File22493
+Node: Startup Variables24800
+Node: The Group Buffer26364
+Node: Group Buffer Format27780
+Node: Group Line Specification28159
+Node: Group Modeline Specification31621
+Node: Group Highlighting32039
+Node: Group Maneuvering33974
+Node: Selecting a Group35385
+Node: Subscription Commands38521
+Node: Group Data39920
+Node: Group Levels40760
+Node: Group Score43711
+Node: Marking Groups44963
+Node: Foreign Groups46249
+Node: Group Parameters50109
+Node: Listing Groups56123
+Node: Sorting Groups58783
+Node: Group Maintenance61534
+Node: Browse Foreign Server62190
+Node: Exiting Gnus63381
+Node: Group Topics64547
+Node: Topic Variables66237
+Node: Topic Commands67201
+Node: Topic Sorting69811
+Node: Topic Topology70703
+Node: Topic Parameters71977
+Node: Misc Group Stuff73986
+Node: Scanning New Messages75096
+Node: Group Information76251
+Node: Group Timestamp77517
+Node: File Commands78604
+Node: The Summary Buffer79025
+Node: Summary Buffer Format81337
+Node: Summary Buffer Lines82429
+Node: Summary Buffer Mode Line85929
+Node: Summary Highlighting87190
+Node: Summary Maneuvering88333
+Node: Choosing Articles91332
+Node: Choosing Commands91628
+Node: Choosing Variables93053
+Node: Paging the Article94342
+Node: Reply Followup and Post95435
+Node: Summary Mail Commands95728
+Node: Summary Post Commands99114
+Node: Canceling and Superseding100519
+Node: Marking Articles102450
+Node: Unread Articles103284
+Node: Read Articles104212
+Node: Other Marks105802
+Node: Setting Marks107748
+Node: Setting Process Marks110418
+Node: Limiting112116
+Node: Threading114318
+Node: Customizing Threading114744
+Node: Thread Commands123145
+Node: Sorting125731
+Node: Asynchronous Fetching128566
+Node: Article Caching132060
+Node: Persistent Articles134950
+Node: Article Backlog136362
+Node: Saving Articles137418
+Node: Decoding Articles145538
+Node: Uuencoded Articles146975
+Node: Shared Articles148303
+Node: PostScript Files148797
+Node: Decoding Variables149326
+Node: Rule Variables149700
+Node: Other Decode Variables150617
+Node: Uuencoding and Posting153472
+Node: Viewing Files154776
+Node: Article Treatment156447
+Node: Article Highlighting157369
+Node: Article Fontisizing160090
+Node: Article Hiding161616
+Node: Article Washing164077
+Node: Article Buttons167331
+Node: Article Date169648
+Node: Article Signature170915
+Node: Article Commands172661
+Node: Summary Sorting172991
+Node: Finding the Parent174003
+Node: Alternative Approaches176359
+Node: Pick and Read176808
+Node: Binary Groups179439
+Node: Tree Display180082
+Node: Mail Group Commands184119
+Node: Various Summary Stuff187528
+Node: Summary Group Information189255
+Node: Searching for Articles190283
+Node: Summary Generation Commands191074
+Node: Really Various Summary Commands191487
+Node: Exiting the Summary Buffer193005
+Node: Crosspost Handling196320
+Node: Duplicate Suppression198472
+Node: The Article Buffer201303
+Node: Hiding Headers201938
+Node: Using MIME205547
+Node: Customizing Articles207206
+Node: Article Keymap208376
+Node: Misc Article209711
+Node: Composing Messages211503
+Node: Mail212427
+Node: Post212859
+Node: Posting Server213685
+Node: Mail and Post214874
+Node: Archived Messages215933
+Node: Select Methods220083
+Node: The Server Buffer221660
+Node: Server Buffer Format223511
+Node: Server Commands224257
+Node: Example Methods225239
+Node: Creating a Virtual Server227169
+Node: Server Variables228346
+Node: Servers and Methods229548
+Node: Unavailable Servers229965
+Node: Getting News231736
+Node: NNTP232165
+Node: News Spool239537
+Node: Getting Mail241273
+Node: Getting Started Reading Mail242248
+Node: Splitting Mail243759
+Node: Mail Backend Variables247051
+Node: Fancy Mail Splitting252630
+Node: Mail and Procmail256024
+Node: Incorporating Old Mail259060
+Node: Expiring Mail260739
+Node: Washing Mail265892
+Node: Duplicates268429
+Node: Not Reading Mail270613
+Node: Choosing a Mail Backend271600
+Node: Unix Mail Box272280
+Node: Rmail Babyl272871
+Node: Mail Spool273409
+Node: MH Spool275741
+Node: Mail Folders276670
+Node: Other Sources277564
+Node: Directory Groups278249
+Node: Anything Groups279366
+Node: Document Groups281849
+Node: Document Server Internals284084
+Node: SOUP288717
+Node: SOUP Commands291579
+Node: SOUP Groups293401
+Node: SOUP Replies295277
+Node: Web Searches295986
+Node: Mail-To-News Gateways298888
+Node: Combined Groups300208
+Node: Virtual Groups300548
+Node: Kibozed Groups303149
+Node: Scoring305105
+Node: Summary Score Commands307366
+Node: Group Score Commands312185
+Node: Score Variables312557
+Node: Score File Format317934
+Node: Score File Editing329478
+Node: Adaptive Scoring330575
+Node: Home Score File336635
+Node: Followups To Yourself339269
+Node: Scoring Tips340669
+Node: Reverse Scoring342195
+Node: Global Score Files342687
+Node: Kill Files345418
+Node: Converting Kill Files347954
+Node: GroupLens348648
+Node: Using GroupLens349799
+Node: Rating Articles350968
+Node: Displaying Predictions352119
+Node: GroupLens Variables353971
+Node: Advanced Scoring354947
+Node: Advanced Scoring Syntax355670
+Node: Advanced Scoring Examples357521
+Node: Advanced Scoring Tips358775
+Node: Score Decays359832
+Node: Various361634
+Node: Process/Prefix362820
+Node: Interactive364586
+Node: Formatting Variables365460
+Node: Formatting Basics367113
+Node: Advanced Formatting368038
+Node: User-Defined Specs369979
+Node: Formatting Fonts370979
+Node: Windows Configuration372499
+Node: Compilation380656
+Node: Mode Lines381643
+Node: Highlighting and Menus383294
+Node: Buttons385511
+Node: Daemons386810
+Node: NoCeM389590
+Node: Undo393335
+Node: Moderation394910
+Node: XEmacs Enhancements396080
+Node: Picons396524
+Node: Picon Basics397176
+Node: Picon Requirements398028
+Node: Easy Picons398551
+Node: Hard Picons399023
+Node: Picon Configuration400962
+Node: Smileys402476
+Node: Toolbar405250
+Node: XVarious405756
+Node: Fuzzy Matching406628
+Node: Thwarting Email Spam407395
+Node: Various Various410923
+Node: The End414082
+Node: Appendices414718
+Node: History415315
+Node: Why?417646
+Node: Compatibility418980
+Node: Conformity421435
+Node: Emacsen422735
+Node: Contributors423257
+Node: New Features427896
+Node: ding Gnus428388
+Node: September Gnus431760
+Node: Red Gnus437066
+Node: Newest Features440826
+Node: Terminology441443
+Node: Customization445876
+Node: Slow/Expensive Connection446466
+Node: Slow Terminal Connection447395
+Node: Little Disk Space449116
+Node: Slow Machine449902
+Node: Troubleshooting450451
+Node: A Programmers Guide to Gnus452963
+Node: Gnus Utility Functions454280
+Node: Backend Interface456622
+Node: Required Backend Functions459394
+Node: Optional Backend Functions467320
+Node: Error Messaging474067
+Node: Writing New Backends475127
+Node: Hooking New Backends Into Gnus480523
+Node: Mail-like Backends481863
+Node: Score File Syntax483448
+Node: Headers486878
+Node: Ranges488040
+Node: Group Info490044
+Node: Emacs/XEmacs Code493146
+Node: Various File Formats495078
+Node: Active File Format495355
+Node: Newsgroups File Format496259
+Node: Emacs for Heathens496910
+Node: Keystrokes497664
+Node: Emacs Lisp499563
+Node: Frequently Asked Questions501689
+Node: Installation FAQ502210
+Node: Customization FAQ509239
+Node: Reading News FAQ516945
+Node: Reading Mail FAQ520176
+Node: Index522494
+Node: Key Index613866
+
+End tag table

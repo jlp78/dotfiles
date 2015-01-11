@@ -1,0 +1,395 @@
+#! /usr/bin/perl
+
+# This code is Copyright (c) 2010 by Jan L. Peterson
+# All rights reserved.
+#
+# You may use this program without charge.  You may copy it for
+# backup purposes.  You may even give it away to anyone you like.
+# You may not charge a fee for it.  You may charge a fee for a
+# distribution mechanism (such as a CD-ROM containing it), but
+# such fee must not exceed the amount required to recoup costs.
+# You may modify it for your own purposes, but this notice must
+# remain attached to all copies and derivitive works.
+#
+# if you make modifications that you think others would like, please
+# send diffs of your changes to the author at
+# <jlp+cpan@peterson.ath.cx>.
+
+# the basic algorithm is fairly simple.  we produce a list of words,
+# each consisting of at least six lower-case letters.  we skip any
+# words that have non-alpha characters (such as apostrophes).  the
+# list of words comes from the system dictionary.
+
+# if, on the other hand, the user supplies a password, then let's
+# just use that
+
+use strict;
+use Getopt::Long;
+my $VERSION = 1.1;
+
+=head1 NAME
+
+mkpw - generate simple passwords
+
+=head1 USAGE
+
+=over
+
+=item B<mkpw> [ --verbose ] [ --dictionary=I<dict_location> ] [ --num-pws=I<nn> ] [ --num-sep=I<nn> ]
+
+=item B<mkpw> [ --verbose ] [ password [ salt ... ] ]
+
+=item B<mkpw> [ --help ]
+
+=back
+
+=head1 SYNOPSIS
+
+In the first form, B<mkpw> will generate one or more passwords using
+either the system dictionary or the specified dictionary.  The
+dictionary will be scanned for lowercase words six characters or
+longer.  The password(s) will be formed using the leading three or
+four characters of a randomly selected word, some number of separator
+character (specified by I<--num-sep> and defaulting to 1), and the
+trailing four or three characters of another randomly selected word.
+The separator characters will come from the set 0-9, S<! (bang)>, S<$
+(dollar)>, S<% (percent)>, S<^ (hat)>, S<& (ampersand)>, S<*
+(asterisk)>, S<+ (plus)>, S<- (minus)>, S<_ (underscore)>, and S<,
+(comma)>.  The goal is to present the user with a password that is
+easy to remember, but hard to guess.  The encrypted forms of these
+generated passwords are shown, as well, using randomly generated salts
+as described below.  See B<SALT GENERATION> below for more information
+on password salt.  Adding I<--verbose> will cause additional
+information to be printed about the dictionary words being used, the
+generated password, and the salts being used.
+
+In the second form, B<mkpw> will accept a clear-text password as an
+argument and will display the encrypted form of that password using
+the specified salt(s).  If no salt is provided, B<mkpw> will generate
+both short form and long form salts and will use them.  If a specific
+salt is provided, only it will be used.  Adding I<--verbose> will
+cause additional information to be printed detailing the password and
+salt(s) being used.
+
+=head1 OPTIONS
+
+=over
+
+=item B<--dictionary>
+
+specify where the system dictionary is.  by default, the program will
+for a words file in several common locations.  the dictionary file
+should consist of one word per line, with the lines delimted by a single
+newline character.
+
+=item B<--num-pws>
+
+specify the number of passwords to generate.
+
+=item B<--verbose>
+
+print debugging information.
+
+=item B<--help>
+
+show help text.
+
+=item B<password>
+
+a user supplied password to show the encrypted version of.  if a
+password is supplied, num-pws and dictionary arguments are ignored.
+
+=item B<salt>
+
+one or more salt strings to use when showing the encrypted password.
+if no salt is supplied, generate random short salt (two character) and
+long salt values (eight character) and use them.  see B<SALT GENERATION>
+for information about the salt.
+
+=back
+
+=head1 SALT GENERATION
+
+Several types of salt are used to permute passwords on Unix systems.
+Historically, Unix passwords were encoded with a two character salt
+that permuted the DES algorithm used to generate the password string.
+Due to export restrictions, however, a new mechanism for encoding
+passwords was developed that used the MD5 algorithm.  This algorithm
+was also permuted using an eight character salt.  The salt in this
+case is delimited by the leading text "$1$" and also has a trailing
+"$" character separating it from the actual password text.
+
+B<mkpw> randomly selects two or eight characters from the set a-z,
+A-Z, 0-9, S<. (dot)>, and S</ (slash)> to make up the salt.
+
+Other password types have been developed over time, for example the
+B<htpasswd> utility shipped with the Apache web server uses a salt
+that has leading text "$apr1$".  Currently, there is no support for
+these extended salt types.
+
+=head1 EXAMPLES
+
+This example produces five passwords:
+
+  $ mkpw --num-pws=5
+  syp&pers => WkdKRQ7zXCmuk $1$08NGT.v4$/qLL4CC2UBUxa569cA/3G.
+  spa^vies => aOl64oy3BXyUA $1$wuHEAjqi$SfRO7AtTW98cM3tyT2ICI1
+  gypp1ets => 7azg9C.dm/SRA $1$.gpMnONc$KYX/udjg4jq3ZyeHKX1T7/
+  sno2lect => Pk6g2LMKZxJBc $1$jvHbo0/x$tJokqM9wrZvdnWRkVbr.H0
+  chee%lly => exW1dYMyXFXLs $1$SrrjL2wc$3BQJ24nxrACEOBmx6X2uU.
+
+This example shows using a custom dictionary:
+
+  $ cat $HOME/.my_dictionary
+  violation
+  wormhole
+  xylophonist
+  $ mkpw --dictionary=$HOME/.my_dictionary
+  worm1ole => Yn/6IFTaejchw $1$m6jqsEpU$9kRc08B0lRGMj4TdDcIck1
+
+This example shows using a known clear-text password:
+
+  $ mkpw myPasswd
+  myPasswd => Cq0BcHDEZtOi6 $1$9HTmRUTA$chpONg9bAF/ZWPmkgxeGY/
+
+This example shows using a known clear-text password and a specific
+salt:
+
+  $ mkpw myPasswd ab
+  myPasswd => abC3a7i.pGlkw
+
+This example shows using a known clear-text password and multiple salt
+values:
+
+  $ mkpw myPasswd ab '$1$oinkoink$'
+  myPasswd => abC3a7i.pGlkw $1$oinkoink$lydGeG4cezlxylqWgNZT9.
+
+(note the use of quotes to avoid shell interpretation of the dollar
+sign delimted salt).
+
+=head1 PREREQUISITES
+
+Getopt::Long
+
+=head1 AUTHOR
+
+Jan L. Peterson <jlp+cpan@peterson.ath.cx>
+
+=head1 COPYRIGHT
+
+Copyright 2009 by Jan L. Peterson
+
+You may use this program without charge.  You may copy it for
+backup purposes.  You may even give it away to anyone you like.
+You may not charge a fee for it.  You may charge a fee for a
+distribution mechanism (such as a CD-ROM containing it), but
+such fee must not exceed the amount required to recoup costs.
+You may modify it for your own purposes, but this notice must
+remain attached to all copies and derivitive works.
+
+=begin CPAN
+
+=head1 README
+
+Produce some simple passwords, suitable for use on low-value web
+sites.  These passwords are B<not> cryptographically secure, so do not
+use them on high security sites (use a fips-181 password generator,
+instead).
+
+=pod SCRIPT CATEGORIES
+
+UNIX/System_administration
+
+=end CPAN
+
+=cut
+
+my @sepchars = ("0".."9", "!", "\$", "%", "^", "&", "*", "+", "-", "_", ",");
+my @saltchars = ('a'..'z', 'A'..'Z', '0'..'9', '.', '/');
+
+my @dict_locations = ('/usr/share/dict/words', '/usr/dict/words',
+              '/usr/share/words');
+my $debug;
+my @words;
+my %stopwords;
+
+sub main {
+    # defaults for getopt processing
+    my $dict = '';
+    my $num_pws = 1;
+    my $num_sep = 1;
+    my $help = 0;
+
+    GetOptions("dictionary=s" => \$dict,
+               "num-pws=i"    => \$num_pws,
+               "num-sep=i"    => \$num_sep,
+               "verbose"      => \$debug,
+               "help"         => \$help) or &usage();
+    &usage() if $help;
+
+    my $pw = shift(@ARGV);
+
+    if (!defined($pw)) {
+        &debug("no password supplied, generate new passwords");
+
+        &load_dict($dict);
+        my ($front, $back, $f, $s, $b, $pw);
+
+        &debug("generating $num_pws password(s)");
+        for (my $i = 1; $i <= $num_pws; $i++) {
+            &debug("password $i:");
+            $front = $words[int(rand(scalar(@words)))];
+            $back  = $words[int(rand(scalar(@words)))];
+            &debug("  words selected: $front $back");
+
+            if (rand(1) < 0.5) {
+                $f = substr($front, 0, 4);
+                $b = substr($back, length($back)-3);
+            } else {
+                $f = substr($front, 0, 3);
+                $b = substr($back, length($back)-4);
+            }
+
+            # now check if either of the words we selected was also
+            # a three- or four-letter word, if so, let's grab two
+            # entirely new words and try again.
+            if (exists($stopwords{$f}) or exists($stopwords{$b})) {
+                &debug("   word $front rejected because it matched shortword $f")
+                    if exists($stopwords{$f});
+                &debug("   word $back rejected because it matched shortword $b")
+                    if exists($stopwords{$b});
+                &debug("   selecting new words...");
+                redo;
+            }
+
+            $s = "";
+            for (my $i = 0; $i < $num_sep; $i++) {
+                $s .= $sepchars[int(rand(scalar(@sepchars)))];
+            }
+            $pw = $f . $s . $b;
+
+            my @salt = &make_salt();
+
+            &debug("  using password: $pw with salt: \"" .
+                   join('", "', @salt) . "\"");
+            &show_pw($pw, @salt);
+        }
+    } else {
+        # user has given us a password, did they give us any salt to use?
+        my @salt = @ARGV;
+
+        if (!defined($salt[0])) {
+            # no, let's make some up
+            @salt = &make_salt();
+        }
+
+        &debug("using password: $pw with salt: \"" .
+               join('", "', @salt) . "\"");
+        &show_pw($pw, @salt);
+    }
+}
+
+sub load_dict {
+    # let's try to locate the dictionary file
+    my $dict = shift;
+
+    if (! -e $dict) {
+        foreach (@dict_locations) {
+            $dict = $_;
+            last if -e;
+        }
+    }
+    die "can't find the dictionary\n" unless -e $dict;
+
+    # load the dictionary
+    &debug("loading dictionary at $dict");
+    open(DICT, $dict);
+    while (<DICT>) {
+        chomp;
+
+        # save off three- and four- letter words to keep us from using
+        # the last four letters of a word like 'unable'... where 'able'
+        # is also a word in it's own right.  note that it's okay to use
+        # 'ble' from 'unable', or to use 'unab', as they are not words.
+        if (m/^[a-z]{3}$/ or m/^[a-z]{4}$/) {
+            $stopwords{$_}++;
+        }
+
+        # only load words consisting of lower case letters that are six
+        # chars or longer
+        next unless $_ =~ m/^[a-z]{6,}$/;
+        push(@words, $_);
+    }
+    close(DICT);
+    &debug("found " . scalar(@words) . " words");
+}
+
+sub make_salt {
+    my ($salt, $long_salt);
+
+    $salt = $saltchars[int(rand(scalar(@saltchars)))] .
+        $saltchars[int(rand(scalar(@saltchars)))];
+
+    $long_salt = '$1$';
+    for (my $s = 0; $s < 8; $s++) {
+        $long_salt .= $saltchars[int(rand(scalar(@saltchars)))];
+    }
+    $long_salt .= '$';
+
+    return($salt, $long_salt);
+}
+
+sub show_pw {
+    my $pw = shift;
+    print "$pw";
+
+    if (scalar(@_) > 0) {
+        # some salts have been provided
+        print " =>";
+        foreach (@_) {
+            my $epw = crypt($pw, $_);
+            print " ", $epw;
+        }
+    }
+    print "\n";
+}
+
+sub debug {
+    return unless $debug;
+
+    warn @_, "\n";
+}
+
+sub usage {
+    print <<'EOL';
+usage: mkpw [ --verbose ] [ --dictionary=dict_location ]
+            [ --num-pws=nn ] [ --num-sep=nn ]
+       mkpw [ --verbose ] [ password [ salt ... ] ]
+       mkpw [ --help ]
+
+    --dictionary specify where the system dictionary is.  by
+                 default, the program will look in the following
+                 locations:
+EOL
+    foreach my $dict (@dict_locations) {
+        print "                     $dict\n";
+    }
+    print <<'EOL';
+    --num-pws    specify the number of passwords to generate.
+    --verbose    print debugging information.
+    --help       show this message.
+    password     a user supplied password to show the encrypted
+                 version of.  if a password is supplied, num-pws
+                 and dictionary arguments are ignored.
+    salt         one or more salt strings to use when showing the
+                 encrypted password.  if no salt is supplied,
+                 generate random short salt (two character) and
+                 long salt values (eight character) and use them.
+
+Try "perldoc mkpw" for a complete man page.
+EOL
+    exit 1;
+}
+
+&main();
+exit;

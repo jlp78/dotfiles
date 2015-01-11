@@ -1,0 +1,1907 @@
+Info file: gnus,    -*-Text-*-
+produced by `texinfo-format-buffer'
+from file `gnus.texi'
+using `texinfmt.el' version 2.32 of 19 November 1993.
+
+
+
+
+
+This file documents Gnus, the GNU Emacs newsreader.
+
+Copyright (C) 1995,96 Free Software Foundation, Inc.
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+
+
+
+
+
+File: gnus, Node: Customization FAQ
+
+Customization
+-------------
+
+   * Q2.1 Custom Edit does not work under XEmacs
+
+     The custom package has not been ported to XEmacs.
+
+
+   * Q2.2 How do I quote messages?
+
+     I see lots of messages with quoted material in them.  I am
+     wondering how to have Gnus do it for me.
+
+     This is Gnus, so there are a number of ways of doing this.  You can
+     use the built-in commands to do this.  There are the `F' and `R'
+     keys from the summary buffer which automatically include the
+     article being responded to.  These commands are also selectable as
+     Followup and Yank and Reply and Yank in the Post menu.
+
+     `C-c C-y' grabs the previous message and prefixes each line with
+     `ail-indentation-spaces' spaces or `mail-yank-prefix' if that is
+     non-nil, unless you have set your own `mail-citation-hook', which
+     will be called to do the job.
+
+     You might also consider the Supercite package, which allows for
+     pretty arbitrarily complex quoting styles.  Some people love it,
+     some people hate it.
+
+
+   * Q2.3 How can I keep my nnvirtual:* groups sorted?
+
+     How can I most efficiently arrange matters so as to keep my
+     nnvirtual:* (etc) groups at the top of my group selection buffer,
+     whilst keeping everything sorted in alphabetical order.
+   
+     If you don't subscribe often to new groups then the easiest way is
+     to first sort the groups and then manually kill and yank the
+     virtuals wherever you want them.
+
+
+   * Q2.4 Any good suggestions on stuff for an all.SCORE file?
+
+     Here is a collection of suggestions from the Gnus mailing list.
+
+       1. From "Dave Disser" <disser@sdd.hp.com>
+          I like blasting anything without lowercase letters.  Weeds out most of
+          the make $$ fast, as well as the lame titles like "IBM" and "HP-UX"
+          with no further description.
+                (("Subject"
+                 ("^\\(Re: \\)?[^a-z]*$" -200 nil R)))
+
+       2. From "Peter Arius" <arius@immd2.informatik.uni-erlangen.de>
+          The most vital entries in my (still young) all.SCORE:
+               (("xref"
+                 ("alt.fan.oj-simpson" -1000 nil s))
+                ("subject"
+                 ("\\<\\(make\\|fast\\|big\\)\\s-*\\(money\\|cash\\|bucks?\\)\\>" -1000 nil r)
+                 ("$$$$" -1000 nil s)))
+
+       3. From "Per Abrahamsen" <abraham@dina.kvl.dk>
+               (("subject"
+                 ;; CAPS OF THE WORLD, UNITE
+                 ("^..[^a-z]+$" -1 nil R)
+                 ;; $$$ Make Money $$$ (Try work)
+                 ("$" -1 nil s)
+                 ;; I'm important! And I have exclamation marks to prove it!
+                 ("!" -1 nil s)))
+
+       4. From "heddy boubaker" <boubaker@cenatls.cena.dgac.fr>
+          I  would like to contribute with mine.
+               (
+                (read-only t)
+                ("subject"
+                 ;; ALL CAPS SUBJECTS
+                 ("^\\([Rr][Ee]: +\\)?[^a-z]+$" -1 nil R)
+                 ;; $$$ Make Money $$$
+                 ("$$" -10 nil s)
+                 ;; Empty subjects are worthless!
+                 ("^ *\\([(<]none[>)]\\|(no subject\\( given\\)?)\\)? *$" -10 nil r)
+                 ;; Sometimes interesting announces occur!
+                 ("ANN?OU?NC\\(E\\|ING\\)" +10 nil r)
+                 ;; Some people think they're on mailing lists
+                 ("\\(un\\)?sub?scribe" -100 nil r)
+                 ;; Stop Micro$oft NOW!!
+                 ("\\(m\\(icro\\)?[s$]\\(oft\\|lot\\)?-?\\)?wind?\\(ows\\|aube\\|oze\\)?[- ]*\\('?95\\|NT\\|3[.]1\\|32\\)" -1001 nil r)
+                 ;; I've nothing to buy
+                 ("\\(for\\|4\\)[- ]*sale" -100 nil r)
+                 ;; SELF-DISCIPLINED people
+                 ("\\[[^a-z0-9 \t\n][^a-z0-9 \t\n]\\]" +100 nil r)
+                 )
+                ("from"
+                 ;; To keep track of posters from my site
+                 (".dgac.fr" +1000 nil s))
+                ("followup"
+                 ;; Keep track of answers to my posts
+                 ("boubaker" +1000 nil s))
+                ("lines"
+                 ;; Some people have really nothing to say!!
+                 (1 -10 nil <=))
+                (mark -100)
+                (expunge -1000)
+                )
+
+       5. From "Christopher Jones" <cjones@au.oracle.com>
+          The sample `all.SCORE' files from Per and boubaker could be
+          augmented with:
+               	(("subject"
+               	  ;; No junk mail please!
+               	  ("please ignore" -500 nil s)
+               	  ("test" -500 nil e))
+               	)
+
+       6. From "Brian Edmonds" <edmonds@cs.ubc.ca>
+          Augment any of the above with a fast method of scoring down
+          excessively cross posted articles.
+                ("xref"
+                 ;; the more cross posting, the exponentially worse the article
+                 ("^xref: \\S-+ \\S-+ \\S-+ \\S-+" -1 nil r)
+                 ("^xref: \\S-+ \\S-+ \\S-+ \\S-+ \\S-+" -2 nil r)
+                 ("^xref: \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+" -4 nil r)
+                 ("^xref: \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+" -8 nil r)
+                 ("^xref: \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+" -16 nil r)
+                 ("^xref: \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+" -32 nil r)
+                 ("^xref: \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+" -64 nil r)
+                 ("^xref: \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+" -128 nil r)
+                 ("^xref: \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+" -256 nil r)
+                 ("^xref: \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+ \\S-+" -512 nil r))
+
+
+
+   * Q2.5 What do I use to yank-through when replying?
+
+     You should probably reply and followup with `R' and `F', instead of
+     `r' and `f', which solves your problem.  But you could try
+     something like:
+
+          (defconst mail-yank-ignored-headers
+            "^.*:"
+            "Delete these headers from old message when it's inserted in a reply.")
+
+
+   * Q2.6 I don't like the default WWW browser
+
+     Now when choosing an URL Gnus starts up a W3 buffer, I would like
+     it to always use Netscape (I don't browse in text-mode ;-).
+
+       1. Activate `Customize...' from the `Help' menu.
+
+       2. Scroll down to the `WWW Browser' field.
+
+       3. Click `mouse-2' on `WWW Browser'.
+
+       4. Select `Netscape' from the pop up menu.
+
+       5. Press `C-c C-c'
+
+
+     If you are using XEmacs then to specify Netscape do
+            (setq gnus-button-url 'gnus-netscape-open-url)
+
+
+   * Q2.7 What, if any, relation is between "ask-server" and "(setq
+     gnus-read-active-file 'some)"?
+
+     In order for Gnus to show you the complete list of newsgroups, it
+     will either have to either store the list locally, or ask the
+     server to transmit the list. You enable the first with
+
+                  (setq gnus-save-killed-list t)
+
+     and the second with
+
+                  (setq gnus-read-active-file t)
+
+     If both are disabled, Gnus will not know what newsgroups
+     exists. There is no option to get the list by casting a spell.
+
+
+   * Q2.8 Moving between groups is slow.
+
+     Per Abrahamsen <abraham@dina.kvl.dk> writes:
+
+     Do you call `define-key' or something like that in one of the
+     summary mode hooks?  This would force Emacs to recalculate the
+     keyboard shortcuts.  Removing the call should speed up `M-x
+     gnus-summary-mode RET' by a couple of orders of magnitude.  You can
+     use
+
+          (define-key gnus-summary-mode-map KEY COMMAND)
+
+     in your `.gnus' instead.
+
+
+
+
+
+File: gnus, Node: Reading News FAQ
+
+Reading News
+------------
+
+   * Q3.1 How do I convert my kill files to score files?
+
+     A kill-to-score translator was written by Ethan Bradford
+     <ethanb@ptolemy.astro.washington.edu>.  It is available from
+     `http://baugi.ifi.uio.no/~larsi/ding-various/gnus-kill-to-score.el'.
+
+
+   * Q3.2 My news server has a lot of groups, and killing groups is
+     painfully slow.
+
+     Don't do that then.  The best way to get rid of groups that should
+     be dead is to edit your newsrc directly.  This problem will be
+     addressed in the near future.
+
+
+   * Q3.3 How do I use an NNTP server with authentication?
+
+     Put the following into your .gnus:
+           (add-hook 'nntp-server-opened-hook 'nntp-send-authinfo)
+
+
+   * Q3.4 Not reading the first article.
+
+     How do I avoid reading the first article when a group is selected?
+
+       1. Use `RET' to select the group instead of `SPC'.
+
+       2. `(setq gnus-auto-select first nil)'
+
+       3. Luis Fernandes <elf@mailhost.ee.ryerson.ca>writes:
+          This is what I use...customize as necessary...
+
+               ;;; Don't auto-select first article if reading sources, or archives or
+               ;;; jobs postings, etc. and just display the summary buffer
+               (add-hook 'gnus-select-group-hook
+               	  (function
+               	   (lambda ()
+               	     (cond ((string-match "sources" gnus-newsgroup-name)
+               		    (setq gnus-auto-select-first nil))
+               			   ((string-match "jobs" gnus-newsgroup-name)
+               				(setq gnus-auto-select-first nil))
+               		   ((string-match "comp\\.archives" gnus-newsgroup-name)
+               		    (setq gnus-auto-select-first nil))
+               		   ((string-match "reviews" gnus-newsgroup-name)
+               		    (setq gnus-auto-select-first nil))
+               		   ((string-match "announce" gnus-newsgroup-name)
+               		    (setq gnus-auto-select-first nil))
+               		   ((string-match "binaries" gnus-newsgroup-name)
+               		    (setq gnus-auto-select-first nil))
+               		   (t
+               		    (setq gnus-auto-select-first t))))))
+
+       4. Per Abrahamsen <abraham@dina.kvl.dk> writes:
+          Another possibility is to create an `all.binaries.all.SCORE' file
+          like this:
+
+               ((local
+                 (gnus-auto-select-first nil)))
+
+          and insert
+               	(setq gnus-auto-select-first t)
+
+          in your `.gnus'.
+
+
+   * Q3.5 Why aren't BBDB known posters marked in the summary buffer?
+
+     Brian Edmonds <edmonds@cs.ubc.ca> writes:
+     Due to changes in Gnus 5.0, `bbdb-gnus.el' no longer marks known
+     posters in the summary buffer.  An updated version, `gnus-bbdb.el'
+     is available at the locations listed below.  This package also supports
+     autofiling of incoming mail to folders specified in the BBDB.  Extensive
+     instructions are included as comments in the file.
+
+     Send mail to `majordomo@edmonds.home.cs.ubc.ca' with the following
+     line in the body of the message: *get misc gnus-bbdb.el*.
+
+     Or get it from the World Wide Web:
+     `http://www.cs.ubc.ca/spider/edmonds/gnus-bbdb.el'.
+
+
+
+
+
+File: gnus, Node: Reading Mail FAQ
+
+Reading Mail
+------------
+
+   * Q4.1 What does the message "Buffer has changed on disk" mean in a
+     mail group?
+
+     Your filter program should not deliver mail directly to your
+     folders, instead it should put the mail into spool files.  Gnus
+     will then move the mail safely from the spool files into the
+     folders.  This will eliminate the problem.  Look it up in the
+     manual, in the section entitled "Mail & Procmail".
+
+
+   * Q4.2 How do you make articles un-expirable?
+
+     I am using nnml to read news and have used
+     `gnus-auto-expirable-newsgroups' to automagically expire articles
+     in some groups (Gnus being one of them).  Sometimes there are
+     interesting articles in these groups that I want to keep.  Is there
+     any way of explicitly marking an article as un-expirable - that is
+     mark it as read but not expirable?
+
+     Use `u', `!', `d' or `M-u' in the summary buffer. You just remove
+     the `E' mark by setting some other mark. It's not necessary to tick
+     the articles.
+
+
+   * Q4.3 How do I delete bogus nnml: groups?
+
+     My problem is that I have various mail (nnml) groups generated
+     while experimenting with Gnus. How do I remove them now? Setting
+     the level to 9 does not help. Also `gnus-group-check-bogus-groups'
+     does not recognize them.
+
+     Removing mail groups is tricky at the moment. (It's on the to-do
+     list, though.) You basically have to kill the groups in Gnus, shut
+     down Gnus, edit the active file to exclude these groups, and
+     probably remove the nnml directories that contained these groups as
+     well. Then start Gnus back up again.
+
+
+   * Q4.4 What happened to my new mail groups?
+
+     I got new mail, but I have never seen the groups they should have
+     been placed in.
+
+     They are probably there, but as zombies. Press `A z' to list zombie
+     groups, and then subscribe to the groups you want with `u'.  This
+     is all documented quite nicely in the user's manual.
+
+
+   * Q4.5 Not scoring mail groups
+
+     How do you *totally* turn off scoring in mail groups?
+
+     Use an nnbabyl:all.SCORE (or nnmh, or nnml, or whatever) file
+     containing:
+
+          ((adapt ignore)
+           (local (gnus-use-scoring nil))
+           (exclude-files "all.SCORE"))
+
+
+
+
+
+
+File: gnus, Node: Index, Next: Key Index, Prev: Appendices, Up: Top
+
+Index
+*****
+
+* Menu:
+
+* <:                            Customizing Threading.  4.
+* >:                            Customizing Threading.  4.
+* *:                            Group Line Specification.  123.
+* %:                            Group Line Specification.  128.
+* 1153 digest:                  Document Groups.        35.
+* activating groups:            Scanning New Messages.  21.
+* active file:                  Terminology.            109.
+* active file:                  The Active File.        4.
+* adapt file group parameter:   Group Parameters.       102.
+* adaptive scoring:             Adaptive Scoring.       4.
+* adopting articles:            Customizing Threading.  137.
+* Alta Vista:                   Foreign Groups.         85.
+* Alta Vista:                   Web Searches.           4.
+* ange-ftp:                     Group Information.      9.
+* archive group:                Foreign Groups.         54.
+* archived messages:            Archived Messages.      4.
+* article:                      Terminology.            54.
+* article backlog:              Article Backlog.        4.
+* article buffer:               The Article Buffer.     4.
+* article caching:              Article Caching.        4.
+* article customization:        Customizing Articles.   4.
+* article emphasis:             Article Fontisizing.    4.
+* article expiry:               Expiring Mail.          4.
+* article hiding:               Article Hiding.         4.
+* article marking:              Marking Articles.       4.
+* article pre-fetch:            Asynchronous Fetching.  4.
+* article scrolling:            Paging the Article.     4.
+* article signature:            Article Signature.      4.
+* article threading:            Threading.              4.
+* article ticking:              Marking Articles.       4.
+* article washing:              Article Washing.        4.
+* article-decode-rfc1522:       Mail Backend Variables.  66.
+* article-de-quoted-unreadable: Washing Mail.           65.
+* asynchronous article fetching: Asynchronous Fetching.  4.
+* authentification:             NNTP.                   23.
+* authinfo:                     NNTP.                   23.
+* auto-expire:                  Group Parameters.       74.
+* auto-save:                    Auto Save.              4.
+* babyl:                        Document Groups.        8.
+* backend:                      Terminology.            32.
+* backlog:                      Article Backlog.        4.
+* bbb-summary-rate-article:     Rating Articles.        16.
+* binary groups:                Binary Groups.          4.
+* body:                         Terminology.            71.
+* bogus groups:                 Group Maintenance.      4.
+* bogus groups:                 Terminology.            115.
+* bookmarks:                    Other Marks.            4.
+* bouncing mail:                Summary Mail Commands.  51.
+* broken-reply-to:              Group Parameters.       45.
+* browsing servers:             Browse Foreign Server.  4.
+* bugs:                         Compatibility.          51.
+* bugs:                         Troubleshooting.        32.
+* buttons:                      Article Buttons.        4.
+* buttons:                      Buttons.                4.
+* byte-compilation:             Compilation.            4.
+* caching:                      Article Caching.        4.
+* canceling articles:           Canceling and Superseding.  4.
+* CancelMoose[tm]:              NoCeM.                  51.
+* changing servers:             Changing Servers.       4.
+* characters in file names:     Various Various.        58.
+* Chris Lewis:                  NoCeM.                  46.
+* ClariNet Briefs:              Foreign Groups.         75.
+* click:                        Buttons.                4.
+* compatibility:                Compatibility.          5.
+* compilation:                  Compilation.            4.
+* composing mail:               Summary Mail Commands.  4.
+* composing news:               Summary Post Commands.  4.
+* contributors:                 Contributors.           4.
+* converting kill files:        Converting Kill Files.  4.
+* copy mail:                    Mail Group Commands.    37.
+* crosspost:                    Splitting Mail.         51.
+* crosspost mail:               Mail Group Commands.    42.
+* crossposting:                 Summary Mail Commands.  89.
+* cross-posting:                Crosspost Handling.     19.
+* crossposts:                   Scoring Tips.           8.
+* customizing:                  Foreign Groups.         26.
+* customizing threading:        Customizing Threading.  4.
+* daemons:                      Daemons.                4.
+* date:                         Score File Format.      124.
+* decays:                       Score Decays.           4.
+* decoding articles:            Decoding Articles.      4.
+* DejaNews:                     Foreign Groups.         85.
+* DejaNews:                     Web Searches.           4.
+* delete-file:                  Mail Backend Variables.  132.
+* deleting headers:             Hiding Headers.         4.
+* deleting incoming files:      Mail Backend Variables.  109.
+* demons:                       Daemons.                4.
+* describing groups:            Group Information.      25.
+* digest:                       Document Groups.        35.
+* digests:                      Summary Post Commands.  47.
+* (ding) archive:               Foreign Groups.         54.
+* ding mailing list:            Troubleshooting.        59.
+* directory groups:             Directory Groups.       4.
+* disk space:                   Little Disk Space.      4.
+* display-time:                 Mode Lines.             12.
+* documentation group:          Document Groups.        4.
+* dribble file:                 Auto Save.              4.
+* duplicate mails:              Duplicates.             5.
+* dynamic IP addresses:         NNTP.                   88.
+* elm:                          Mail and Procmail.      5.
+* Emacs:                        Emacsen.                4.
+* Emacsen:                      Emacsen.                4.
+* Emacsen:                      Emacs/XEmacs Code.      4.
+* email spam:                   Thwarting Email Spam.   4.
+* emphasis:                     Article Fontisizing.    4.
+* ephemeral groups:             Terminology.            142.
+* excessive crossposting:       Summary Mail Commands.  89.
+* exiting Gnus:                 Exiting Gnus.           4.
+* exiting groups:               Exiting the Summary Buffer.  4.
+* expirable mark:               Read Articles.          4.
+* expiry-wait:                  Group Parameters.       88.
+* fancy mail splitting:         Fancy Mail Splitting.   4.
+* FAQ:                          Group Information.      9.
+* fetching a group:             Fetching a Group.       4.
+* fetching by Message-ID:       Finding the Parent.     24.
+* file commands:                File Commands.          4.
+* file names:                   Various Various.        58.
+* finding news:                 Finding the News.       4.
+* first time usage:             The First Time.         4.
+* follow up:                    Terminology.            27.
+* followup:                     Composing Messages.     4.
+* foreign:                      Terminology.            43.
+* foreign groups:               Foreign Groups.         4.
+* foreign groups:               Select Methods.         4.
+* foreign servers:              Browse Foreign Server.  4.
+* format-time-string:           Article Date.           21.
+* formatting variables:         Formatting Variables.   4.
+* forwarded messages:           Document Groups.        28.
+* functions:                    Gnus Utility Functions.  4.
+* fuzzy article gathering:      Customizing Threading.  54.
+* fuzzy matching:               Fuzzy Matching.         4.
+* gateways:                     Mail-To-News Gateways.  4.
+* Gcc:                          Archived Messages.      28.
+* gcc-self:                     Group Parameters.       65.
+* general customization:        Customization.          4.
+* global score files:           Global Score Files.     4.
+* gnu.emacs.gnus:               Troubleshooting.        59.
+* gnus:                         Starting Up.            5.
+* Gnus utility functions:       Gnus Utility Functions.  4.
+* gnus-activate-all-groups:     Scanning New Messages.  21.
+* gnus-activate-foreign-newsgroups: Foreign Groups.     97.
+* gnus-activate-level:          Group Levels.           61.
+* gnus-adaptive-file-suffix:    Adaptive Scoring.       84.
+* gnus-adaptive-word-syntax-table: Adaptive Scoring.    114.
+* gnus-add-configuration:       Windows Configuration.  172.
+* gnus-add-current-to-buffer-list: Gnus Utility Functions.  34.
+* gnus-add-to-list:             Mail.                   14.
+* gnus-after-getting-new-news-hook: Scanning New Messages.  30.
+* gnus-always-force-window-configuration: Windows Configuration.  187.
+* gnus-ancient-mark:            Read Articles.          19.
+* gnus-apply-kill-file:         Kill Files.             66.
+* gnus-apply-kill-file-unless-scored: Kill Files.       66.
+* gnus-apply-kill-hook:         Kill Files.             66.
+* gnus-article-add-buttons:     Article Washing.        79.
+* gnus-article-add-buttons-to-head: Article Washing.    83.
+* gnus-article-button-face:     Article Buttons.        68.
+* gnus-article-date-lapsed:     Article Date.           29.
+* gnus-article-date-local:      Article Date.           17.
+* gnus-article-date-original:   Article Date.           34.
+* gnus-article-date-user:       Article Date.           21.
+* gnus-article-date-ut:         Article Date.           12.
+* gnus-article-de-quoted-unreadable: Article Washing.   57.
+* gnus-article-describe-briefly: Article Keymap.        40.
+* gnus-article-display-hook:    Customizing Articles.   5.
+* gnus-article-display-hook:    Hard Picons.            29.
+* gnus-article-display-hook:    Hiding Headers.         65.
+* gnus-article-display-hook:    Misc Article.           19.
+* gnus-article-display-picons:  Hard Picons.            31.
+* gnus-article-display-picons:  Hard Picons.            37.
+* gnus-article-display-picons:  Hard Picons.            44.
+* gnus-article-display-x-face:  Article Washing.        61.
+* gnus-article-emphasis:        Article Fontisizing.    9.
+* gnus-article-emphasize:       Article Fontisizing.    5.
+* gnus-article-fill-cited-article: Article Washing.     44.
+* gnus-article-hide:            Article Hiding.         11.
+* gnus-article-hide-boring-headers: Article Hiding.     20.
+* gnus-article-hide-boring-headers: Hiding Headers.     65.
+* gnus-article-hide-citation:   Article Hiding.         41.
+* gnus-article-hide-citation-in-followups: Article Hiding.  73.
+* gnus-article-hide-headers:    Article Hiding.         15.
+* gnus-article-hide-pem:        Article Hiding.         36.
+* gnus-article-hide-pgp:        Article Hiding.         30.
+* gnus-article-hide-pgp-hook:   Article Hiding.         30.
+* gnus-article-hide-signature:  Article Hiding.         25.
+* gnus-article-highlight:       Article Highlighting.   11.
+* gnus-article-highlight-citation: Article Highlighting.  26.
+* gnus-article-highlight-headers: Article Highlighting.  15.
+* gnus-article-highlight-signature: Article Highlighting.  72.
+* gnus-article-mail:            Article Keymap.         30.
+* gnus-article-maybe-highlight: Customizing Articles.   9.
+* gnus-article-menu-hook:       Highlighting and Menus.  59.
+* gnus-article-mode-hook:       Misc Article.           27.
+* gnus-article-mode-line-format: Misc Article.          34.
+* gnus-article-mode-syntax-table: Misc Article.         31.
+* gnus-article-mouse-face:      Article Buttons.        72.
+* gnus-article-next-button:     Article Keymap.         45.
+* gnus-article-next-page:       Article Keymap.         16.
+* gnus-article-prepare-hook:    Misc Article.           12.
+* gnus-article-prev-button:     Article Keymap.         50.
+* gnus-article-prev-page:       Article Keymap.         20.
+* gnus-article-refer-article:   Article Keymap.         24.
+* gnus-article-remove-cr:       Article Washing.        53.
+* gnus-article-remove-trailing-blank-lines: Article Washing.  99.
+* gnus-article-save-directory:  Saving Articles.        106.
+* gnus-article-show-summary:    Article Keymap.         35.
+* gnus-article-sort-by-author:  Sorting.                49.
+* gnus-article-sort-by-date:    Sorting.                49.
+* gnus-article-sort-by-number:  Sorting.                49.
+* gnus-article-sort-by-score:   Sorting.                49.
+* gnus-article-sort-by-subject: Sorting.                49.
+* gnus-article-sort-functions:  Sorting.                49.
+* gnus-article-strip-blank-lines: Article Washing.      104.
+* gnus-article-strip-leading-blank-lines: Article Washing.  88.
+* gnus-article-strip-leading-space: Article Washing.    108.
+* gnus-article-strip-multiple-blank-lines: Article Washing.  93.
+* gnus-article-time-format:     Article Date.           21.
+* gnus-article-treat-overstrike: Article Washing.       40.
+* gnus-article-x-face-command:  Article Washing.        61.
+* gnus-article-x-face-command:  Article Washing.        61.
+* gnus-article-x-face-too-ugly: Article Washing.        61.
+* gnus-asynchronous:            Asynchronous Fetching.  34.
+* gnus-async-prefetch-article-p: Asynchronous Fetching.  44.
+* gnus-async-read-p:            Asynchronous Fetching.  44.
+* gnus-auto-center-summary:     Summary Maneuvering.    69.
+* gnus-auto-expirable-newsgroups: Expiring Mail.        26.
+* gnus-auto-extend-newsgroup:   Choosing Variables.     9.
+* gnus-auto-select-first:       Selecting a Group.      54.
+* gnus-auto-select-next:        Summary Maneuvering.    38.
+* gnus-auto-select-same:        Summary Maneuvering.    55.
+* gnus-auto-subscribed-groups:  Filtering New Groups.   26.
+* gnus-binary-mode:             Binary Groups.          5.
+* gnus-binary-mode-hook:        Binary Groups.          14.
+* gnus-binary-show-article:     Binary Groups.          11.
+* gnus-boring-article-headers:  Hiding Headers.         65.
+* gnus-break-pages:             Misc Article.           45.
+* gnus-browse-describe-briefly: Browse Foreign Server.  46.
+* gnus-browse-exit:             Browse Foreign Server.  42.
+* gnus-browse-menu-hook:        Highlighting and Menus.  75.
+* gnus-browse-mode:             Browse Foreign Server.  10.
+* gnus-browse-read-group:       Browse Foreign Server.  26.
+* gnus-browse-select-group:     Browse Foreign Server.  31.
+* gnus-browse-unsubscribe-current-group: Browse Foreign Server.  35.
+* gnus-buffer-configuration:    Windows Configuration.  10.
+* gnus-bug:                     Compatibility.          51.
+* gnus-bug:                     Troubleshooting.        33.
+* gnus-build-sparse-threads:    Customizing Threading.  28.
+* gnus-button-alist:            Article Buttons.        17.
+* gnus-button-url-regexp:       Article Buttons.        63.
+* gnus-cache-active-file:       Article Caching.        49.
+* gnus-cache-directory:         Article Caching.        13.
+* gnus-cached-mark:             Other Marks.            22.
+* gnus-cache-enter-article:     Persistent Articles.    23.
+* gnus-cache-enter-articles:    Article Caching.        27.
+* gnus-cache-generate-active:   Article Caching.        49.
+* gnus-cache-generate-nov-databases: Article Caching.   49.
+* gnus-cache-remove-article:    Persistent Articles.    27.
+* gnus-cache-remove-articles:   Article Caching.        27.
+* gnus-canceled-mark:           Read Articles.          40.
+* gnus-carpal:                  Buttons.                13.
+* gnus-carpal-browse-buffer-buttons: Buttons.           45.
+* gnus-carpal-button-face:      Buttons.                25.
+* gnus-carpal-group-buffer-buttons: Buttons.            33.
+* gnus-carpal-header-face:      Buttons.                29.
+* gnus-carpal-mode-hook:        Buttons.                21.
+* gnus-carpal-server-buffer-buttons: Buttons.           41.
+* gnus-carpal-summary-buffer-buttons: Buttons.          37.
+* gnus-catchup-mark:            Read Articles.          36.
+* gnus-change-server:           Changing Servers.       24.
+* gnus-check-backend-function:  Gnus Utility Functions.  90.
+* gnus-check-bogus-newsgroups:  Startup Variables.      23.
+* gnus-check-new-newsgroups:    New Groups.             5.
+* gnus-cite-attribution-face:   Article Highlighting.   75.
+* gnus-cite-attribution-prefix: Article Highlighting.   67.
+* gnus-cite-attribution-suffix: Article Highlighting.   71.
+* gnus-cited-lines-visible:     Article Hiding.         71.
+* gnus-cited-text-button-line-format: Article Hiding.   57.
+* gnus-cite-face-list:          Article Highlighting.   47.
+* gnus-cite-hide-absolute:      Article Hiding.         52.
+* gnus-cite-hide-percentage:    Article Hiding.         47.
+* gnus-cite-max-prefix:         Article Highlighting.   43.
+* gnus-cite-minimum-match-count: Article Highlighting.  62.
+* gnus-cite-parse-max-size:     Article Highlighting.   30.
+* gnus-cite-prefix-regexp:      Article Highlighting.   38.
+* gnus-compile:                 Compilation.            5.
+* gnus-configure-frame:         Windows Configuration.  110.
+* gnus-continuum-version:       Gnus Utility Functions.  39.
+* gnus-crosspost-complaint:     Summary Mail Commands.  92.
+* gnus-dead-summary-mode:       Exiting the Summary Buffer.  65.
+* gnus-decay-score:             Score Decays.           10.
+* gnus-decay-scores:            Score Decays.           10.
+* gnus-default-adaptive-score-alist: Adaptive Scoring.  17.
+* gnus-default-adaptive-word-score-alist: Adaptive Scoring.  95.
+* gnus-default-article-saver:   Saving Articles.        70.
+* gnus-default-directory:       Various Various.        19.
+* gnus-default-ignored-adaptive-words: Adaptive Scoring.  110.
+* gnus-default-subscribed-newsgroups: The First Time.   8.
+* gnus-del-mark:                Read Articles.          10.
+* gnus-demon-add-disconnection: Daemons.                56.
+* gnus-demon-add-handler:       Daemons.                54.
+* gnus-demon-add-nocem:         Daemons.                56.
+* gnus-demon-add-rescan:        Daemons.                56.
+* gnus-demon-add-scanmail:      Daemons.                56.
+* gnus-demon-add-scan-timestamps: Daemons.              56.
+* gnus-demon-cancel:            Daemons.                62.
+* gnus-demon-handlers:          Daemons.                62.
+* gnus-demon-init:              Daemons.                62.
+* gnus-demon-timestep:          Daemons.                44.
+* gnus-directory:               Various Various.        13.
+* gnus-dormant-mark:            Unread Articles.        21.
+* gnus-dribble-directory:       Auto Save.              18.
+* gnus-duplicate-file:          Duplicate Suppression.  56.
+* gnus-duplicate-list-length:   Duplicate Suppression.  51.
+* gnus-duplicate-mark:          Read Articles.          53.
+* gnus-emphasis-bold:           Article Fontisizing.    22.
+* gnus-emphasis-bold-italic:    Article Fontisizing.    22.
+* gnus-emphasis-italic:         Article Fontisizing.    22.
+* gnus-emphasis-underline:      Article Fontisizing.    22.
+* gnus-emphasis-underline-bold: Article Fontisizing.    22.
+* gnus-emphasis-underline-bold-italic: Article Fontisizing.  22.
+* gnus-emphasis-underline-italic: Article Fontisizing.  22.
+* gnus-empty-thread-mark:       Other Marks.            31.
+* gnus-ephemeral-group-p:       Gnus Utility Functions.  53.
+* gnus-exit-gnus-hook:          Exiting Gnus.           19.
+* gnus-exit-group-hook:         Exiting the Summary Buffer.  63.
+* gnus-expert-user:             Interactive.            16.
+* gnus-expirable-mark:          Read Articles.          53.
+* gnus-extract-address-components: Summary Buffer Format.  12.
+* gnus-extract-address-components: Summary Buffer Format.  12.
+* gnus-fetch-group:             Fetching a Group.       5.
+* gnus-fetch-old-headers:       Customizing Threading.  15.
+* gnus-file-save-name:          Saving Articles.        89.
+* gnus-find-method-for-group:   Gnus Utility Functions.  16.
+* gnus-Folder-save-name:        Saving Articles.        101.
+* gnus-folder-save-name:        Saving Articles.        101.
+* gnus-folder-save-name:        Saving Articles.        101.
+* gnus-gather-threads-by-references: Customizing Threading.  119.
+* gnus-gather-threads-by-subject: Customizing Threading.  114.
+* gnus-generate-horizontal-tree: Tree Display.          78.
+* gnus-generate-tree-function:  Tree Display.           78.
+* gnus-generate-vertical-tree:  Tree Display.           78.
+* gnus-get-info:                Gnus Utility Functions.  30.
+* gnus-get-new-news-hook:       Scanning New Messages.  28.
+* gnus-global-score-files:      Global Score Files.     13.
+* gnus-goto-next-group-when-activating: Scanning New Messages.  16.
+* gnus-group-add-to-virtual:    Foreign Groups.         107.
+* gnus-group-apropos:           Listing Groups.         67.
+* gnus-group-archive-directory: Foreign Groups.         54.
+* gnus-group-best-unread-group: Group Maneuvering.      43.
+* gnus-group-brew-soup:         SOUP Commands.          9.
+* gnus-group-browse-foreign-server: Browse Foreign Server.  7.
+* gnus-group-browse-foreign-server: Finding the News.   38.
+* gnus-group-catchup-current:   Group Data.             8.
+* gnus-group-catchup-current-all: Group Data.           14.
+* gnus-group-catchup-group-hook: Group Data.            8.
+* gnus-group-check-bogus-groups: Group Maintenance.     7.
+* gnus-group-clear-data:        Group Data.             19.
+* gnus-group-clear-data-on-native-groups: Changing Servers.  34.
+* gnus-group-clear-data-on-native-groups: Group Data.   24.
+* gnus-group-customize:         Foreign Groups.         26.
+* gnus-group-default-list-level: Group Levels.          49.
+* gnus-group-delete-group:      Foreign Groups.         94.
+* gnus-group-describe-all-groups: Group Information.    30.
+* gnus-group-describe-briefly:  Group Information.      41.
+* gnus-group-describe-group:    Group Information.      25.
+* gnus-group-description-apropos: Listing Groups.       72.
+* gnus-group-edit-global-kill:  Kill Files.             49.
+* gnus-group-edit-group:        Foreign Groups.         40.
+* gnus-group-edit-group-method: Foreign Groups.         30.
+* gnus-group-edit-group-parameters: Foreign Groups.     35.
+* gnus-group-edit-local-kill:   Kill Files.             45.
+* gnus-group-enter-directory:   Foreign Groups.         69.
+* gnus-group-enter-server-mode: Misc Group Stuff.       15.
+* gnus-group-exit:              Exiting Gnus.           15.
+* gnus-group-expire-all-groups: Group Maintenance.      23.
+* gnus-group-expire-articles:   Group Maintenance.      18.
+* gnus-group-faq-directory:     Group Information.      9.
+* gnus-group-faq-directory:     Summary Group Information.  8.
+* gnus-group-fetch-faq:         Group Information.      9.
+* gnus-group-find-new-groups:   Group Maintenance.      12.
+* gnus-group-first-unread-group: Group Maneuvering.     48.
+* gnus-group-foreign-p:         Gnus Utility Functions.  73.
+* gnus-group-get-new-news:      Scanning New Messages.  8.
+* gnus-group-get-new-news-this-group: Scanning New Messages.  16.
+* gnus-group-goto-unread:       Group Maneuvering.      48.
+* gnus-group-highlight:         Group Highlighting.     5.
+* gnus-group-highlight-line:    Group Highlighting.     53.
+* gnus-group-jump-to-group:     Group Maneuvering.      37.
+* gnus-group-kill-all-zombies:  Subscription Commands.  47.
+* gnus-group-kill-group:        Subscription Commands.  25.
+* gnus-group-kill-level:        Subscription Commands.  51.
+* gnus-group-kill-region:       Subscription Commands.  43.
+* gnus-grouplens-override-scoring: Displaying Predictions.  11.
+* gnus-group-line-format:       Group Line Specification.  20.
+* gnus-group-list-active:       Listing Groups.         57.
+* gnus-group-list-all-groups:   Listing Groups.         23.
+* gnus-group-list-all-matching: Listing Groups.         53.
+* gnus-group-list-groups:       Listing Groups.         12.
+* gnus-group-list-inactive-groups: Group Levels.        53.
+* gnus-group-list-killed:       Listing Groups.         37.
+* gnus-group-list-level:        Listing Groups.         31.
+* gnus-group-list-matching:     Listing Groups.         48.
+* gnus-group-list-zombies:      Listing Groups.         44.
+* gnus-group-mail:              Misc Group Stuff.       25.
+* gnus-group-make-archive-group: Foreign Groups.        54.
+* gnus-group-make-directory-group: Foreign Groups.      45.
+* gnus-group-make-doc-group:    Foreign Groups.         75.
+* gnus-group-make-empty-virtual: Foreign Groups.        102.
+* gnus-group-make-group:        Foreign Groups.         13.
+* gnus-group-make-help-group:   Foreign Groups.         50.
+* gnus-group-make-kiboze-group: Foreign Groups.         62.
+* gnus-group-make-web-group:    Foreign Groups.         85.
+* gnus-group-mark-buffer:       Marking Groups.         37.
+* gnus-group-mark-group:        Marking Groups.         19.
+* gnus-group-mark-regexp:       Marking Groups.         41.
+* gnus-group-mark-region:       Marking Groups.         33.
+* gnus-group-menu-hook:         Highlighting and Menus.  63.
+* gnus-group-mode-hook:         Misc Group Stuff.       30.
+* gnus-group-mode-line-format:  Group Modeline Specification.  5.
+* gnus-group-move-group-to-server: Changing Servers.    30.
+* gnus-group-native-p:          Gnus Utility Functions.  65.
+* gnus-group-next-group:        Browse Foreign Server.  18.
+* gnus-group-next-group:        Group Maneuvering.      23.
+* gnus-group-next-unread-group: Group Maneuvering.      11.
+* gnus-group-next-unread-group-same-level: Group Maneuvering.  31.
+* gnus-group-post-news:         Misc Group Stuff.       20.
+* gnus-group-prefixed-name:     Gnus Utility Functions.  25.
+* gnus-group-prepare-hook:      Misc Group Stuff.       34.
+* gnus-group-prev-group:        Browse Foreign Server.  22.
+* gnus-group-prev-group:        Group Maneuvering.      27.
+* gnus-group-prev-unread-group: Group Maneuvering.      18.
+* gnus-group-prev-unread-group-same-level: Group Maneuvering.  36.
+* gnus-group-quick-select-group: Selecting a Group.     27.
+* gnus-group-quit:              Exiting Gnus.           19.
+* gnus-group-read-group:        Selecting a Group.      8.
+* gnus-group-read-init-file:    File Commands.          8.
+* gnus-group-read-only-p:       Gnus Utility Functions.  45.
+* gnus-group-real-name:         Gnus Utility Functions.  20.
+* gnus-group-recent-archive-directory: Foreign Groups.  54.
+* gnus-group-rename-group:      Foreign Groups.         19.
+* gnus-group-restart:           Scanning New Messages.  27.
+* gnus-group-save-newsrc:       File Commands.          13.
+* gnus-group-secondary-p:       Gnus Utility Functions.  69.
+* gnus-group-select-group:      Selecting a Group.      19.
+* gnus-group-select-group-ephemerally: Selecting a Group.  44.
+* gnus-group-set-current-level: Group Levels.           16.
+* gnus-group-set-parameter:     Gnus Utility Functions.  82.
+* gnus-group-sort-by-alphabet:  Sorting Groups.         12.
+* gnus-group-sort-by-level:     Sorting Groups.         20.
+* gnus-group-sort-by-method:    Sorting Groups.         37.
+* gnus-group-sort-by-rank:      Sorting Groups.         28.
+* gnus-group-sort-by-real-name: Sorting Groups.         16.
+* gnus-group-sort-by-score:     Sorting Groups.         24.
+* gnus-group-sort-by-unread:    Sorting Groups.         33.
+* gnus-group-sort-function:     Sorting Groups.         5.
+* gnus-group-sort-groups:       Sorting Groups.         5.
+* gnus-group-sort-groups-by-alphabet: Sorting Groups.   43.
+* gnus-group-sort-groups-by-level: Sorting Groups.      53.
+* gnus-group-sort-groups-by-method: Sorting Groups.     68.
+* gnus-group-sort-groups-by-rank: Sorting Groups.       63.
+* gnus-group-sort-groups-by-score: Sorting Groups.      58.
+* gnus-group-sort-groups-by-unread: Sorting Groups.     48.
+* gnus-group-sort-selected-groups-by-alphabet: Sorting Groups.  72.
+* gnus-group-sort-selected-groups-by-level: Sorting Groups.  82.
+* gnus-group-sort-selected-groups-by-method: Sorting Groups.  97.
+* gnus-group-sort-selected-groups-by-rank: Sorting Groups.  92.
+* gnus-group-sort-selected-groups-by-score: Sorting Groups.  87.
+* gnus-group-sort-selected-groups-by-unread: Sorting Groups.  77.
+* gnus-group-suspend:           Exiting Gnus.           9.
+* gnus-group-toolbar:           Toolbar.                14.
+* gnus-group-transpose-groups:  Subscription Commands.  35.
+* gnus-group-uncollapsed-levels: Group Line Specification.  121.
+* gnus-group-universal-argument: Marking Groups.        38.
+* gnus-group-unmark-all-groups: Marking Groups.         29.
+* gnus-group-unmark-group:      Marking Groups.         25.
+* gnus-group-unsubscribe-current-group: Subscription Commands.  10.
+* gnus-group-unsubscribe-group: Subscription Commands.  17.
+* gnus-group-update-hook:       Group Highlighting.     53.
+* gnus-group-use-permanent-levels: Group Levels.        57.
+* gnus-group-visible-select-group: Selecting a Group.   38.
+* gnus-group-yank-group:        Subscription Commands.  31.
+* gnus-header-button-alist:     Article Buttons.        53.
+* gnus-header-face-alist:       Article Highlighting.   15.
+* gnus-hidden-properties:       Various Various.        71.
+* gnus-home-adapt-file:         Home Score File.        60.
+* gnus-home-score-file:         Home Score File.        14.
+* gnus-ignored-adaptive-words:  Adaptive Scoring.       110.
+* gnus-ignored-headers:         Hiding Headers.         36.
+* gnus-ignored-newsgroups:      The Active File.        9.
+* gnus-info-find-node:          Group Information.      45.
+* gnus-info-find-node:          Summary Group Information.  29.
+* gnus-info-group:              Group Info.             54.
+* gnus-info-level:              Group Info.             66.
+* gnus-info-marks:              Group Info.             84.
+* gnus-info-method:             Group Info.             90.
+* gnus-info-params:             Group Info.             96.
+* gnus-info-rank:               Group Info.             60.
+* gnus-info-read:               Group Info.             78.
+* gnus-info-score:              Group Info.             72.
+* gnus-info-set-group:          Group Info.             54.
+* gnus-info-set-level:          Group Info.             66.
+* gnus-info-set-marks:          Group Info.             84.
+* gnus-info-set-method:         Group Info.             90.
+* gnus-info-set-params:         Group Info.             96.
+* gnus-info-set-rank:           Group Info.             60.
+* gnus-info-set-read:           Group Info.             78.
+* gnus-info-set-score:          Group Info.             72.
+* gnus-inhibit-startup-message: Startup Variables.      33.
+* gnus-init-file:               File Commands.          8.
+* gnus-init-file:               Startup Files.          56.
+* gnus-insert-pseudo-articles:  Viewing Files.          31.
+* gnus-interactive-catchup:     Interactive.            22.
+* gnus-interactive-exit:        Interactive.            27.
+* gnus-jog-cache:               Article Caching.        35.
+* gnus-keep-backlog:            Article Backlog.        14.
+* gnus-keep-same-level:         Group Levels.           43.
+* gnus-killed-mark:             Read Articles.          24.
+* gnus-kill-file-mark:          Read Articles.          28.
+* gnus-kill-file-mode-hook:     Kill Files.             75.
+* gnus-kill-file-name:          Kill Files.             53.
+* gnus-kill-files-directory:    Score Variables.        23.
+* gnus-kill-killed:             Score Variables.        13.
+* gnus-kill-save-kill-file:     Kill Files.             59.
+* gnus-kill-summary-on-exit:    Exiting the Summary Buffer.  65.
+* gnus-large-newsgroup:         Selecting a Group.      46.
+* gnus-level-default-subscribed: Group Levels.          37.
+* gnus-level-default-unsubscribed: Group Levels.        37.
+* gnus-level-killed:            Group Levels.           19.
+* gnus-level-subscribed:        Group Levels.           19.
+* gnus-level-unsubscribed:      Group Levels.           19.
+* gnus-level-zombie:            Group Levels.           19.
+* gnus-list-groups-with-ticked-articles: Listing Groups.  69.
+* gnus-load-hook:               Startup Variables.      8.
+* gnus-low-score-mark:          Read Articles.          32.
+* gnus-mailing-list-groups:     Mail and Post.          9.
+* gnus-mail-save-name:          Saving Articles.        83.
+* gnus-mark-article-hook:       Choosing Variables.     21.
+* gnus-mark-article-hook:       Expiring Mail.          38.
+* gnus-mark-unpicked-articles-as-read: Pick and Read.   70.
+* gnus-message-archive-group:   Archived Messages.      28.
+* gnus-message-archive-method:  Archived Messages.      11.
+* gnus-mode-non-string-length:  Mode Lines.             13.
+* gnus-mouse-face:              Highlighting and Menus.  51.
+* gnus-move-split-methods:      Mail Group Commands.    77.
+* gnus-narrow-to-body:          Gnus Utility Functions.  86.
+* gnus-new-mail-mark:           Group Line Specification.  128.
+* gnus-newsgroup-name:          Gnus Utility Functions.  12.
+* gnus-news-group-p:            Gnus Utility Functions.  49.
+* gnus-nntp-server:             Finding the News.       28.
+* gnus-nntpserver-file:         Finding the News.       22.
+* gnus-nocem-directory:         NoCeM.                  90.
+* gnus-nocem-expiry-wait:       NoCeM.                  95.
+* gnus-nocem-groups:            NoCeM.                  30.
+* gnus-nocem-issuers:           NoCeM.                  36.
+* gnus-nocem-verifyer:          NoCeM.                  67.
+* gnus-no-groups-message:       Startup Variables.      40.
+* gnus-no-server:               The Server is Down.     17.
+* gnus-not-empty-thread-mark:   Other Marks.            31.
+* gnus-novice-user:             Interactive.            8.
+* gnus-nov-is-evil:             Crosspost Handling.     36.
+* gnus-Numeric-save-name:       Saving Articles.        117.
+* gnus-numeric-save-name:       Saving Articles.        121.
+* gnus-numeric-save-name:       Saving Articles.        89.
+* gnus-options-not-subscribe:   Filtering New Groups.   19.
+* gnus-options-subscribe:       Filtering New Groups.   19.
+* gnus-other-frame:             Starting Up.            9.
+* gnus-outgoing-message-group : Archived Messages.      90.
+* gnus-page-delimiter:          Misc Article.           55.
+* gnus-parse-headers-hook:      Customizing Threading.  200.
+* gnus-parse-headers-hook:      Various Various.        77.
+* gnus-permanently-visible-groups: Listing Groups.      64.
+* gnus-permanently-visible-groups: Misc Group Stuff.    39.
+* gnus-pick-display-summary:    Pick and Read.          71.
+* gnus-pick-mode:               Pick and Read.          10.
+* gnus-pick-mode-hook:          Pick and Read.          68.
+* gnus-pick-next-page:          Pick and Read.          26.
+* gnus-pick-start-reading:      Pick and Read.          71.
+* gnus-picons-buffer:           Picon Configuration.    45.
+* gnus-picons-convert-x-face:   Picon Configuration.    33.
+* gnus-picons-convert-x-face:   Picon Requirements.     11.
+* gnus-picons-database:         Picon Basics.           18.
+* gnus-picons-database:         Picon Configuration.    11.
+* gnus-picons-display-where :   Hard Picons.            14.
+* gnus-picons-display-where:    Hard Picons.            29.
+* gnus-picons-domain-directories: Picon Configuration.  27.
+* gnus-picons-news-directory:   Picon Configuration.    17.
+* gnus-picons-user-directories: Picon Configuration.    22.
+* gnus-picons-x-face-file-name: Picon Configuration.    40.
+* gnus-Plain-save-name:         Saving Articles.        125.
+* gnus-plain-save-name:         Saving Articles.        129.
+* gnus-plain-save-name:         Saving Articles.        77.
+* gnus-play-startup-jingle:     Startup Variables.      44.
+* gnus-post-method:             Posting Server.         10.
+* gnus-prefetched-article-deletion-strategy: Asynchronous Fetching.  67.
+* gnus-process-mark:            Other Marks.            36.
+* gnus-prompt-before-saving:    Saving Articles.        57.
+* gnus-ps-print-hook:           Article Commands.       8.
+* gnus-read-active-file:        The Active File.        17.
+* gnus-read-mark:               Read Articles.          15.
+* gnus-read-method:             Gnus Utility Functions.  98.
+* gnus-refer-article-method:    Finding the Parent.     34.
+* gnus-replied-mark:            Other Marks.            17.
+* gnus-rmail-save-name:         Saving Articles.        77.
+* gnus-save-all-headers:        Saving Articles.        11.
+* gnus-saved-headers:           Saving Articles.        14.
+* gnus-saved-mark:              Other Marks.            26.
+* gnus-save-duplicate-list:     Duplicate Suppression.  44.
+* gnus-save-killed-list:        Startup Files.          26.
+* gnus-save-newsrc-file:        Startup Files.          20.
+* gnus-save-newsrc-hook:        Startup Files.          42.
+* gnus-save-quick-newsrc-hook:  Startup Files.          42.
+* gnus-save-score:              Score Variables.        45.
+* gnus-save-standard-newsrc-hook: Startup Files.        42.
+* gnus-score-after-write-file-function: Score Variables.  135.
+* gnus-score-below-mark:        Score Variables.        74.
+* gnus-score-change-score-file: Summary Score Commands.  47.
+* gnus-score-customize:         Summary Score Commands.  68.
+* gnus-score-decay-constant:    Score Decays.           27.
+* gnus-score-decay-function:    Score Decays.           10.
+* gnus-score-decay-scale:       Score Decays.           27.
+* gnus-score-edit-current-scores: Summary Score Commands.  52.
+* gnus-score-edit-done:         Score File Editing.     15.
+* gnus-score-edit-file:         Summary Score Commands.  58.
+* gnus-score-edit-insert-date:  Score File Editing.     20.
+* gnus-score-exact-adapt-limit: Adaptive Scoring.       88.
+* gnus-score-expiry-days:       Score Variables.        120.
+* gnus-score-file-suffix:       Score Variables.        29.
+* gnus-score-find-bnews:        Score Variables.        90.
+* gnus-score-find-hierarchical: Score Variables.        109.
+* gnus-score-find-score-files-function: Score Variables.  79.
+* gnus-score-find-single:       Score Variables.        86.
+* gnus-score-find-trace:        Summary Score Commands.  30.
+* gnus-score-flush-cache:       Group Score Commands.   10.
+* gnus-score-flush-cache:       Summary Score Commands.  63.
+* gnus-score-followup-article:  Followups To Yourself.  15.
+* gnus-score-followup-thread:   Followups To Yourself.  20.
+* gnus-score-interactive-default-score: Score Variables.  51.
+* gnus-score-menu-hook:         Highlighting and Menus.  79.
+* gnus-score-mimic-keymap:      Summary Score Commands.  180.
+* gnus-score-mode-hook:         Score File Editing.     31.
+* gnus-score-over-mark:         Score Variables.        69.
+* gnus-score-pretty-print:      Score File Editing.     26.
+* gnus-score-search-global-directories: Global Score Files.  26.
+* gnus-score-set-expunge-below: Summary Score Commands.  72.
+* gnus-score-set-mark-below:    Summary Score Commands.  67.
+* gnus-score-uncacheable-files: Score Variables.        34.
+* gnus-secondary-select-methods: Finding the News.      45.
+* gnus-secondary-servers:       Finding the News.       32.
+* gnus-select-article-hook:     Choosing Variables.     16.
+* gnus-selected-tree-face:      Tree Display.           24.
+* gnus-select-group-hook:       Selecting a Group.      54.
+* gnus-select-method:           Finding the News.       5.
+* gnus-sent-message-ids-file:   Post.                   9.
+* gnus-sent-message-ids-length: Post.                   20.
+* gnus-server-add-server:       Server Commands.        8.
+* gnus-server-close-all-servers: Unavailable Servers.   48.
+* gnus-server-close-server:     Unavailable Servers.    34.
+* gnus-server-copy-server:      Server Commands.        32.
+* gnus-server-deny-server:      Unavailable Servers.    39.
+* gnus-server-edit-server:      Server Commands.        12.
+* gnus-server-equal:            Gnus Utility Functions.  61.
+* gnus-server-exit:             Server Commands.        20.
+* gnus-server-kill-server:      Server Commands.        24.
+* gnus-server-line-format:      Server Buffer Format.   5.
+* gnus-server-list-servers:     Server Commands.        36.
+* gnus-server-menu-hook:        Highlighting and Menus.  71.
+* gnus-server-mode-hook:        The Server Buffer.      38.
+* gnus-server-mode-line-format: Server Buffer Format.   22.
+* gnus-server-open-all-servers: Unavailable Servers.    43.
+* gnus-server-open-server:      Unavailable Servers.    29.
+* gnus-server-read-server:      Server Commands.        16.
+* gnus-server-regenerate-server: Server Commands.       46.
+* gnus-server-remove-denials:   Unavailable Servers.    53.
+* gnus-server-scan-server:      Server Commands.        40.
+* gnus-server-to-method:        Gnus Utility Functions.  57.
+* gnus-server-yank-server:      Server Commands.        28.
+* gnus-shell-command-separator: Various Various.        84.
+* gnus-show-all-headers:        Hiding Headers.         8.
+* gnus-show-mime:               Using MIME.             15.
+* gnus-show-mime-method:        Using MIME.             15.
+* gnus-show-threads:            Customizing Threading.  8.
+* gnus-signature-face:          Article Highlighting.   72.
+* gnus-signature-limit:         Article Signature.      26.
+* gnus-signature-separator:     Article Highlighting.   72.
+* gnus-signature-separator:     Article Signature.      5.
+* gnus-simplify-ignored-prefixes: Customizing Threading.  66.
+* gnus-simplify-subject-fuzzy-regexp: Customizing Threading.  60.
+* gnus-single-article-buffer:   Misc Article.           8.
+* gnus-sorted-header-list:      Hiding Headers.         51.
+* gnus-soup-add-article:        SOUP Commands.          32.
+* gnus-soup-directory:          SOUP Commands.          38.
+* gnus-souped-mark:             Read Articles.          44.
+* gnus-soup-packer:             SOUP Commands.          53.
+* gnus-soup-packet-directory:   SOUP Commands.          63.
+* gnus-soup-packet-regexp:      SOUP Commands.          67.
+* gnus-soup-pack-packet:        SOUP Commands.          24.
+* gnus-soup-prefix-file:        SOUP Commands.          48.
+* gnus-soup-replies-directory:  SOUP Commands.          43.
+* gnus-soup-save-areas:         SOUP Commands.          15.
+* gnus-soup-send-replies:       SOUP Commands.          19.
+* gnus-soup-unpacker:           SOUP Commands.          58.
+* gnus-sparse-mark:             Read Articles.          48.
+* gnus-split-methods:           Saving Articles.        127.
+* gnus-started-hook:            Startup Variables.      18.
+* gnus-startup-file:            Startup Files.          38.
+* gnus-startup-hook:            Startup Variables.      14.
+* gnus-startup-jingle:          Startup Variables.      48.
+* gnus-strict-mime:             Using MIME.             15.
+* gnus-subscribe-alphabetically: Subscription Methods.  26.
+* gnus-subscribe-hierarchical-interactive: Subscription Methods.  42.
+* gnus-subscribe-hierarchically: Subscription Methods.  30.
+* gnus-subscribe-interactively: Subscription Methods.   40.
+* gnus-subscribe-killed:        Subscription Methods.   45.
+* gnus-subscribe-newsgroup-method: Subscription Methods.  5.
+* gnus-subscribe-options-newsgroup-method: Filtering New Groups.  11.
+* gnus-subscribe-randomly:      Subscription Methods.   22.
+* gnus-subscribe-zombies:       Subscription Methods.   16.
+* gnus-summary-article-posted-p: Mail Group Commands.   77.
+* gnus-summary-beginning-of-article: Paging the Article.  35.
+* gnus-summary-best-unread-article: Choosing Commands.  58.
+* gnus-summary-bubble-group:    Group Score.            18.
+* gnus-summary-caesar-message:  Article Washing.        20.
+* gnus-summary-cancel-article:  Canceling and Superseding.  10.
+* gnus-summary-catchup:         Setting Marks.          49.
+* gnus-summary-catchup-all:     Setting Marks.          53.
+* gnus-summary-catchup-all-and-exit: Exiting the Summary Buffer.  37.
+* gnus-summary-catchup-and-exit: Exiting the Summary Buffer.  32.
+* gnus-summary-catchup-and-goto-next-group: Exiting the Summary Buffer.  42.
+* gnus-summary-catchup-to-here: Setting Marks.          58.
+* gnus-summary-check-current:   Summary Maneuvering.    63.
+* gnus-summary-clear-above:     Setting Marks.          97.
+* gnus-summary-clear-mark-forward: Setting Marks.       75.
+* gnus-summary-copy-article:    Mail Group Commands.    37.
+* gnus-summary-crosspost-article: Mail Group Commands.  42.
+* gnus-summary-current-score:   Summary Score Commands.  25.
+* gnus-summary-default-score:   Score Variables.        59.
+* gnus-summary-delete-article:  Mail Group Commands.    26.
+* gnus-summary-describe-briefly: Summary Group Information.  24.
+* gnus-summary-describe-group:  Summary Group Information.  18.
+* gnus-summary-down-thread:     Thread Commands.        70.
+* gnus-summary-dummy-line-format: Customizing Threading.  149.
+* gnus-summary-edit-article:    Mail Group Commands.    65.
+* gnus-summary-edit-global-kill: Kill Files.            40.
+* gnus-summary-edit-local-kill: Kill Files.             36.
+* gnus-summary-end-of-article:  Paging the Article.     42.
+* gnus-summary-enter-digest-group: Really Various Summary Commands.  8.
+* gnus-summary-execute-command: Searching for Articles.  18.
+* gnus-summary-exit:            Exiting the Summary Buffer.  13.
+* gnus-summary-exit-hook:       Exiting the Summary Buffer.  13.
+* gnus-summary-exit-no-update:  Exiting the Summary Buffer.  25.
+* gnus-summary-expand-window:   Really Various Summary Commands.  35.
+* gnus-summary-expire-articles: Mail Group Commands.    14.
+* gnus-summary-expire-articles-now: Mail Group Commands.  19.
+* gnus-summary-expunge-below:   Score Variables.        63.
+* gnus-summary-fetch-faq:       Summary Group Information.  8.
+* gnus-summary-first-unread-article: Choosing Commands.  51.
+* gnus-summary-followup:        Summary Post Commands.  17.
+* gnus-summary-followup-to-mail: Summary Post Commands.  29.
+* gnus-summary-followup-to-mail: Summary Post Commands.  34.
+* gnus-summary-followup-with-original: Summary Post Commands.  23.
+* gnus-summary-gather-exclude-subject: Customizing Threading.  94.
+* gnus-summary-gather-subject-limit: Customizing Threading.  43.
+* gnus-summary-generate-hook:   Various Summary Stuff.  16.
+* gnus-summary-goto-article:    Summary Maneuvering.    28.
+* gnus-summary-goto-last-article: Choosing Commands.    65.
+* gnus-summary-goto-subject:    Summary Maneuvering.    33.
+* gnus-summary-goto-unread:     Process/Prefix.         36.
+* gnus-summary-goto-unread:     Setting Marks.          86.
+* gnus-summary-hide-all-threads: Thread Commands.       56.
+* gnus-summary-hide-thread:     Thread Commands.        48.
+* gnus-summary-highlight:       Summary Highlighting.   24.
+* gnus-summary-ignore-duplicates: Various Summary Stuff.  30.
+* gnus-summary-import-article:  Mail Group Commands.    49.
+* gnus-summary-insert-cached-articles: Summary Generation Commands.  12.
+* gnus-summary-isearch-article: Paging the Article.     48.
+* gnus-summary-kill-below:      Setting Marks.          68.
+* gnus-summary-kill-process-mark: Setting Process Marks.  73.
+* gnus-summary-kill-same-subject: Setting Marks.        44.
+* gnus-summary-kill-same-subject-and-select: Setting Marks.  36.
+* gnus-summary-kill-thread:     Thread Commands.        10.
+* gnus-summary-limit-exclude-childless-dormant: Limiting.  79.
+* gnus-summary-limit-exclude-dormant: Limiting.         75.
+* gnus-summary-limit-include-dormant: Limiting.         70.
+* gnus-summary-limit-include-expunged: Limiting.        65.
+* gnus-summary-limit-mark-excluded-as-read: Limiting.   84.
+* gnus-summary-limit-to-age:    Limiting.               39.
+* gnus-summary-limit-to-articles: Limiting.             46.
+* gnus-summary-limit-to-author: Limiting.               20.
+* gnus-summary-limit-to-marks:  Limiting.               34.
+* gnus-summary-limit-to-score:  Limiting.               58.
+* gnus-summary-limit-to-subject: Limiting.              15.
+* gnus-summary-limit-to-unread: Limiting.               27.
+* gnus-summary-line-format:     Summary Buffer Lines.   5.
+* gnus-summary-lower-thread:    Thread Commands.        19.
+* gnus-summary-mail-crosspost-complaint: Summary Mail Commands.  89.
+* gnus-summary-mail-forward:    Summary Mail Commands.  38.
+* gnus-summary-mail-other-window: Summary Mail Commands.  46.
+* gnus-summary-mail-toolbar:    Toolbar.                22.
+* gnus-summary-make-false-root: Customizing Threading.  127.
+* gnus-summary-mark-above:      Setting Marks.          107.
+* gnus-summary-mark-as-dormant: Setting Marks.          17.
+* gnus-summary-mark-as-expirable: Setting Marks.        82.
+* gnus-summary-mark-as-processable: Pick and Read.      19.
+* gnus-summary-mark-as-processable: Setting Process Marks.  10.
+* gnus-summary-mark-as-read-backward: Setting Marks.    29.
+* gnus-summary-mark-as-read-forward: Setting Marks.     24.
+* gnus-summary-mark-below:      Scoring.                10.
+* gnus-summary-mark-read-and-unread-as-read: Choosing Variables.  21.
+* gnus-summary-mark-region-as-read: Setting Marks.      63.
+* gnus-summary-mark-unread-as-read: Choosing Variables.  21.
+* gnus-summary-menu-hook:       Highlighting and Menus.  67.
+* gnus-summary-mode-hook:       Various Summary Stuff.  12.
+* gnus-summary-mode-line-format: Summary Buffer Mode Line.  5.
+* gnus-summary-move-article:    Mail Group Commands.    32.
+* gnus-summary-next-article:    Choosing Commands.      29.
+* gnus-summary-next-group:      Exiting the Summary Buffer.  61.
+* gnus-summary-next-page:       Choosing Commands.      10.
+* gnus-summary-next-page:       Paging the Article.     8.
+* gnus-summary-next-same-subject: Choosing Commands.    39.
+* gnus-summary-next-thread:     Thread Commands.        62.
+* gnus-summary-next-unread-article: Choosing Commands.  17.
+* gnus-summary-next-unread-subject: Summary Maneuvering.  14.
+* gnus-summary-pick-line-format: Pick and Read.         73.
+* gnus-summary-pipe-output:     Saving Articles.        63.
+* gnus-summary-pop-article:     Choosing Commands.      69.
+* gnus-summary-pop-limit:       Limiting.               52.
+* gnus-summary-post-forward:    Summary Post Commands.  41.
+* gnus-summary-post-news:       Summary Post Commands.  11.
+* gnus-summary-prepare:         Summary Generation Commands.  8.
+* gnus-summary-prepare-exit-hook: Exiting the Summary Buffer.  13.
+* gnus-summary-prepare-hook:    Various Summary Stuff.  24.
+* gnus-summary-prev-article:    Choosing Commands.      35.
+* gnus-summary-prev-group:      Exiting the Summary Buffer.  66.
+* gnus-summary-prev-page:       Paging the Article.     14.
+* gnus-summary-prev-same-subject: Choosing Commands.    44.
+* gnus-summary-prev-thread:     Thread Commands.        66.
+* gnus-summary-prev-unread-article: Choosing Commands.  23.
+* gnus-summary-prev-unread-subject: Summary Maneuvering.  21.
+* gnus-summary-print-article :  Article Commands.       8.
+* gnus-summary-raise-thread:    Thread Commands.        24.
+* gnus-summary-read-document:   Really Various Summary Commands.  19.
+* gnus-summary-refer-article:   Finding the Parent.     24.
+* gnus-summary-refer-parent-article: Finding the Parent.  5.
+* gnus-summary-refer-references: Finding the Parent.    20.
+* gnus-summary-remove-bookmark: Setting Marks.          92.
+* gnus-summary-reparent-thread: Thread Commands.        66.
+* gnus-summary-reply:           Summary Mail Commands.  12.
+* gnus-summary-reply-with-original: Summary Mail Commands.  19.
+* gnus-summary-rescan-group:    Exiting the Summary Buffer.  55.
+* gnus-summary-rescore:         Summary Score Commands.  35.
+* gnus-summary-reselect-current-group: Exiting the Summary Buffer.  47.
+* gnus-summary-resend-bounced-mail: Summary Mail Commands.  51.
+* gnus-summary-resend-message:  Summary Mail Commands.  63.
+* gnus-summary-respool-article: Mail Group Commands.    55.
+* gnus-summary-respool-query:   Mail Group Commands.    71.
+* gnus-summary-rethread-current: Thread Commands.       60.
+* gnus-summary-same-subject:    Summary Buffer Format.  21.
+* gnus-summary-save-article:    Saving Articles.        23.
+* gnus-summary-save-article-body-file: Saving Articles.  48.
+* gnus-summary-save-article-file: Saving Articles.      38.
+* gnus-summary-save-article-folder: Saving Articles.    53.
+* gnus-summary-save-article-mail: Saving Articles.      28.
+* gnus-summary-save-article-rmail: Saving Articles.     33.
+* gnus-summary-save-article-vm: Saving Articles.        58.
+* gnus-summary-save-body-in-file: Saving Articles.      95.
+* gnus-summary-save-in-file:    Saving Articles.        89.
+* gnus-summary-save-in-folder:  Saving Articles.        101.
+* gnus-summary-save-in-mail:    Saving Articles.        83.
+* gnus-summary-save-in-rmail:   Saving Articles.        77.
+* gnus-summary-save-in-vm:      Saving Articles.        109.
+* gnus-summary-save-newsrc:     Exiting the Summary Buffer.  71.
+* gnus-summary-save-process-mark: Setting Process Marks.  83.
+* gnus-summary-score-entry:     Summary Score Commands.  42.
+* gnus-summary-scroll-up:       Paging the Article.     19.
+* gnus-summary-search-article-backward: Searching for Articles.  13.
+* gnus-summary-search-article-forward: Searching for Articles.  8.
+* gnus-summary-selected-face:   Summary Highlighting.   19.
+* gnus-summary-set-bookmark:    Setting Marks.          87.
+* gnus-summary-set-score:       Summary Score Commands.  21.
+* gnus-summary-show-all-threads: Thread Commands.       52.
+* gnus-summary-show-article:    Paging the Article.     26.
+* gnus-summary-show-thread:     Thread Commands.        43.
+* gnus-summary-sort-by-author:  Summary Sorting.        15.
+* gnus-summary-sort-by-date:    Summary Sorting.        23.
+* gnus-summary-sort-by-lines:   Summary Sorting.        27.
+* gnus-summary-sort-by-number:  Summary Sorting.        11.
+* gnus-summary-sort-by-score:   Summary Sorting.        31.
+* gnus-summary-sort-by-subject: Summary Sorting.        19.
+* gnus-summary-stop-page-breaking: Article Washing.     15.
+* gnus-summary-supersede-article: Canceling and Superseding.  23.
+* gnus-summary-thread-gathering-function: Customizing Threading.  103.
+* gnus-summary-tick-above:      Setting Marks.          102.
+* gnus-summary-tick-article-forward: Setting Marks.     11.
+* gnus-summary-toggle-header:   Article Washing.        25.
+* gnus-summary-toggle-mime:     Article Washing.        35.
+* gnus-summary-toggle-threads:  Thread Commands.        39.
+* gnus-summary-toggle-truncation: Really Various Summary Commands.  28.
+* gnus-summary-toolbar:         Toolbar.                18.
+* gnus-summary-top-thread:      Thread Commands.        78.
+* gnus-summary-universal-argument: Searching for Articles.  25.
+* gnus-summary-unmark-all-processable: Pick and Read.   35.
+* gnus-summary-unmark-all-processable: Setting Process Marks.  22.
+* gnus-summary-unmark-as-processable: Pick and Read.    31.
+* gnus-summary-unmark-as-processable: Setting Process Marks.  12.
+* gnus-summary-update-hook:     Summary Highlighting.   14.
+* gnus-summary-up-thread:       Thread Commands.        74.
+* gnus-summary-verbose-header:  Article Washing.        30.
+* gnus-summary-wake-up-the-dead: Exiting the Summary Buffer.  65.
+* gnus-summary-wide-reply:      Summary Mail Commands.  25.
+* gnus-summary-wide-reply-with-original: Summary Mail Commands.  32.
+* gnus-summary-write-article-file: Saving Articles.     43.
+* gnus-summary-yank-process-mark: Setting Process Marks.  78.
+* gnus-summary-zcore-fuzz:      Summary Buffer Lines.   79.
+* gnus-supercite-regexp:        Article Highlighting.   54.
+* gnus-supercite-secondary-regexp: Article Highlighting.  58.
+* gnus-suppress-duplicates:     Duplicate Suppression.  40.
+* gnus-suspend-gnus-hook:       Exiting Gnus.           19.
+* gnus-thread-expunge-below:    Customizing Threading.  176.
+* gnus-thread-hide-killed:      Customizing Threading.  183.
+* gnus-thread-hide-subtree:     Customizing Threading.  171.
+* gnus-thread-ignore-subject:   Customizing Threading.  188.
+* gnus-thread-indent-level:     Customizing Threading.  195.
+* gnus-thread-operation-ignore-subject : Thread Commands.  75.
+* gnus-thread-score-function:   Sorting.                45.
+* gnus-thread-sort-by-author:   Sorting.                5.
+* gnus-thread-sort-by-date:     Sorting.                5.
+* gnus-thread-sort-by-number:   Sorting.                5.
+* gnus-thread-sort-by-score:    Sorting.                5.
+* gnus-thread-sort-by-subject:  Sorting.                5.
+* gnus-thread-sort-by-total-score: Sorting.             5.
+* gnus-thread-sort-functions:   Sorting.                5.
+* gnus-ticked-mark:             Unread Articles.        10.
+* gnus-topic-copy-group:        Topic Commands.         23.
+* gnus-topic-copy-matching:     Topic Commands.         40.
+* gnus-topic-create-topic:      Topic Commands.         12.
+* gnus-topic-delete:            Topic Commands.         93.
+* gnus-topic-display-empty-topics: Topic Variables.     33.
+* gnus-topic-edit-parameters:   Topic Commands.         102.
+* gnus-topic-indent:            Topic Commands.         72.
+* gnus-topic-indent-level:      Topic Variables.        27.
+* gnus-topic-kill-group:        Topic Commands.         78.
+* gnus-topic-line-format:       Topic Variables.        8.
+* gnus-topic-list-active:       Topic Commands.         97.
+* gnus-topic-mark-topic:        Topic Commands.         50.
+* gnus-topic-mode:              Group Topics.           26.
+* gnus-topic-mode-hook:         Topic Variables.        31.
+* gnus-topic-move-group:        Topic Commands.         17.
+* gnus-topic-move-matching:     Topic Commands.         35.
+* gnus-topic-remove-group:      Topic Commands.         29.
+* gnus-topic-rename:            Topic Commands.         89.
+* gnus-topic-select-group:      Topic Commands.         60.
+* gnus-topic-sort-groups-by-alphabet: Topic Sorting.    11.
+* gnus-topic-sort-groups-by-level: Topic Sorting.       21.
+* gnus-topic-sort-groups-by-method: Topic Sorting.      36.
+* gnus-topic-sort-groups-by-rank: Topic Sorting.        31.
+* gnus-topic-sort-groups-by-score: Topic Sorting.       26.
+* gnus-topic-sort-groups-by-unread: Topic Sorting.      16.
+* gnus-topic-toggle-display-empty-topics: Topic Commands.  45.
+* gnus-topic-topology:          Topic Topology.         27.
+* gnus-topic-unmark-topic:      Topic Commands.         55.
+* gnus-topic-yank-group:        Topic Commands.         83.
+* gnus-total-expirable-newsgroups: Expiring Mail.       96.
+* gnus-tree-brackets:           Tree Display.           56.
+* gnus-tree-line-format:        Tree Display.           29.
+* gnus-tree-minimize-window:    Tree Display.           68.
+* gnus-tree-mode-hook:          Tree Display.           14.
+* gnus-tree-mode-line-format:   Tree Display.           18.
+* gnus-tree-parent-child-edges: Tree Display.           63.
+* gnus-uncacheable-groups:      Article Caching.        42.
+* gnus-undo:                    Undo.                   27.
+* gnus-undo-mode:               Undo.                   27.
+* gnus-unload:                  Exiting Gnus.           24.
+* gnus-unread-mark:             Choosing Variables.     21.
+* gnus-unread-mark:             Unread Articles.        28.
+* gnus-updated-mode-lines:      Mode Lines.             5.
+* gnus-update-format:           Formatting Variables.   33.
+* gnus-update-score-entry-dates: Score Variables.       126.
+* gnus-use-adaptive-scoring:    Adaptive Scoring.       9.
+* gnus-use-article-prefetch:    Asynchronous Fetching.  37.
+* gnus-use-cache:               Article Caching.        13.
+* gnus-use-cross-reference:     Exiting the Summary Buffer.  77.
+* gnus-use-demon:               Daemons.                48.
+* gnus-use-dribble-file:        Auto Save.              15.
+* gnus-use-full-window:         Windows Configuration.  7.
+* gnus-use-grouplens:           Using GroupLens.        14.
+* gnus-use-header-prefetch:     Asynchronous Fetching.  79.
+* gnus-use-long-file-name:      Article Caching.        13.
+* gnus-use-long-file-name:      Saving Articles.        171.
+* gnus-use-nocem:               NoCeM.                  25.
+* gnus-use-scoring:             Score Variables.        8.
+* gnus-use-toolbar:             Toolbar.                8.
+* gnus-use-trees:               Tree Display.           5.
+* gnus-use-undo:                Undo.                   27.
+* gnus-uu-be-dangerous:         Other Decode Variables.  23.
+* gnus-uu-correct-stripped-uucode: Other Decode Variables.  75.
+* gnus-uu-decode-postscript:    PostScript Files.       8.
+* gnus-uu-decode-postscript-and-save: PostScript Files.  12.
+* gnus-uu-decode-postscript-and-save-view: PostScript Files.  22.
+* gnus-uu-decode-postscript-view: PostScript Files.     17.
+* gnus-uu-decode-unshar:        Shared Articles.        8.
+* gnus-uu-decode-unshar-and-save: Shared Articles.      12.
+* gnus-uu-decode-unshar-and-save-view: Shared Articles.  22.
+* gnus-uu-decode-unshar-view:   Shared Articles.        17.
+* gnus-uu-decode-uu:            Uuencoded Articles.     8.
+* gnus-uu-decode-uu-and-save:   Uuencoded Articles.     12.
+* gnus-uu-decode-uu-and-save-view: Uuencoded Articles.  21.
+* gnus-uu-decode-uu-view:       Uuencoded Articles.     17.
+* gnus-uu-digest-headers:       Mail.                   9.
+* gnus-uu-digest-mail-forward:  Summary Mail Commands.  83.
+* gnus-uu-digest-post-forward:  Summary Post Commands.  47.
+* gnus-uu-do-not-unpack-archives: Other Decode Variables.  45.
+* gnus-uu-grabbed-file-functions: Other Decode Variables.  5.
+* gnus-uu-grab-move:            Other Decode Variables.  21.
+* gnus-uu-grab-view:            Other Decode Variables.  17.
+* gnus-uu-ignore-default-archive-rules: Other Decode Variables.  60.
+* gnus-uu-ignore-default-view-rules: Other Decode Variables.  55.
+* gnus-uu-ignore-files-by-name: Other Decode Variables.  30.
+* gnus-uu-ignore-files-by-type: Other Decode Variables.  34.
+* gnus-uu-invert-processable:   Setting Process Marks.  27.
+* gnus-uu-kill-carriage-return: Other Decode Variables.  65.
+* gnus-uu-mark-all:             Setting Process Marks.  64.
+* gnus-uu-mark-buffer:          Pick and Read.          63.
+* gnus-uu-mark-buffer:          Setting Process Marks.  68.
+* gnus-uu-mark-by-regexp:       Pick and Read.          55.
+* gnus-uu-mark-by-regexp:       Setting Process Marks.  32.
+* gnus-uu-mark-over:            Setting Process Marks.  50.
+* gnus-uu-mark-region:          Pick and Read.          47.
+* gnus-uu-mark-region:          Setting Process Marks.  36.
+* gnus-uu-mark-series:          Setting Process Marks.  55.
+* gnus-uu-mark-sparse:          Setting Process Marks.  59.
+* gnus-uu-mark-thread:          Pick and Read.          39.
+* gnus-uu-mark-thread:          Setting Process Marks.  40.
+* gnus-uu-mark-thread:          Thread Commands.        29.
+* gnus-uu-notify-files:         Uuencoded Articles.     30.
+* gnus-uu-post-include-before-composing: Uuencoding and Posting.  8.
+* gnus-uu-post-length:          Uuencoding and Posting.  15.
+* gnus-uu-post-news:            Summary Post Commands.  53.
+* gnus-uu-post-separate-description: Uuencoding and Posting.  28.
+* gnus-uu-post-threaded:        Uuencoding and Posting.  20.
+* gnus-uu-save-in-digest:       Other Decode Variables.  87.
+* gnus-uu-tmp-dir:              Other Decode Variables.  41.
+* gnus-uu-unmark-articles-not-decoded: Other Decode Variables.  70.
+* gnus-uu-unmark-buffer:        Pick and Read.          67.
+* gnus-uu-unmark-by-regexp:     Pick and Read.          59.
+* gnus-uu-unmark-region:        Pick and Read.          51.
+* gnus-uu-unmark-thread:        Pick and Read.          43.
+* gnus-uu-unmark-thread:        Setting Process Marks.  45.
+* gnus-uu-unmark-thread:        Thread Commands.        34.
+* gnus-uu-user-archive-rules:   Rule Variables.         28.
+* gnus-uu-user-view-rules:      Rule Variables.         15.
+* gnus-uu-user-view-rules-end:  Rule Variables.         23.
+* gnus-uu-view-and-save:        Other Decode Variables.  50.
+* gnus-uu-view-with-metamail:   Other Decode Variables.  80.
+* gnus-valid-select-methods:    Hooking New Backends Into Gnus.  5.
+* gnus-verbose:                 Various Various.        28.
+* gnus-verbose-backends:        Various Various.        37.
+* gnus-version:                 Group Information.      37.
+* gnus-view-pseudo-asynchronously: Viewing Files.       18.
+* gnus-view-pseudos:            Viewing Files.          21.
+* gnus-view-pseudos-separately : Viewing Files.         26.
+* gnus-visible-headers:         Hiding Headers.         22.
+* gnus-visual:                  Highlighting and Menus.  5.
+* gnus-visual-mark-article-hook: Summary Highlighting.  8.
+* gnus-window-min-height:       Windows Configuration.  98.
+* gnus-window-min-width:        Windows Configuration.  98.
+* gnus-xmas-glyph-directory:    XVarious.               7.
+* gnus-xmas-logo-color-alist:   XVarious.               13.
+* gnus-xmas-logo-color-style:   XVarious.               18.
+* gnus-xmas-modeline-glyph:     XVarious.               25.
+* Good Net-Keeping Seal of Approval: Conformity.        20.
+* group buffer:                 The Group Buffer.       4.
+* group buffer format:          Group Line Specification.  4.
+* group description:            Group Information.      25.
+* group highlighting:           Group Highlighting.     4.
+* group information:            Group Information.      4.
+* group level:                  Group Levels.           4.
+* group listing:                Listing Groups.         4.
+* group modeline:               Group Modeline Specification.  4.
+* group movement:               Group Maneuvering.      4.
+* group parameters:             Group Parameters.       4.
+* group parameters:             Topic Commands.         102.
+* group score:                  Group Score.            4.
+* group score commands:         Group Score Commands.   4.
+* group selection:              Selecting a Group.      4.
+* group timestamps:             Group Timestamp.        4.
+* group-group-find-parameter:   Gnus Utility Functions.  77.
+* GroupLens:                    GroupLens.              4.
+* grouplens-best-unread-article: Rating Articles.       34.
+* grouplens-newsgroups:         Using GroupLens.        24.
+* grouplens-next-unread-article: Rating Articles.       30.
+* grouplens-prediction-display: Displaying Predictions.  23.
+* grouplens-pseudonym:          Using GroupLens.        19.
+* grouplens-score-thread:       Rating Articles.        21.
+* head:                         Terminology.            66.
+* header:                       Terminology.            75.
+* headers:                      Terminology.            79.
+* help group:                   Document Groups.        4.
+* help group:                   Foreign Groups.         50.
+* hiding headers:               Hiding Headers.         4.
+* highlight:                    Article Highlighting.   4.
+* highlighting:                 Compatibility.          32.
+* highlighting:                 Group Highlighting.     4.
+* highlighting:                 Highlighting and Menus.  4.
+* highlights:                   Various Various.        4.
+* hilit19:                      Compatibility.          32.
+* history:                      History.                5.
+* ignored groups:               The Active File.        4.
+* illegal characters in file names: Various Various.    58.
+* incoming mail files:          Mail Backend Variables.  109.
+* incoming mail treatment:      Washing Mail.           4.
+* info:                         Group Information.      45.
+* information on groups:        Group Information.      4.
+* InReference:                  Foreign Groups.         85.
+* InReference:                  Web Searches.           4.
+* interaction:                  Interactive.            4.
+* internal variables:           Gnus Utility Functions.  4.
+* ISO8601:                      Score File Format.      124.
+* ispell:                       Mail and Post.          24.
+* ispell-message:               Mail and Post.          24.
+* Jem:                          NoCeM.                  57.
+* kibozing:                     Kibozed Groups.         4.
+* kill files:                   Converting Kill Files.  4.
+* kill files:                   Kill Files.             4.
+* killed groups:                Terminology.            100.
+* level:                        Group Levels.           4.
+* levels:                       Terminology.            91.
+* limiting:                     Limiting.               4.
+* links:                        Splitting Mail.         51.
+* LIST overview.fmt:            Crosspost Handling.     29.
+* list server brain damage:     Washing Mail.           4.
+* local variables:              Score File Format.      252.
+* mail:                         Getting Mail.           4.
+* mail:                         Summary Mail Commands.  4.
+* mail:                         Terminology.            16.
+* mail folders:                 Mail Folders.           4.
+* mail group commands:          Mail Group Commands.    4.
+* mail message:                 Terminology.            58.
+* mail NOV spool:               Mail Spool.             4.
+* mail splitting:               Fancy Mail Splitting.   4.
+* mail splitting:               Splitting Mail.         4.
+* mail washing:                 Washing Mail.           4.
+* mail-extract-address-components: Summary Buffer Format.  12.
+* MAILHOST:                     Mail Backend Variables.  16.
+* mailing lists:                Mail and Post.          9.
+* mail-to-news gateways:        Mail-To-News Gateways.  4.
+* making digests:               Summary Post Commands.  47.
+* making groups:                Foreign Groups.         13.
+* manual:                       Group Information.      45.
+* marking groups:               Marking Groups.         4.
+* marks:                        Marking Articles.       4.
+* max-lisp-eval-depth:          Troubleshooting.        30.
+* mbox:                         Document Groups.        12.
+* mbox folders:                 Mail Folders.           4.
+* mc-verify:                    NoCeM.                  67.
+* menus:                        Highlighting and Menus.  4.
+* message:                      Terminology.            62.
+* Message-ID:                   Finding the Parent.     24.
+* message-sent-hook:            Followups To Yourself.  21.
+* metamail:                     Other Decode Variables.  80.
+* metamail-buffer:              Using MIME.             15.
+* MH folders:                   Saving Articles.        101.
+* mh-e mail spool:              MH Spool.               4.
+* MIME:                         Using MIME.             4.
+* MIME digest:                  Document Groups.        35.
+* MMDF mail box:                Document Groups.        17.
+* mode lines:                   Mode Lines.             4.
+* mode lines:                   Various Various.        4.
+* MODE READER:                  NNTP.                   23.
+* moderation:                   Moderation.             4.
+* mouse:                        Buttons.                4.
+* move mail:                    Mail Group Commands.    32.
+* movemail:                     Mail Backend Variables.  16.
+* moving articles:              Mail Group Commands.    77.
+* Mule:                         Emacsen.                4.
+* native:                       Terminology.            38.
+* new features:                 New Features.           4.
+* new groups:                   New Groups.             4.
+* new messages:                 Scanning New Messages.  4.
+* news:                         Terminology.            8.
+* news backends:                Getting News.           4.
+* news spool:                   News Spool.             4.
+* newsgroup:                    Group Parameters.       58.
+* .newsrc:                      Startup Files.          4.
+* .newsrc.el:                   Startup Files.          4.
+* .newsrc.eld:                  Startup Files.          4.
+* nnbabyl:                      Rmail Babyl.            4.
+* nnbabyl-active-file:          Rmail Babyl.            17.
+* nnbabyl-active-file:          Rmail Babyl.            5.
+* nnbabyl-get-new-mail:         Not Reading Mail.       12.
+* nnbabyl-get-new-mail:         Rmail Babyl.            21.
+* nnbabyl-mbox-file:            Rmail Babyl.            13.
+* nnbabyl-mbox-file:            Rmail Babyl.            5.
+* `nnchoke':                    Backend Interface.      52.
+* nndir:                        Directory Groups.       4.
+* nndir:                        Foreign Groups.         45.
+* nndoc:                        Document Groups.        4.
+* nndoc:                        Foreign Groups.         75.
+* nndoc-article-type:           Document Groups.        58.
+* nndoc-post-type:              Document Groups.        64.
+* nneething:                    Anything Groups.        4.
+* nneething:                    Foreign Groups.         69.
+* nneething-exclude-files:      Anything Groups.        48.
+* nneething-map-file:           Anything Groups.        54.
+* nneething-map-file-directory: Anything Groups.        43.
+* nnfolder:                     Mail Folders.           4.
+* nnfolder-active-file:         Mail Folders.           17.
+* nnfolder-directory:           Mail Folders.           13.
+* nnfolder-generate-active-file: Mail Folders.          24.
+* nnfolder-get-new-mail:        Mail Folders.           26.
+* nnfolder-get-new-mail:        Not Reading Mail.       12.
+* nnfolder-newsgroups-file:     Mail Folders.           21.
+* nngateway-address :           Mail-To-News Gateways.  16.
+* nngateway-header-transformation: Mail-To-News Gateways.  20.
+* nnheader-file-name-translation-alist : Various Various.  58.
+* nnheader-get-report:          Error Messaging.        5.
+* nnheader-head-chop-length:    Various Various.        53.
+* nnheader-max-head-length:     Various Various.        42.
+* nnheader-ms-strip-cr:         Washing Mail.           29.
+* nnheader-report:              Error Messaging.        5.
+* nnkiboze:                     Foreign Groups.         62.
+* nnkiboze:                     Kibozed Groups.         4.
+* nnkiboze-directory:           Kibozed Groups.         35.
+* nnkiboze-generate-groups:     Kibozed Groups.         20.
+* nnmail-cache-accepted-message-ids: Mail Backend Variables.  136.
+* nnmail-crash-box:             Mail Backend Variables.  52.
+* nnmail-crosspost:             Splitting Mail.         46.
+* nnmail-crosspost-link-function: Splitting Mail.       51.
+* nnmail-delete-file-function:  Mail Backend Variables.  132.
+* nnmail-delete-incoming:       Mail Backend Variables.  109.
+* nnmail-expiry-wait:           Expiring Mail.          61.
+* nnmail-expiry-wait-function:  Expiring Mail.          71.
+* nnmail-expiry-wait-function:  Group Parameters.       88.
+* nnmail-keep-last-article:     Expiring Mail.          92.
+* nnmail-keep-last-article:     Mail and Procmail.      49.
+* nnmail-message-id-cache-file: Duplicates.             5.
+* nnmail-message-id-cache-length: Duplicates.           5.
+* nnmail-movemail-program:      Mail Backend Variables.  100.
+* nnmail-pop-password:          Mail Backend Variables.  16.
+* nnmail-pop-password-required: Mail Backend Variables.  16.
+* nnmail-post-get-new-mail-hook: Mail Backend Variables.  74.
+* nnmail-pre-get-new-mail-hook: Mail Backend Variables.  74.
+* nnmail-prepare-incoming-header-hook: Washing Mail.    34.
+* nnmail-prepare-incoming-hook: Mail Backend Variables.  59.
+* nnmail-prepare-incoming-hook: Washing Mail.           24.
+* nnmail-prepare-incoming-message-hook: Washing Mail.   60.
+* nnmail-procmail-directory:    Mail and Procmail.      37.
+* nnmail-procmail-suffix:       Mail and Procmail.      37.
+* nnmail-procmail-suffix:       Mail Backend Variables.  44.
+* nnmail-read-incoming-hook:    Mail Backend Variables.  8.
+* nnmail-remove-leading-whitespace: Washing Mail.       39.
+* nnmail-remove-list-identifiers: Washing Mail.         44.
+* nnmail-remove-tabs:           Washing Mail.           58.
+* nnmail-resplit-incoming:      Mail and Procmail.      44.
+* nnmail-split-abbrev-alist:    Fancy Mail Splitting.   64.
+* nnmail-split-fancy:           Fancy Mail Splitting.   5.
+* nnmail-split-fancy:           Fancy Mail Splitting.   5.
+* nnmail-split-fancy-syntax-table: Fancy Mail Splitting.  69.
+* nnmail-split-hook:            Mail Backend Variables.  64.
+* nnmail-split-methods:         Splitting Mail.         5.
+* nnmail-spool-file:            Mail Backend Variables.  14.
+* nnmail-tmp-directory:         Mail Backend Variables.  93.
+* nnmail-treat-duplicates:      Duplicates.             5.
+* nnmail-use-long-file-names:   Mail Backend Variables.  124.
+* nnmail-use-procmail:          Mail Backend Variables.  44.
+* nnmbox:                       Unix Mail Box.          4.
+* nnmbox-active-file:           Unix Mail Box.          17.
+* nnmbox-active-file:           Unix Mail Box.          5.
+* nnmbox-get-new-mail:          Not Reading Mail.       12.
+* nnmbox-get-new-mail:          Unix Mail Box.          21.
+* nnmbox-mbox-file:             Unix Mail Box.          13.
+* nnmbox-mbox-file:             Unix Mail Box.          5.
+* nnmh:                         MH Spool.               4.
+* nnmh-be-safe:                 MH Spool.               22.
+* nnmh-directory:               MH Spool.               14.
+* nnmh-get-new-mail:            MH Spool.               18.
+* nnmh-get-new-mail:            Not Reading Mail.       12.
+* nnml:                         Mail Spool.             4.
+* nnml-active-file:             Mail Spool.             38.
+* nnml-directory:               Mail Spool.             34.
+* nnml-directory:               Mail Spool.             8.
+* nnml-generate-nov-databases:  Mail Spool.             55.
+* nnml-get-new-mail:            Mail Spool.             47.
+* nnml-get-new-mail:            Not Reading Mail.       12.
+* nnml-newsgroups-file:         Mail Spool.             42.
+* nnml-nov-file-name:           Mail Spool.             55.
+* nnml-nov-is-evil:             Mail Spool.             51.
+* nnml-prepare-save-mail-hook:  Mail Spool.             59.
+* nnsoup:                       SOUP Groups.            4.
+* nnsoup-active-file:           SOUP Groups.            40.
+* nnsoup-directory:             SOUP Groups.            19.
+* nnsoup-packer:                SOUP Groups.            47.
+* nnsoup-packet-directory:      SOUP Groups.            57.
+* nnsoup-packet-regexp:         SOUP Groups.            62.
+* nnsoup-pack-replies:          SOUP Commands.          28.
+* nnsoup-replies-directory :    SOUP Groups.            24.
+* nnsoup-replies-format-type:   SOUP Groups.            29.
+* nnsoup-replies-index-type:    SOUP Groups.            35.
+* nnsoup-set-variables:         SOUP Replies.           9.
+* nnsoup-tmp-directory:         SOUP Groups.            14.
+* nnsoup-unpacker:              SOUP Groups.            52.
+* nnspool:                      News Spool.             4.
+* nnspool-active-file:          News Spool.             43.
+* nnspool-active-times-file:    News Spool.             55.
+* nnspool-history-file:         News Spool.             51.
+* nnspool-inews-program:        News Spool.             21.
+* nnspool-inews-switches:       News Spool.             25.
+* nnspool-lib-dir:              News Spool.             39.
+* nnspool-newsgroups-file:      News Spool.             47.
+* nnspool-nov-directory :       News Spool.             34.
+* nnspool-nov-is-evil:          News Spool.             59.
+* nnspool-sift-nov-with-sed:    News Spool.             64.
+* nnspool-spool-directory:      News Spool.             29.
+* nntp:                         NNTP.                   4.
+* nntp authentification:        NNTP.                   23.
+* NNTP server:                  Finding the News.       22.
+* nntp-address:                 NNTP.                   163.
+* nntp-authinfo-function :      NNTP.                   31.
+* nntp-buggy-select:            NNTP.                   172.
+* nntp-command-timeout:         NNTP.                   88.
+* nntp-connection-timeout:      NNTP.                   77.
+* nntp-end-of-line:             NNTP.                   152.
+* nntp-maximum-request:         NNTP.                   68.
+* nntp-nov-gap:                 NNTP.                   187.
+* nntp-nov-is-evil :            NNTP.                   176.
+* nntp-open-connection-function: NNTP.                  111.
+* nntp-open-network-stream:     NNTP.                   109.
+* nntp-open-rlogin:             NNTP.                   109.
+* nntp-open-telnet:             NNTP.                   109.
+* nntp-port-number:             NNTP.                   167.
+* nntp-prepare-server-hook:     NNTP.                   200.
+* nntp-retry-on-break:          NNTP.                   100.
+* nntp-rlogin-parameters:       NNTP.                   125.
+* nntp-rlogin-user-name:        NNTP.                   129.
+* nntp-rlogin-user-name:        NNTP.                   158.
+* nntp-send-authinfo:           NNTP.                   23.
+* nntp-send-authinfo:           NNTP.                   36.
+* nntp-send-authinfo-from-file: NNTP.                   46.
+* nntp-send-mode-reader:        NNTP.                   23.
+* nntp-send-nosy-authinfo:      NNTP.                   42.
+* NNTPSERVER:                   Finding the News.       22.
+* nntp-server-action-alist :    NNTP.                   48.
+* nntp-server-hook:             NNTP.                   106.
+* nntp-server-opened-hook:      NNTP.                   23.
+* nntp-telnet-command:          NNTP.                   134.
+* nntp-telnet-parameters:       NNTP.                   151.
+* nntp-telnet-passwd:           NNTP.                   147.
+* nntp-telnet-switches:         NNTP.                   138.
+* nntp-telnet-user-name:        NNTP.                   143.
+* nntp-warn-about-losing-connection: NNTP.              204.
+* nntp-xover-commands:          NNTP.                   182.
+* nnvirtual:                    Virtual Groups.         4.
+* nnvirtual-always-rescan:      Virtual Groups.         46.
+* nnweb:                        Foreign Groups.         85.
+* nnweb:                        Web Searches.           4.
+* nnweb-max-hits:               Web Searches.           51.
+* nnweb-search:                 Web Searches.           47.
+* nnweb-type:                   Web Searches.           42.
+* nnweb-type-definition:        Web Searches.           56.
+* nocem:                        NoCeM.                  4.
+* NOV:                          Crosspost Handling.     19.
+* nov:                          NNTP.                   182.
+* nov:                          Terminology.            84.
+* offline:                      SOUP.                   4.
+* overview.fmt:                 Crosspost Handling.     29.
+* parameters:                   Topic Commands.         102.
+* parent articles:              Finding the Parent.     4.
+* persistent articles:          Persistent Articles.    4.
+* pick and read:                Pick and Read.          4.
+* POP mail:                     Mail Backend Variables.  16.
+* post:                         Composing Messages.     4.
+* post:                         Summary Post Commands.  4.
+* PostScript:                   Article Commands.       8.
+* PostScript:                   PostScript Files.       4.
+* PPP connections:              NNTP.                   88.
+* pre-fetch:                    Asynchronous Fetching.  4.
+* printing:                     Article Commands.       8.
+* process mark:                 Other Marks.            4.
+* process/prefix convention:    Process/Prefix.         4.
+* procmail:                     Mail and Procmail.      4.
+* pseudo-articles:              Viewing Files.          4.
+* rcvstore:                     Saving Articles.        101.
+* reading init file:            File Commands.          8.
+* reading mail:                 Getting Mail.           4.
+* reading news:                 Getting News.           4.
+* referring articles:           Finding the Parent.     4.
+* renaming groups:              Foreign Groups.         19.
+* renaming groups:              Foreign Groups.         30.
+* reply:                        Composing Messages.     4.
+* reply:                        Terminology.            23.
+* reporting bugs:               Compatibility.          51.
+* reporting bugs:               Troubleshooting.        32.
+* restarting:                   Scanning New Messages.  27.
+* reverse scoring:              Reverse Scoring.        4.
+* RFC 1036:                     Conformity.             16.
+* RFC 1153 digest:              Document Groups.        35.
+* RFC 341 digest:               Document Groups.        35.
+* RFC 822:                      Conformity.             12.
+* RFC1522 decoding:             Mail Backend Variables.  66.
+* rmail mbox:                   Document Groups.        8.
+* rmail mbox:                   Rmail Babyl.            4.
+* rnews batch files:            Document Groups.        27.
+* rule variables:               Rule Variables.         4.
+* saving articles:              Saving Articles.        4.
+* saving .newsrc:               File Commands.          13.
+* scanning new news:            Scanning New Messages.  4.
+* score cache:                  Score Variables.        34.
+* score commands:               Summary Score Commands.  4.
+* score decays:                 Score Decays.           4.
+* Score File Atoms:             Score File Format.      159.
+* score file format:            Score File Format.      4.
+* score file group parameter:   Group Parameters.       96.
+* score variables:              Score Variables.        4.
+* scoring:                      Scoring.                4.
+* scoring crossposts:           Scoring Tips.           8.
+* scoring tips:                 Scoring Tips.           4.
+* searching the Usenet:         Web Searches.           4.
+* secondary:                    Terminology.            49.
+* sed:                          News Spool.             64.
+* select method:                Terminology.            125.
+* select methods:               Select Methods.         4.
+* selecting articles:           Choosing Articles.      4.
+* sent messages:                Archived Messages.      4.
+* server:                       Terminology.            121.
+* server buffer format:         Server Buffer Format.   4.
+* server commands:              Server Commands.        4.
+* server errors:                The Server is Down.     4.
+* setting marks:                Setting Marks.          4.
+* setting process marks:        Setting Process Marks.  4.
+* shared articles:              Shared Articles.        4.
+* signatures:                   Article Signature.      4.
+* slave:                        Slave Gnusae.           4.
+* slocal:                       Mail and Procmail.      5.
+* slow machine:                 Slow Machine.           4.
+* smiley-circle-color:          Smileys.                72.
+* smiley-data-directory:        Smileys.                56.
+* smiley-deformed-regexp-alist: Smileys.                18.
+* smiley-features-color:        Smileys.                64.
+* smiley-flesh-color:           Smileys.                60.
+* smiley-mouse-face:            Smileys.                76.
+* smiley-nosey-regexp-alist:    Smileys.                18.
+* smileys:                      Smileys.                4.
+* smiley-tongue-color:          Smileys.                68.
+* solid groups:                 Terminology.            148.
+* Son-of-RFC 1036:              Conformity.             25.
+* sorting groups:               Sorting Groups.         4.
+* SOUP:                         SOUP.                   4.
+* sox:                          Rule Variables.         15.
+* spam:                         NoCeM.                  4.
+* spam:                         Thwarting Email Spam.   4.
+* spamming:                     Crosspost Handling.     5.
+* sparse articles:              Terminology.            153.
+* splitting mail:               Splitting Mail.         4.
+* starting up:                  Starting Up.            4.
+* startup files:                Startup Files.          4.
+* subscription:                 New Groups.             4.
+* subscription:                 Subscription Commands.  4.
+* summary buffer:               The Summary Buffer.     4.
+* summary buffer format:        Summary Buffer Format.  4.
+* summary exit:                 Exiting the Summary Buffer.  4.
+* summary movement:             Summary Maneuvering.    4.
+* summary sorting:              Summary Sorting.        4.
+* superseding articles:         Canceling and Superseding.  4.
+* terminology:                  Terminology.            5.
+* thread commands:              Thread Commands.        4.
+* threading:                    Threading.              4.
+* timestamps:                   Group Timestamp.        4.
+* to-address:                   Group Parameters.       9.
+* todo:                         Newest Features.        4.
+* to-group:                     Group Parameters.       53.
+* to-list:                      Group Parameters.       27.
+* topic commands:               Topic Commands.         4.
+* topic parameters:             Topic Commands.         102.
+* topic parameters:             Topic Parameters.       4.
+* topic sorting:                Topic Sorting.          4.
+* topic topology:               Topic Topology.         4.
+* topic variables:              Topic Variables.        4.
+* topics:                       Group Topics.           4.
+* topology:                     Topic Topology.         4.
+* total-expire:                 Group Parameters.       80.
+* transient-mark-mode:          Process/Prefix.         18.
+* trees:                        Tree Display.           4.
+* troubleshooting:              Troubleshooting.        4.
+* UCE:                          Thwarting Email Spam.   4.
+* undo:                         Undo.                   4.
+* unix mail box:                Unix Mail Box.          4.
+* Unix mbox:                    Document Groups.        12.
+* unloading:                    Exiting Gnus.           24.
+* unshar:                       Shared Articles.        4.
+* unsolicited commercial email: Thwarting Email Spam.   4.
+* Usenet searches:              Web Searches.           4.
+* utility functions:            Gnus Utility Functions.  4.
+* uudecode:                     Uuencoded Articles.     4.
+* uuencoded articles:           Uuencoded Articles.     4.
+* velveeta:                     Crosspost Handling.     5.
+* version:                      Group Information.      37.
+* viewing files:                Viewing Files.          4.
+* virtual groups:               Virtual Groups.         4.
+* virtual server:               Terminology.            130.
+* visible:                      Group Parameters.       39.
+* visible group parameter:      Listing Groups.         64.
+* visual:                       Highlighting and Menus.  4.
+* washing:                      Article Washing.        4.
+* washing:                      Terminology.            136.
+* window height:                Windows Configuration.  98.
+* window width:                 Windows Configuration.  98.
+* windows configuration:        Windows Configuration.  4.
+* XEmacs:                       Emacsen.                4.
+* XEmacs:                       Emacs/XEmacs Code.      4.
+* XEmacs:                       XEmacs Enhancements.    4.
+* x-face:                       Article Washing.        61.
+* XOVER:                        NNTP.                   182.
+* Xref:                         Crosspost Handling.     19.
+* zombie groups:                Terminology.            105.
+
+
+

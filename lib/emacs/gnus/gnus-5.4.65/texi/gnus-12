@@ -1,0 +1,511 @@
+Info file: gnus,    -*-Text-*-
+produced by `texinfo-format-buffer'
+from file `gnus.texi'
+using `texinfmt.el' version 2.32 of 19 November 1993.
+
+
+
+
+
+This file documents Gnus, the GNU Emacs newsreader.
+
+Copyright (C) 1995,96 Free Software Foundation, Inc.
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+
+
+
+
+
+File: gnus, Node: Key Index, Prev: Index, Up: Top
+
+Key Index
+*********
+
+* Menu:
+
+* .  (Summary):                 Choosing Commands.      51.
+* / / (Summary):                Limiting.               15.
+* / a (Summary):                Limiting.               20.
+* ? (Article):                  Article Keymap.         40.
+* ? (Browse):                   Browse Foreign Server.  46.
+* / c (Summary):                Limiting.               79.
+* / C (Summary):                Limiting.               84.
+* / D (Summary):                Limiting.               70.
+* / d (Summary):                Limiting.               75.
+* / E (Summary):                Limiting.               65.
+* ? (Group):                    Group Information.      41.
+* , (Group):                    Group Maneuvering.      43.
+* . (Group):                    Group Maneuvering.      48.
+* # (Group):                    Marking Groups.         17.
+* ^ (Group):                    Misc Group Stuff.       15.
+* , (GroupLens):                Rating Articles.        34.
+* / m (Summary):                Limiting.               34.
+* / n (Summary):                Limiting.               46.
+* . (Pick):                     Pick and Read.          19.
+* , (Summary):                  Choosing Commands.      58.
+* ^ (Summary):                  Finding the Parent.     5.
+* < (Summary):                  Paging the Article.     35.
+* > (Summary):                  Paging the Article.     42.
+* * (Summary):                  Persistent Articles.    23.
+* = (Summary):                  Really Various Summary Commands.  35.
+* & (Summary):                  Searching for Articles.  18.
+* ! (Summary):                  Setting Marks.          11.
+* ? (Summary):                  Setting Marks.          17.
+* # (Summary):                  Setting Process Marks.  10.
+* / t (Summary):                Limiting.               39.
+* / u (Summary):                Limiting.               27.
+* / v (Summary):                Limiting.               58.
+* / w (Summary):                Limiting.               52.
+* A < (Summary):                Paging the Article.     35.
+* A > (Summary):                Paging the Article.     42.
+* A A (Group):                  Listing Groups.         57.
+* A a (Group):                  Listing Groups.         67.
+* A d (Group):                  Listing Groups.         72.
+* A g (Summary):                Paging the Article.     26.
+* a (Group):                    Misc Group Stuff.       20.
+* A k (Group):                  Listing Groups.         37.
+* A l (Group):                  Listing Groups.         31.
+* A m (Group):                  Listing Groups.         48.
+* A M (Group):                  Listing Groups.         53.
+* A P (Summary):                Article Commands.       8.
+* A R (Summary):                Finding the Parent.     20.
+* A s (Group):                  Listing Groups.         12.
+* A s (Summary):                Paging the Article.     48.
+* a (Server):                   Server Commands.        8.
+* a (Summary):                  Summary Post Commands.  11.
+* A T (Topic):                  Topic Commands.         97.
+* A u (Group):                  Listing Groups.         23.
+* A z (Group):                  Listing Groups.         44.
+* B c (Summary):                Mail Group Commands.    37.
+* B C (Summary):                Mail Group Commands.    42.
+* B DEL (Summary):              Mail Group Commands.    26.
+* B e (Summary):                Mail Group Commands.    14.
+* B (Group):                    Browse Foreign Server.  7.
+* B (Group):                    Finding the News.       38.
+* b (Group):                    Group Maintenance.      7.
+* B i (Summary):                Mail Group Commands.    49.
+* B m (Summary):                Mail Group Commands.    32.
+* B M-C-e (Summary):            Mail Group Commands.    19.
+* B p (Summary):                Mail Group Commands.    77.
+* b (Pick):                     Pick and Read.          63.
+* B (Pick):                     Pick and Read.          67.
+* B q (Summary):                Mail Group Commands.    71.
+* B r (Summary):                Mail Group Commands.    55.
+* B w (Summary):                Mail Group Commands.    65.
+* C (Group):                    Group Data.             14.
+* c (Group):                    Group Data.             8.
+* c (Server):                   Server Commands.        32.
+* C (Server):                   Unavailable Servers.    34.
+* C (Summary):                  Canceling and Superseding.  10.
+* c (Summary):                  Exiting the Summary Buffer.  32.
+* C-c ^ (Article):              Article Keymap.         24.
+* C-c C-c (Article):            Mail Group Commands.    65.
+* C-c C-c (Post):               Composing Messages.     5.
+* C-c C-c (Score):              Score File Editing.     15.
+* C-c C-d (Group):              Group Information.      25.
+* C-c C-d (Score):              Score File Editing.     20.
+* C-c C-i (Group):              Group Information.      45.
+* C-c C-m (Article):            Article Keymap.         30.
+* C-c C-p (Score):              Score File Editing.     26.
+* C-c C-s C-a (Summary):        Summary Sorting.        15.
+* C-c C-s C-d (Summary):        Summary Sorting.        23.
+* C-c C-s C-i (Summary):        Summary Sorting.        31.
+* C-c C-s C-l (Summary):        Summary Sorting.        27.
+* C-c C-s C-n (Summary):        Summary Sorting.        11.
+* C-c C-s C-s (Summary):        Summary Sorting.        19.
+* C-c C-s (Group):              Sorting Groups.         5.
+* C-c C-x (Group):              Group Maintenance.      18.
+* C-c M-C-x (Group):            Group Maintenance.      23.
+* C-c M-g (Group):              Scanning New Messages.  23.
+* C-d (Summary):                Really Various Summary Commands.  8.
+* C-k (Group):                  Subscription Commands.  25.
+* C-k (Summary):                Setting Marks.          44.
+* C-k (Topic):                  Topic Commands.         78.
+* C-t (Summary):                Really Various Summary Commands.  28.
+* C-w (Group):                  Subscription Commands.  43.
+* C-w (Summary):                Setting Marks.          63.
+* C-x C-t (Group):              Subscription Commands.  35.
+* C-y (Group):                  Subscription Commands.  31.
+* C-y (Topic):                  Topic Commands.         83.
+* D (Server):                   Unavailable Servers.    39.
+* d (Summary):                  Setting Marks.          24.
+* D (Summary):                  Setting Marks.          29.
+* DEL (Article):                Article Keymap.         20.
+* DEL (Group):                  Group Maneuvering.      18.
+* DEL (Summary):                Paging the Article.     14.
+* e (Pick):                     Pick and Read.          55.
+* E (Pick):                     Pick and Read.          59.
+* e (Server):                   Server Commands.        12.
+* e (Summary):                  Mail Group Commands.    65.
+* E (Summary):                  Setting Marks.          82.
+* F (Group):                    Group Maintenance.      12.
+* f (Summary):                  Summary Post Commands.  17.
+* F (Summary):                  Summary Post Commands.  23.
+* G a (Group):                  Foreign Groups.         54.
+* G b (Summary):                Choosing Commands.      58.
+* g (Binary):                   Binary Groups.          11.
+* G c (Group):                  Foreign Groups.         26.
+* G C-n (Summary):              Choosing Commands.      39.
+* G C-p (Summary):              Choosing Commands.      44.
+* G d (Group):                  Foreign Groups.         45.
+* G D (Group):                  Foreign Groups.         69.
+* G DEL (Group):                Foreign Groups.         94.
+* G e (Group):                  Foreign Groups.         30.
+* G E (Group):                  Foreign Groups.         40.
+* G f  (Summary):               Choosing Commands.      51.
+* G f (Group):                  Foreign Groups.         75.
+* G g (Summary):                Summary Maneuvering.    33.
+* g (Group):                    Scanning New Messages.  8.
+* G h (Group):                  Foreign Groups.         50.
+* G j (Summary):                Summary Maneuvering.    28.
+* G k (Group):                  Foreign Groups.         62.
+* G k (Group):                  Kibozed Groups.         10.
+* G l (Summary):                Choosing Commands.      65.
+* G m (Group):                  Foreign Groups.         13.
+* G M-n (Summary):              Summary Maneuvering.    14.
+* G M-p (Summary):              Summary Maneuvering.    21.
+* G n (Summary):                Choosing Commands.      17.
+* G N (Summary):                Choosing Commands.      29.
+* G P a (Group):                Sorting Groups.         72.
+* G p (Group):                  Foreign Groups.         35.
+* G P l (Group):                Sorting Groups.         82.
+* G P m (Group):                Sorting Groups.         97.
+* G P r (Group):                Sorting Groups.         92.
+* G P (Summary):                Choosing Commands.      35.
+* G p (Summary):                Choosing Commands.      69.
+* G p (Topic):                  Topic Commands.         102.
+* G P u (Group):                Sorting Groups.         77.
+* G P v (Group):                Sorting Groups.         87.
+* G r (Group):                  Foreign Groups.         19.
+* G S a (Group):                Sorting Groups.         43.
+* G s b (Group):                SOUP Commands.          9.
+* G S l (Group):                Sorting Groups.         53.
+* G S m (Group):                Sorting Groups.         68.
+* G s p (Group):                SOUP Commands.          24.
+* G S r (Group):                Sorting Groups.         63.
+* G s r (Group):                SOUP Commands.          28.
+* G s s (Group):                SOUP Commands.          19.
+* G S u (Group):                Sorting Groups.         48.
+* G S v (Group):                Sorting Groups.         58.
+* G s w (Group):                SOUP Commands.          15.
+* g (Server):                   Server Commands.        46.
+* g (Summary):                  Paging the Article.     26.
+* G V (Group):                  Foreign Groups.         102.
+* G v (Group):                  Foreign Groups.         107.
+* G w (Group):                  Foreign Groups.         85.
+* H d (Group):                  Group Information.      25.
+* H d (Summary):                Summary Group Information.  18.
+* H f (Group):                  Group Information.      9.
+* H f (Summary):                Summary Group Information.  8.
+* H h (Summary):                Summary Group Information.  24.
+* H i (Summary):                Summary Group Information.  29.
+* H v (Group):                  Group Information.      37.
+* j (Group):                    Group Maneuvering.      37.
+* j (Summary):                  Summary Maneuvering.    28.
+* k (GroupLens):                Rating Articles.        21.
+* k (Server):                   Server Commands.        24.
+* k (Summary):                  Setting Marks.          36.
+* l (Browse):                   Browse Foreign Server.  42.
+* l (Group):                    Listing Groups.         12.
+* L (Group):                    Listing Groups.         23.
+* l (Server):                   Server Commands.        36.
+* l (Summary):                  Choosing Commands.      65.
+* M ? (Summary):                Setting Marks.          17.
+* M b (Group):                  Marking Groups.         37.
+* M b (Summary):                Setting Marks.          87.
+* M B (Summary):                Setting Marks.          92.
+* M C (Summary):                Setting Marks.          49.
+* M c (Summary):                Setting Marks.          75.
+* M C-c (Summary):              Setting Marks.          53.
+* M d (Summary):                Setting Marks.          24.
+* M e (Summary):                Setting Marks.          82.
+* m (Group):                    Misc Group Stuff.       25.
+* M-# (Group):                  Marking Groups.         23.
+* M H (Summary):                Setting Marks.          58.
+* M k (Summary):                Setting Marks.          36.
+* M K (Summary):                Setting Marks.          44.
+* M m (Group):                  Marking Groups.         19.
+* M P a (Summary):              Setting Process Marks.  64.
+* M P b (Summary):              Setting Process Marks.  68.
+* M P i (Summary):              Setting Process Marks.  27.
+* M P k (Summary):              Setting Process Marks.  73.
+* M P p (Summary):              Setting Process Marks.  10.
+* M P R (Summary):              Setting Process Marks.  32.
+* M P r (Summary):              Setting Process Marks.  36.
+* M P s (Summary):              Setting Process Marks.  55.
+* M P S (Summary):              Setting Process Marks.  59.
+* M P t (Summary):              Setting Process Marks.  40.
+* M P T (Summary):              Setting Process Marks.  45.
+* M P u (Summary):              Setting Process Marks.  17.
+* M P U (Summary):              Setting Process Marks.  22.
+* M P v (Summary):              Setting Process Marks.  50.
+* M P w (Summary):              Setting Process Marks.  83.
+* M P y (Summary):              Setting Process Marks.  78.
+* M r (Group):                  Marking Groups.         41.
+* M S (Summary):                Limiting.               65.
+* m (Summary):                  Summary Mail Commands.  46.
+* M-^ (Summary):                Finding the Parent.     24.
+* M-* (Summary):                Persistent Articles.    27.
+* M-& (Summary):                Searching for Articles.  25.
+* M-# (Summary):                Setting Process Marks.  17.
+* M t (Summary):                Setting Marks.          11.
+* M u (Group):                  Marking Groups.         25.
+* M U (Group):                  Marking Groups.         29.
+* M V c (Summary):              Setting Marks.          97.
+* M V k (Summary):              Setting Marks.          68.
+* M V m (Summary):              Setting Marks.          107.
+* M V u (Summary):              Setting Marks.          102.
+* M w (Group):                  Marking Groups.         33.
+* M-c (Group):                  Group Data.             19.
+* M-c (Server):                 Unavailable Servers.    48.
+* M-C-d (Summary):              Really Various Summary Commands.  19.
+* M-C-k (Summary):              Thread Commands.        10.
+* M-C-l (Summary):              Thread Commands.        19.
+* M-C-RET (Group):              Selecting a Group.      44.
+* M-d (Group):                  Group Information.      30.
+* M-g (Group):                  Scanning New Messages.  16.
+* M-g (Summary):                Exiting the Summary Buffer.  55.
+* M-k (Group):                  Kill Files.             45.
+* M-K (Group):                  Kill Files.             49.
+* M-k (Summary):                Kill Files.             36.
+* M-K (Summary):                Kill Files.             40.
+* M-n (Group):                  Group Maneuvering.      36.
+* M-n (Summary):                Summary Maneuvering.    14.
+* M-o (Server):                 Unavailable Servers.    43.
+* M-p (Group):                  Group Maneuvering.      31.
+* M-p (Summary):                Summary Maneuvering.    21.
+* M-r (Summary):                Searching for Articles.  13.
+* M-RET (Group):                Selecting a Group.      27.
+* M-s (Summary):                Searching for Articles.  8.
+* M-SPACE (Group):              Selecting a Group.      38.
+* M-TAB (Article):              Article Keymap.         50.
+* M-u (Summary):                Setting Marks.          75.
+* M-x gnus:                     Starting Up.            5.
+* M-x gnus-binary-mode:         Binary Groups.          5.
+* M-x gnus-bug:                 Compatibility.          51.
+* M-x gnus-bug:                 Troubleshooting.        33.
+* M-x gnus-change-server:       Changing Servers.       24.
+* M-x gnus-group-clear-data-on-native-groups: Changing Servers.  34.
+* M-x gnus-group-clear-data-on-native-groups: Group Data.  24.
+* M-x gnus-group-move-group-to-server: Changing Servers.  30.
+* M-x gnus-no-server:           The Server is Down.     17.
+* M-x gnus-other-frame:         Starting Up.            9.
+* M-x gnus-pick-mode:           Pick and Read.          10.
+* M-x gnus-update-format:       Formatting Variables.   33.
+* M-x nnfolder-generate-active-file: Mail Folders.      24.
+* M-x nnkiboze-generate-groups: Kibozed Groups.         20.
+* M-x nnmail-split-history:     Splitting Mail.         56.
+* n (Browse):                   Browse Foreign Server.  18.
+* n (Group):                    Group Maneuvering.      11.
+* N (Group):                    Group Maneuvering.      23.
+* n (GroupLens):                Rating Articles.        30.
+* n (Summary):                  Choosing Commands.      17.
+* N (Summary):                  Choosing Commands.      29.
+* nnmail-split-history:         Splitting Mail.         56.
+* O b (Summary):                Saving Articles.        48.
+* O f (Summary):                Saving Articles.        38.
+* O F (Summary):                Saving Articles.        43.
+* O h (Summary):                Saving Articles.        53.
+* O m (Summary):                Saving Articles.        28.
+* O o (Summary):                Saving Articles.        23.
+* O p (Summary):                Saving Articles.        63.
+* O r (Summary):                Saving Articles.        33.
+* O s (Summary):                SOUP Commands.          32.
+* O (Server):                   Unavailable Servers.    29.
+* o (Summary):                  Saving Articles.        23.
+* O v (Summary):                Saving Articles.        58.
+* p (Browse):                   Browse Foreign Server.  22.
+* p (Group):                    Group Maneuvering.      18.
+* P (Group):                    Group Maneuvering.      27.
+* p (Summary):                  Choosing Commands.      23.
+* P (Summary):                  Choosing Commands.      35.
+* q (Browse):                   Browse Foreign Server.  42.
+* q (Group):                    Exiting Gnus.           15.
+* Q (Group):                    Exiting Gnus.           19.
+* q (Server):                   Server Commands.        20.
+* q (Summary):                  Exiting the Summary Buffer.  13.
+* Q (Summary):                  Exiting the Summary Buffer.  25.
+* r (Group):                    File Commands.          8.
+* R (Group):                    Scanning New Messages.  27.
+* r (GroupLens):                Rating Articles.        16.
+* r (Pick):                     Pick and Read.          47.
+* R (Pick):                     Pick and Read.          51.
+* R (Server):                   Unavailable Servers.    53.
+* r (Summary):                  Summary Mail Commands.  12.
+* R (Summary):                  Summary Mail Commands.  19.
+* RET (Browse):                 Browse Foreign Server.  31.
+* RET (Group):                  Selecting a Group.      19.
+* RET (Pick):                   Pick and Read.          71.
+* RET (Summary):                Paging the Article.     19.
+* RET (Topic):                  Topic Commands.         60.
+* s (Article):                  Article Keymap.         35.
+* S C-k (Group):                Subscription Commands.  51.
+* S D b (Summary):              Summary Mail Commands.  51.
+* S D r (Summary):              Summary Mail Commands.  63.
+* S f (Summary):                Summary Post Commands.  17.
+* S F (Summary):                Summary Post Commands.  23.
+* s (Group):                    File Commands.          13.
+* S k (Group):                  Subscription Commands.  25.
+* S l (Group):                  Group Levels.           16.
+* S m (Summary):                Summary Mail Commands.  46.
+* S M-c (Summary):              Summary Mail Commands.  89.
+* S n (Summary):                Summary Post Commands.  29.
+* S n (Summary):                Summary Post Commands.  34.
+* S o m (Summary):              Summary Mail Commands.  38.
+* S O m (Summary):              Summary Mail Commands.  83.
+* S o p (Summary):              Summary Post Commands.  41.
+* S O p (Summary):              Summary Post Commands.  47.
+* S p (Summary):                Summary Post Commands.  11.
+* S r (Summary):                Summary Mail Commands.  12.
+* S R (Summary):                Summary Mail Commands.  19.
+* S s (Group):                  Subscription Commands.  17.
+* s (Server):                   Server Commands.        40.
+* S (Summary):                  Canceling and Superseding.  23.
+* s (Summary):                  Paging the Article.     48.
+* S t (Group):                  Subscription Commands.  10.
+* S u (Summary):                Summary Post Commands.  53.
+* S w (Group):                  Subscription Commands.  43.
+* S w (Summary):                Summary Mail Commands.  25.
+* S W (Summary):                Summary Mail Commands.  32.
+* S y (Group):                  Subscription Commands.  31.
+* S z (Group):                  Subscription Commands.  47.
+* SPACE (Article):              Article Keymap.         16.
+* SPACE (Browse):               Browse Foreign Server.  26.
+* SPACE (Group):                Selecting a Group.      8.
+* SPACE (Pick):                 Pick and Read.          26.
+* SPACE (Server):               Server Commands.        16.
+* SPACE (Summary):              Choosing Commands.      10.
+* SPACE (Summary):              Paging the Article.     8.
+* T # (Summary):                Thread Commands.        29.
+* T ^ (Summary):                Thread Commands.        66.
+* T # (Topic):                  Topic Commands.         50.
+* T c (Topic):                  Topic Commands.         23.
+* T C (Topic):                  Topic Commands.         40.
+* T d (Summary):                Thread Commands.        70.
+* T D (Topic):                  Topic Commands.         29.
+* T DEL (Topic):                Topic Commands.         93.
+* t (Group):                    Group Topics.           26.
+* T h (Summary):                Thread Commands.        48.
+* T H (Summary):                Thread Commands.        56.
+* T h (Topic):                  Topic Commands.         45.
+* T i (Summary):                Thread Commands.        24.
+* T k (Summary):                Thread Commands.        10.
+* T l (Summary):                Thread Commands.        19.
+* T M-# (Summary):              Thread Commands.        34.
+* T m (Topic):                  Topic Commands.         17.
+* T M (Topic):                  Topic Commands.         35.
+* T M-# (Topic):                Topic Commands.         55.
+* T n (Summary):                Thread Commands.        62.
+* T n (Topic):                  Topic Commands.         12.
+* T o (Summary):                Thread Commands.        78.
+* T p (Summary):                Thread Commands.        66.
+* t (Pick):                     Pick and Read.          39.
+* T (Pick):                     Pick and Read.          43.
+* T r (Topic):                  Topic Commands.         89.
+* T S a (Topic):                Topic Sorting.          11.
+* T S l (Topic):                Topic Sorting.          21.
+* T S m (Topic):                Topic Sorting.          36.
+* T S r (Topic):                Topic Sorting.          31.
+* T s (Summary):                Thread Commands.        43.
+* T S (Summary):                Thread Commands.        52.
+* T S u (Topic):                Topic Sorting.          16.
+* T S v (Topic):                Topic Sorting.          26.
+* T T (Summary):                Thread Commands.        39.
+* T t (Summary):                Thread Commands.        60.
+* T TAB (Topic):                Topic Commands.         72.
+* T u (Summary):                Thread Commands.        74.
+* TAB (Article):                Article Keymap.         45.
+* u (Browse):                   Browse Foreign Server.  35.
+* u (Group):                    Subscription Commands.  10.
+* U (Group):                    Subscription Commands.  17.
+* u (Pick):                     Pick and Read.          31.
+* U (Pick):                     Pick and Read.          35.
+* V a (Summary):                Summary Score Commands.  42.
+* V c (Summary):                Summary Score Commands.  47.
+* V C (Summary):                Summary Score Commands.  68.
+* V e (Summary):                Summary Score Commands.  52.
+* V f (Summary):                Summary Score Commands.  58.
+* V F (Summary):                Summary Score Commands.  63.
+* V (Group):                    Group Information.      37.
+* V m (Summary):                Summary Score Commands.  67.
+* V R (Summary):                Summary Score Commands.  35.
+* V s (Summary):                Summary Score Commands.  21.
+* V S (Summary):                Summary Score Commands.  25.
+* V t (Summary):                Summary Score Commands.  30.
+* V x (Summary):                Summary Score Commands.  72.
+* W b (Summary):                Article Washing.        79.
+* W B (Summary):                Article Washing.        83.
+* W c (Summary):                Article Washing.        53.
+* W E a (Summary):              Article Washing.        104.
+* W E l (Summary):              Article Washing.        88.
+* W E m (Summary):              Article Washing.        93.
+* W E s (Summary):              Article Washing.        108.
+* W e (Summary):                Article Fontisizing.    5.
+* W E t (Summary):              Article Washing.        99.
+* W f (Group):                  Group Score Commands.   10.
+* W f (Summary):                Article Washing.        61.
+* W H a (Summary):              Article Highlighting.   11.
+* W H c (Summary):              Article Highlighting.   26.
+* W H h (Summary):              Article Highlighting.   15.
+* W H s (Summary):              Article Highlighting.   72.
+* W l (Summary):                Article Washing.        15.
+* W m (Summary):                Article Washing.        35.
+* W o (Summary):                Article Washing.        40.
+* W q (Summary):                Article Washing.        57.
+* W r (Summary):                Article Washing.        20.
+* W T e (Summary):              Article Date.           29.
+* W T l (Summary):              Article Date.           17.
+* W T o (Summary):              Article Date.           34.
+* W T s (Summary):              Article Date.           21.
+* W t (Summary):                Article Washing.        25.
+* W T u (Summary):              Article Date.           12.
+* W v (Summary):                Article Washing.        30.
+* W W a (Summary):              Article Hiding.         11.
+* W W b (Summary):              Article Hiding.         20.
+* W W c (Summary):              Article Hiding.         41.
+* W W C (Summary):              Article Hiding.         73.
+* W W h (Summary):              Article Hiding.         15.
+* W W p (Summary):              Article Hiding.         30.
+* W W P (Summary):              Article Hiding.         36.
+* W W s (Summary):              Article Hiding.         25.
+* W w (Summary):                Article Washing.        44.
+* X P (Summary):                PostScript Files.       12.
+* X p (Summary):                PostScript Files.       8.
+* X S (Summary):                Shared Articles.        12.
+* X s (Summary):                Shared Articles.        8.
+* x (Summary):                  Limiting.               27.
+* X U (Summary):                Uuencoded Articles.     12.
+* X u (Summary):                Uuencoded Articles.     8.
+* X v p (Summary):              PostScript Files.       17.
+* X v P (Summary):              PostScript Files.       22.
+* X v s (Summary):              Shared Articles.        17.
+* X v S (Summary):              Shared Articles.        22.
+* X v u (Summary):              Uuencoded Articles.     17.
+* X v U (Summary):              Uuencoded Articles.     21.
+* Y c (Summary):                Summary Generation Commands.  12.
+* Y g (Summary):                Summary Generation Commands.  8.
+* y (Server):                   Server Commands.        28.
+* Z c (Summary):                Exiting the Summary Buffer.  32.
+* Z C (Summary):                Exiting the Summary Buffer.  37.
+* Z E (Summary):                Exiting the Summary Buffer.  25.
+* Z G (Summary):                Exiting the Summary Buffer.  55.
+* z (Group):                    Exiting Gnus.           9.
+* Z n (Summary):                Exiting the Summary Buffer.  42.
+* Z N (Summary):                Exiting the Summary Buffer.  61.
+* Z P (Summary):                Exiting the Summary Buffer.  66.
+* Z R (Summary):                Exiting the Summary Buffer.  47.
+* Z s (Summary):                Exiting the Summary Buffer.  71.
+* Z Z (Summary):                Exiting the Summary Buffer.  13.
+
+

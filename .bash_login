@@ -1,0 +1,39 @@
+:
+# login script for bash (login shells only)
+
+mesg n
+echo TERM was $TERM
+case $TERM in
+  dialup|network|s4|PC7300|pc7300)
+    default_term=s4
+    ;;
+  unknown)
+    default_term=xterm
+    ;;
+  *)
+    default_term=$TERM
+    ;;
+esac
+echo -n "TERM = ($default_term) "
+
+if [ -f /usr/local/bin/perl ]; then
+  perl=/usr/local/bin/perl
+elif [ -f /usr/bin/perl ]; then
+  perl=/usr/bin/perl
+elif type -p perl; then
+  perl=`type -p perl`
+else
+  perl=:
+  echo "no perl available?  not good."
+fi
+newTERM=`$perl -e '$a = <>; print $a; exit;' < /dev/tty`
+if [ "x$newTERM" = "x" ]; then
+  TERM=$default_term
+else
+  TERM=$newTERM
+fi
+export TERM
+ignoreeof=1
+LOGIN_SHELL=true
+
+if [ -f ~/.bashrc ]; then source ~/.bashrc; fi

@@ -1,0 +1,313 @@
+#! /usr/bin/perl
+#
+#  scrabler - find words from a group of scrambled letters, sort
+#             by their scrabble score.
+
+$version = '$Id: $';
+my $VERSION = 1.3;
+my $dictionary = "$ENV{HOME}/lib/TWL06.txt";
+
+# This code is Copyright(c) 2012 by Jan L. Peterson
+# All rights reserved.
+
+# You may use this program without charge, you may copy it for
+# backup purposes, you may even give it away to anyone you like.
+# You may not charge a fee for it.  You may charge a fee for
+# a distribution mechanism (such as a CD-ROM containing it), but
+# such fee must not exceed the amount required to recoup costs.
+# You may modify it for your own purposes, but this notice must
+# remain attached to all copies and derivitive works.
+#
+# If you make modifications that you think others would like, please
+# send diffs of your changes to the author at <jlp+cpan@peterson.ath.cx>
+
+=head1 NAME
+
+scrabler - find matching words for the game of Scrabble(r)
+
+=head1 USAGE
+
+=over
+
+=item B<scrabler> I<WORDS> [ I<PATTERN> ]
+
+=back
+
+=head1 SYNOPSIS
+
+find words from the Scrabble dictionary that can be made from
+the letter tiles that you have.  wild card (blank) tiles are
+supported (use a '.' character to represent them).  an optional
+PATTERN can be supplied, in which case found words that do not
+match the PATTERN are rejected.  note, if any matching words use
+B<all> of the letter tiles you have, the word is flagged with the
+special character sequence '***'.
+
+=head1 OPTIONS
+
+=over
+
+=item I<WORDS>
+
+include each letter tile you have in your hand.  if you have
+wild card tile(s), use a '.' character to represent them.  for
+example, if you hold the following tiles, 'S', 'C', ' ' (blank),
+'A', 'B', ' ' (blank), 'L', and you are playing against an
+existing 'E' tile already on the board, the program will suggest
+that you play 'scRabBle', using your two blank tiles as 'R' and
+'B' respectively.
+
+=item I<PATTERN>
+
+you can supply an optional regular expression pattern that all
+words must also match to be included in the result set.  for
+example, if you hold tiles 'D' and 'W', and you would like to
+place them on the board with existing characters 'O' and 'N'
+that are separated by a blank space, you could use the pattern
+'^.o.n$'.  note that any shell meta characters must be quoted
+or they will be interpretted (probably poorly) by the shell.
+
+if no pattern is supplied, all words that can be made from your
+tiles will be returned.
+
+the pattern is matched in a case insensitive fashion, but is
+not tied to the start or end of the word unless you include the
+appropriate regular expression special characters.  see documentation
+on regular expressions for details.
+
+=back
+
+=head1 CAVEATS
+
+wild card (blank) tiles do not give any points.
+
+the program does not account for double or triple letter or
+word spaces.  these spaces may drastically affect the score
+you actually receive from playing a given word.
+
+the program does not apply any bonus for using all of your
+tiles, but words that do so are flagged in the output so they
+can be readily recognized.
+
+you must supply your own dictionary.  the program expects to find a
+file $HOME/lib/TWL06.txt that contains legal words, one per line.
+this file is readily available on the web and is B<not> included with
+this program.  if you wish to use an alternate dictionary, you must
+modify the code to do so.  note that most Unix-based systems include
+a dictionary in /usr/share/dict/words, but that this dictionary
+contains many words that are not considered legal in Scrabble.
+
+=head1 EXAMPLES
+
+this example shows words generated from the following tiles:
+'i', 'a', 'l', 'u', 'o', 'b', and 'o':
+
+  $ scrabler ialuobo
+   2 ai
+   2 al
+  ...
+   8 aboil
+   8 aboli
+
+this example uses the same tiles as above, but presumes that I
+want to place my tiles against an existing set of two additional
+tiles, 'd' and 'e':
+
+  $ scrabler ialuobode
+   2 ae
+   2 ai
+   2 al
+  ...
+  11 diabolo
+  11 double
+  12 audible
+
+same as above, but now constrain the matches to only words that
+actually include 'd' and 'e' together and in that order:
+
+  $ scrabler ialuobode de
+   3 de
+   4 del
+  ...
+   9 blade
+  10 bolide
+
+this example shows a wild card (blank) tile along with the letter
+tiles 'a', 'k', 'j', 'l', 'o', and 'w':
+
+  $ scrabler akj.low
+   1 Aa
+   1 aB
+  ...
+  11 waCko
+  ...
+  16 kojI
+  22 loCkjaw ***
+
+note that the word "lockjaw" can be produced if the wild card tile
+is used to represent a 'c'.  this usage also uses all of the owned
+tiles and likely qualifies for a bonus score.
+
+=head1 AUTHOR
+
+Jan L. Peterson <jlp+cpan@peterson.ath.cx>
+
+=head1 COPYRIGHT
+
+Copyright 2012 by Jan L. Peterson
+
+You may use this program without charge.  You may copy it for
+backup purposes.  You may even give it away to anyone you like.
+You may not charge a fee for it.  You may charge a fee for a
+distribution mechanism (such as a CD-ROM containing it), but
+such fee must not exceed the amount required to recoup costs.
+You may modify it for your own purposes, but this notice must
+remain attached to all copies and derivitive works.
+
+Scrabble(r) is a registered trademark of Hasbro.  No usage of
+the mark is intended to indicate any relationship between the
+author and Hasbro and no such relationship exists.
+
+=begin CPAN
+
+=head1 README
+
+Find words from the Scrabble dictionary that can be made from
+the letter tiles that you have.
+
+=pod OSNAMES
+
+any
+
+=pod SCRIPT CATEGORIES
+
+Games
+
+=end CPAN
+
+=cut
+
+$| = 1;
+
+$string = shift;
+$match = shift;
+
+unless (defined($string) and$string !~ m/^\-h(elp)?$/) {
+    my $prog = $0;
+    $prog =~ s,^.*/,,;          # strip up to the last slash
+    print "usage: $prog WORDS [PATTERN]\n";
+    print "  find words from the Scrabble(r) dictionary that can\n";
+    print "  be made from the letter tiles that you have.\n\n";
+
+    print "  try running \"perldoc $prog\" for additional information.\n";
+    exit 1;
+}
+
+%value = ('a' => 1,
+          'b' => 4,
+          'c' => 4,
+          'd' => 2,
+          'e' => 1,
+          'f' => 4,
+          'g' => 3,
+          'h' => 4,
+          'i' => 1,
+          'j' => 10,
+          'k' => 5,
+          'l' => 1,
+          'm' => 3,
+          'n' => 1,
+          'o' => 1,
+          'p' => 4,
+          'q' => 10,
+          'r' => 1,
+          's' => 1,
+          't' => 1,
+          'u' => 2,
+          'v' => 4,
+          'w' => 4,
+          'x' => 8,
+          'y' => 4,
+          'z' => 10,
+         );
+
+@letters = sort(split(m//, lc($string)));
+$nletters = length($string);
+
+foreach my $letter (@letters) {
+    $letters{$letter}++;
+}
+
+# load dictionary
+open(WORDS, $dictionary)
+    or die "can not open dictionary $dictionary: $!\n";
+while (<WORDS>) {
+    chomp;
+    $_ = lc($_);
+    next if ($dict{$_}++ > 0);
+    ($found, @wilds) = &word_from_letters($_, %letters);
+    if ($found) {
+        if (scalar(@wilds) > 0) {
+            # sub in the wilds by showing them in uc
+            foreach my $letter (@wilds) {
+                s/$letter/uc($letter)/e;
+            }
+        }
+        push(@found, $_);
+    }
+    #print ".";
+}
+close(WORDS);
+
+foreach (sort by_scrabble_score @found) {
+    my $score = &score($_);
+    my $used_all = (length($_) == $nletters);
+    printf "%2d %s%s\n", $score, $_, $used_all ? ' ***' : ''
+        if !defined($match) or $_ =~ m/$match/i;
+}
+
+sub word_from_letters {
+    my($word, %letters) = @_;   # get a new copy of %letters each time
+    my($found, @wletters, @tletters, $i, $j, @wilds_used);
+
+    @wletters = split(m//, $word);
+
+    foreach my $letter (@wletters) {
+        if ($letters{$letter} <= 0) {
+            # needed letter wasn't found
+            if ($letters{'.'} <= 0) {
+                # and no wild card letters left
+                return(0);
+            } else {
+                # but we have a wild card
+                $letters{'.'}--;
+                push(@wilds_used, $letter);
+            }
+        }
+        $letters{$letter}--;    # needed letter was found, use it up
+    }
+    return(1, @wilds_used);     # was able to make the word
+}
+
+sub by_scrabble_score {
+    my $score_a = &score($a);
+    my $score_b = &score($b);
+    return $score_a <=> $score_b;
+}
+
+sub score {
+    my $word = shift;
+
+    if (exists($scores{$word})) {
+        return $scores{$word};
+    }
+
+    my @letters = split(m//, $word);
+    my $score = 0;
+    foreach (@letters) {
+        # NOTE: wilds don't contribute to the score
+        $score += $value{$_};
+    }
+    $scores{$word} = $score;    # remember it for next time
+    return $score;
+}
