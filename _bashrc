@@ -6,6 +6,12 @@
 # commands here for all shells
 # try to work around Ubuntu 12.04 XAUTHORITY settings
 # are we on the console *and* running lightdm *and* root?
+
+# get a minimum PATH so we have something to work with
+oPATH="$PATH"
+PATH=/bin:/usr/bin:/usr/local/bin
+export PATH
+
 if [ `id -u` -eq 0 ]; then
   if [ "$XAUTHORITY" == "$HOME/.Xauthority" ]; then
     if [ "$DISPLAY" == ":0" ]; then
@@ -19,8 +25,6 @@ if [ `id -u` -eq 0 ]; then
     fi
   fi
 fi
-
-oPATH="$PATH"
 
 # figure out my current hostname
 hostcmd=`type -path hostname || type -path uname || type -path uuname`
@@ -55,12 +59,22 @@ else
   MY_BIN=$HOME/bin/scripts
 fi
 
-MY_BIN=$MY_BIN:.:/usr/local/linkedin/bin:/export/apps/xtools/bin
+MY_BIN=$MY_BIN:.:/export/apps/xtools/bin
 
 # extra bin dirs
+EBIN=
 #EBIN=.:/usr/local/linkedin/bin
+if [ -e $HOME/pebble-dev ]; then
+  PEBBLE_HOME=$HOME/pebble-dev/PebbleSDK-current
+  EBIN=$EBIN:$PEBBLE_HOME/bin
+  export PEBBLE_HOME
+fi
+if [ -e $HOME/android-sdk-* ]; then
+  EBIN=$EBIN:`echo $HOME/android-sdk-*/tools`
+  EBIN=$EBIN:`echo $HOME/android-sdk-*/platform-tools`
+fi
 
-PATH=$MY_BIN:$LOCALBIN:$X11:/usr/ucb:/usr/bin:/bin:/usr/5bin
+PATH=$PREPATH:$MY_BIN:$LOCALBIN:$X11:/usr/ucb:/usr/bin:/bin:/usr/5bin
 PATH=$PATH:/usr/etc:/etc:/usr/hosts:/usr/new:/usr/old:$EBIN:/usr/games
 
 case $MACH_TYPE in
@@ -111,7 +125,7 @@ case $less_version in
     LESS="${LESS}~"
     ;;
   *)
-    LESS="${LESS}w"
+    LESS="${LESS}wR"
     ;;
 esac
 
@@ -210,3 +224,19 @@ if [ "$PS1" ]; then
   #fi
 
 fi
+
+export HOMEBREW_GITHUB_API_TOKEN=bc2c12a301a0da609811f6ddfc38473f059805fc
+
+# clean up the PATH (get rid of duplicates, missing dirs, and blank entries)
+PATH=`perl -e '
+  $path = $ENV{PATH};
+  @path_elements = split(m/:/, $path);
+  foreach $element (@path_elements) {
+    next if $element eq "";
+    next unless -d $element;
+    push(@new_path, $element);
+  }
+  $newpath = join(":", @new_path);
+  print "$newpath\n"; '`
+export PATH
+

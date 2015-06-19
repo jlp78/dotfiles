@@ -11,7 +11,9 @@ if [ -x $uname ]; then
             MACH_TYPE=macosx
             X11=/usr/X11/bin
             LOCALBIN=/usr/local/bin:/usr/local/sbin
-            LOCALBIN=$LOCALBIN:/sbin:/usr/sbin
+            LOCALBIN=$LOCALBIN:/sbin:/usr/sbin:/sw/bin:/sw/sbin
+	    # setting path for Python 3.4
+	    PREPATH=/Library/Frameworks/Python.framework/Versions/3.4/bin
             ;;
     *freebsd*)
             MACH_TYPE=fbsd

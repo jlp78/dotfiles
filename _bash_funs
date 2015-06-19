@@ -1,0 +1,160 @@
+# -*- shell-script -*-
+
+settitle () {
+  echo -en "\033]0;$1\a"
+}
+
+setenv () {
+  export $1="$2"
+}
+
+unsetenv () {
+  unset $*
+}
+
+lr () {
+  ls -alR $* | less
+}
+
+range () {
+  echo '[li p' ${3-1} '+ d si' $2 '!<a] sa' $1 'silax' | dc
+}
+
+which () {
+  local doall=
+  local shellin=
+  local usage="usage:  which [ -a ] [ -s ] prog [ prog ... ]
+        -a := show all matches
+        -s := show path only"
+
+  if [ "$1" = "" ]; then
+    echo $usage
+    return
+  fi
+  if [ "$1" = "-a" -o "$1" = "-s" ]; then
+    if [ "$1" = "-a" ]; then
+      doall=-all
+    else
+      shellin=-path
+    fi
+    shift
+  fi
+  if [ "$1" = "-a" -o "$1" = "-s" ]; then
+    if [ "$1" = "-a" ]; then
+      doall=-all
+    else
+      shellin=-path
+    fi
+    shift
+  fi
+  if [ "$1" = "" ]; then
+    echo $usage
+    return
+  fi
+
+  while [ "$1" != "" ]
+    do
+
+    if [ "$1" != "`basename $1`" ]; then
+      echo "which: do not specify a path"
+      return
+    fi
+
+    type $doall $shellin $1
+
+    shift
+    done
+}
+
+memorize () {
+  if [ -f $MEMORY_FILE ]; then
+    echo "-- " >> $MEMORY_FILE
+  fi
+
+  case "x$1" in
+    x)
+      echo "enter text to be memorized"
+      cat - >> $MEMORY_FILE
+      echo "text has been memorized"
+      ;;
+    *)
+      echo "$@" >> $MEMORY_FILE
+      echo "arguments have been memorized"
+      ;;
+  esac
+}
+
+remember () {
+  if [ -f $MEMORY_FILE ]; then
+    case "x$1" in
+      x)
+        less $MEMORY_FILE
+        ;;
+      *)
+        grep -i "$1" $MEMORY_FILE | less -i
+        ;;
+    esac
+  fi
+}
+
+## functions for bluehost/EIG
+
+k () {
+  ssh keyserv.unifiedlayer.com "$1"
+}
+
+# from quora:
+# http://www.quora.com/What-are-some-of-the-best-command-prompt-or-terminal-tricks
+
+extract () {
+   if [ -f "$1" ] ; then
+       case $1 in
+           *.tar.bz2)   tar xvjf "$1"    ;;
+           *.tar.gz)    tar xvzf "$1"    ;;
+           *.bz2)       bunzip2 "$1"     ;;
+           *.rar)       unrar x "$1"     ;;
+           *.gz)        gunzip "$1"      ;;
+           *.tar)       tar xvf "$1"     ;;
+           *.tbz2)      tar xvjf "$1"    ;;
+           *.tgz)       tar xvzf "$1"    ;;
+           *.zip)       unzip "$1"       ;;
+           *.Z)         uncompress "$1"  ;;
+           *.7z)        7z x "$1"        ;;
+           *)           echo "don't know how to extract '$1'..." ;;
+       esac
+   else
+       echo "'$1' is not a valid file"
+   fi
+}
+
+weather() {
+    wu="http://api.wunderground.com/auto/wui/geo/ForcastXML/index.xml"
+    curl -s "$wu?query=${@:-84123}" |
+    gunzip |
+    perl -ne 's/&amp;deg;/°/g;
+              /<title>([^<]+)/ && printf "%s: ", $1;
+              /<fcttext>([^<]+)/ && print $1, "\n"'
+}
+
+define() {
+  curl -s "http://www.collinsdictionary.com/dictionary/english/$*" |
+    sed -n '/class="def"/p' |
+    awk '{gsub(/.*<span class="def">|<\/span>.*/,"");print}' |
+    sed "s/<[^>]\+>//g" |
+    par
+}
+
+epoch() {
+  TESTREG="[\d{10}]"
+  if [[ "$1" =~ $TESTREG ]]; then
+    # is epoch
+    date -d @$*
+  else
+    # is date
+    if [ $# -gt 0 ]; then
+      date +%s --date="$*"
+    else
+      date +%s
+    fi
+  fi
+}

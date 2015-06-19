@@ -1,0 +1,56 @@
+#! /usr/bin/perl
+
+# update_dot_files - copy files in the current directory that start
+#                    with an underscore (_) over files starting with
+#                    a dot (.) in the user's home directory.
+
+use File::Compare;
+use File::Find;
+use File::Copy;
+
+if ($ARGV[0] eq '-f') {
+    $force++;                   # force overwrites
+}
+
+find({ wanted => sub { -f $_ and push(@files, $_); },
+       no_chdir => 1,}, <_*>);
+
+foreach $ufile (@files) {
+    $ufile =~ s,^\./,,;
+    $dfile = $ufile; $dfile =~ s,^_,.,;
+    $dfile = $ENV{HOME} . '/' . $dfile;
+
+    if (compare($dfile, $ufile)) {
+        # files are different, check dates
+        if (-M $dfile < -M $ufile) {
+            push(@local_mods, $dfile);
+        } else {
+            push(@needs_update, $dfile);
+        }
+    }
+}
+
+if (scalar(@local_mods) > 0) {
+    print "These files have local mods:\n";
+    foreach $file (@local_mods) {
+        print "  $file\n";
+    }
+    if ($force) {
+        print "Updating them, anyway.\n";
+        push(@needs_update, @local_mods);
+    } else {
+        print "Not updating them.\n";
+    }
+}
+
+if (scalar(@needs_update)) {
+    print "Updating ...\n";
+    foreach $dfile (@needs_update) {
+        $ufile = $dfile; $ufile =~ s,^\.,_,;
+        print "  copying $ufile over $dfile\n";
+#        copy($ufile, $dfile);
+    }
+    print "done.\n";
+} else {
+    print "nothing to do.\n";
+}
