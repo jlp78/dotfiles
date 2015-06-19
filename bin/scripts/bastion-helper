@@ -4,47 +4,89 @@
 #    use this as a ProxyCommand for ssh and it will decide if/when
 #    a bastion host is required and use it automatically
 
+t=`tty`
+exec 2>/dev/null
+if [ -t "$t" ]; then
+    exec 3>$t
+fi
+
+necho () {
+    log_file=/tmp/bastion-helper.log
+    
+    if [ -w $log_file ]; then
+	echo "$@" >>/tmp/bastion-helper.log
+    fi
+    if [ -t "$t" ]; then
+        echo "$@" >&3
+    fi
+}
+
 host=$1
 port=$2
 
 case "x$port" in
-  x)
-    port=22
-    ;;
+    x)
+	port=22
+	;;
 esac
 
 case "x$host" in
-  x)
-    echo "usage: $0 host [port]"
-    exit 1
-    ;;
+    x)
+	echo "usage: $0 host [port]"
+	exit 1
+	;;
 esac
 
 
-# do we need to use a bastion host?  what network are we on?
+# do we need to use a bastion host?  what network are we on?  is
+# there a VPN?
 default_router=`netstat -rn | awk '/^default/ {print $2; exit;}'`
 wifi_network=`networksetup -getairportnetwork en0 | awk '{print $NF}'`
+network_location=`networksetup -getcurrentlocation`
+
+necho "default router $default_router"
+necho "wifi network $wifi_network"
+necho "network location $network_location"
+
+if ps gauxww | grep openvpn | grep -sq BluehostVPN; then
+    vpn=up
+else
+    vpn=down
+fi
+necho "vpn $vpn"
 
 bastion_required=0
 
+# conditions requiring bastion host usage:
+#  on the bluehost network or
+#  not on the bluehost network, but
+#    vpn is up and connecting to bluehost host
+
 case "x$wifi_network" in
-  xbluehost)
-    bastion_required=1
-    ;;
+    xbluehost)
+	bastion_required=1
+	;;
 esac
 
-exec 2>/dev/null 3>/tmp/bastion-helper.log
-
-necho () {
-  echo "$@" >&3
-}
+case "x$vpn" in
+    xup)
+	bastion_required=1
+	;;
+esac
 
 necho "host $host port $port $bastion_required"
 
+# resolve the host so we can hand the bastion an IP
+# (we do this with perl because it will honor hosts in /etc/hosts as well
+#  as those returned via DNS. it would be nice to just use host(1), but it
+#  only knows DNS and doesn't know beans about /etc/hosts.)
+iaddr=`perl -e 'use Socket;
+                print inet_ntoa(scalar(gethostbyname(shift)));' $host`
+
 if [ $bastion_required -eq 1 ]; then
-  necho "bastion required"
-  exec ssh -A -p 5190 zugzug.bluehost.com nc $host $port
+    necho "bastion required"
+    exec ssh -A -p 5190 zugzug2.bluehost.com nc $iaddr $port
 else
-  necho "bastion NOT required"
-  exec nc $host $port
+    necho "bastion NOT required"
+    exec nc $iaddr $port
 fi
