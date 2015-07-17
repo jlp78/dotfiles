@@ -73,6 +73,30 @@ if [ -x $uname ]; then
             LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/contrib/bin
             LOCALBIN=${LOCALBIN}:/usr/contrib/games
             ;;
+    *cygwin*)
+	MACH_TYPE=cygwin
+	cyg="/cygcrive/c/Program Files"
+	X11="${cyg}/Broadcom/Broadcom 802.11/Driver"
+	X11="${X11}:${cyg}/Common Files/Microsoft Shared/Windows Live"
+	X11="${X11}:${cyg} (x86)/Common Files/Microsoft Shared/Windows Live"
+	X11="${X11}:/cygdrive/c/Windows/system32"
+	X11="${X11}:/cygdrive/c/Windows"
+	X11="${X11}:/cygdrive/c/Windows/System32/Wbem"
+	X11="${X11}:/cygdrive/c/Windows/System32/WindowsPowerShell/v1.0"
+	X11="${X11}:${cyg} (x86)/Common Files/Roxio Shared/DLLShared"
+	X11="${X11}:${cyg} (x86)/Common Files/Roxio Shared/DLLShared"
+	X11="${X11}:${cyg} (x86)/Common Files/Roxio Shared/12.0/DLLShared"
+	X11="${X11}:${cyg} (x86)/Windows Live/Shared"
+	X11="${X11}:${cyg}/WIDCOMM/Bluetooth Software"
+	X11="${X11}:${cyg}/WIDCOMM/Bluetooth Software/syswow64"
+	X11="${X11}:${cyg}/Broadcom/WHL"
+	X11="${X11}:${cyg}/Broadcom/WHL/syswow64"
+	X11="${X11}:${cyg}/Broadcom/WHL/SysWow64"
+	X11="${X11}:${cyg}/Broadcom/WHL/SysWow64/syswow64"
+	X11="${X11}:${cyg} (x86)/GNU/GnuPG/pub"
+	X11="${X11}:${cyg} (x86)/Nmap"
+	LOCALBIN=/usr/local/bin
+	;;
     *)
             MACH_TYPE=unknown
             X11=/usr/bin/X11

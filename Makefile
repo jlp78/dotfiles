@@ -4,6 +4,9 @@
 
 default:
 	./update_dot_files
+	./update_dirs
 
 force:
 	./update_dot_files -f
+	./update_dirs
+

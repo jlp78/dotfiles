@@ -1,0 +1,93 @@
+#! /usr/bin/perl
+
+# update_dirs - copy directories in the current directory to
+#               corresponding directories in the user's home
+#               directory.
+
+use File::Compare;
+use File::Find;
+use File::Copy;
+
+if ($ARGV[0] eq '-f') {
+  $force++;			# force overwrites
+}
+
+foreach $d (<*>) {
+  next if $d eq '.' or $d eq '..';
+  next unless -d $d;
+  push(@top_dirs, $d);
+}
+
+find({ wanted => sub { next if m/^_/;
+		       -f $_ and push(@files, $_);
+		       -d $_ and push(@dirs, $_); },
+       no_chdir => 1,}, @top_dirs);
+
+foreach $d (@dirs) {
+  # check that target dir exists
+  $td = $ENV{HOME} . '/' . $d;
+  if (not -d $td) {
+    push(@missing_dirs, $td);
+    if (-e $td) {
+      # exists, but isn't a directory!
+      push(@not_a_dir, $td);
+    }
+  }
+}
+
+foreach $f (@files) {
+  $tf = $ENV{HOME} . '/' . $f;
+  if (not -e $tf) {
+    push(@missing_files, $f);
+  } elsif (compare($f, $tf)) {
+    # files are different, check dates
+    if (-M $tf < $f) {
+      push(@local_mods, $f);
+    } else {
+      push(@needs_update, $f);
+    }
+  }
+}
+
+if (scalar(@not_a_dir)) {
+  print "abort: The following are directories in\n";
+  print "       the repo, but not directories in\n";
+  print "       $ENV{HOME}\n\n";
+  foreach $f (@not_a_dir) {
+    print "  $f\n";
+  }
+  exit(1);
+}
+
+if (scalar(@missing_dirs)) {
+  print "Creating missing directories:\n";
+  foreach $d (@missing_dirs) {
+    print "  $d\n";
+    mkdir $d;
+  }
+}
+
+if (scalar(@local_mods) > 0) {
+  print "These files have local mods:\n";
+  foreach $f (@local_mods) {
+    print "  $file\n";
+  }
+  if ($force) {
+    print "Updating them, anyway.\n";
+    push(@needs_update, @local_mods);
+  } else {
+    print "Not updating them.\n";
+  }
+}
+
+if (scalar(@needs_update)) {
+  print "Updating ...\n";
+  foreach $f (@needs_update) {
+    $tf = $ENV{HOME} . '/' . $f;
+    print "  copying $f over $tf\n";
+    copy($f, $tf);
+  }
+  print "done.\n";
+} else {
+  print "No files to copy.\n";
+}

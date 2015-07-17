@@ -195,12 +195,17 @@ if [ "$PS1" ]; then
   no_exit_on_failed_exec=
   notify=
 
+  qtype () {
+      # quiet type - just return the exit code
+      type "$@" >/dev/null 2>&1
+  }
+
   if test -t; then
     # we are talking to a tty
 #    stty dec
     stty erase '^?' intr '^C' kill '^U' eof '^D' susp '^Z'
 #    stty werase '^W'
-    mesg n
+    qtype mesg && mesg n
   fi
 
   # terminal management for use with UW
