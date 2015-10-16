@@ -1,0 +1,89 @@
+#! /bin/sh
+
+# prox_helper - handle blueproximity's lock/unlock/presence optiones
+
+# I use blueproximity to figure out if I'm near my workstation or not.
+# I want it to do several things depending on if I'm nearby or not.
+# for example, if I approach my machine, I want it to unlock my screen
+# and unpause my music player.  if I leave the machine, I want it to
+# lock the screen and pause my music.
+
+usage () {
+    cat <<EOL
+prox_helper expects one of three possible arguments: lock, unlock, or
+prox.  It is intended to be called by blueproximity.
+EOL
+}
+
+
+# redirect output to a log file if it exists.  create the log file
+# and watch it, i.e. with tail -F, if you want to see what prox_helper
+# is doing.  if you remove the file, output will go to stdout (and
+# likely into your .xsession log file).
+if [ -e /tmp/prox_helper.log ]; then
+    exec >> /tmp/prox_helper.log
+fi
+
+case "x$1" in
+
+    xlock)
+	echo "lock request received"
+	if xscreensaver-command -time >/dev/null 2>&1; then
+	    echo "instructing screensaver to lock"
+	    xscreensaver-command -lock
+	else
+	    echo "starting screensaver"
+	    daemonize /usr/bin/xscreensaver -no-splash
+	    until xscreensaver-command -time >/dev/null 2>&1; do
+		sleep 1
+		echo "instructing screensaver to lock"
+		xscreensaver-command -lock
+	    done
+	fi
+	echo "screen should be locked now"
+
+	if rhythmbox-client --check-running; then
+	    echo "pausing music"
+	    rhythmbox-client --pause
+	fi
+
+	;;
+
+    xunlock)
+	echo "unlock request received"
+	while xscreensaver-command -time >/dev/null 2>&1; do
+	    echo "killing screensaver"
+	    pkill xscreensaver
+	    sleep 1
+
+            # these are because xflame seems to end up in STOP state when
+            # xscreensaver gets killed
+            pkill xflame
+            sleep 1
+            pkill -CONT xflame
+	done
+	echo "screen should be unlocked now"
+
+	if rhythmbox-client --check-running; then
+	    echo "playing music"
+	    rhythmbox-client --play
+	fi
+	;;
+
+    xprox)
+	#echo "proximity request received"
+	if xscreensaver-command -time >/dev/null 2>&1; then
+	    #echo "simulating user activity"
+	    xscreensaver-command -deactivate >/dev/null 2>&1
+	else
+	    #echo "starting screensaver (was not already running!)"
+	    daemonize /usr/bin/xscreensaver -no-splash
+	fi
+	#echo "screen should be unlocked due to presence"
+	;;
+
+    *)
+	usage
+	;;
+
+esac

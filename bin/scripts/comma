@@ -1,0 +1,22 @@
+#! /usr/bin/perl
+
+# comma - take a list and return them as a comma separated list
+
+# the naive implementation looks like this:
+# while (<>) {
+#   chomp;
+#   push(@l, $_);
+# }
+# print join(',', @l), "\n";
+#
+# but this version consumes the entire list into memory.  fine if
+# you've got a couple hundred, but maybe expensive if you've got a
+# couple tens of thousands.
+
+while (<>) {
+  chomp;
+  print $_;
+} continue {
+  print "," unless eof;
+}
+print "\n";

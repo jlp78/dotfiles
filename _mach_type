@@ -1,3 +1,5 @@
+# -*- shell-script -*-
+
 uname=/nope
 if [ -x /bin/uname ]; then
   uname=/bin/uname
@@ -8,100 +10,103 @@ if [ -x $uname ]; then
   hostout=`$uname -a | /usr/bin/tr '[A-Z]' '[a-z]'`
   case "$hostout" in
     *darwin*)
-            MACH_TYPE=macosx
-            X11=/usr/X11/bin
-            LOCALBIN=/usr/local/bin:/usr/local/sbin
-            LOCALBIN=$LOCALBIN:/sbin:/usr/sbin:/sw/bin:/sw/sbin
-	    # setting path for Python 3.4
-	    PREPATH=/Library/Frameworks/Python.framework/Versions/3.4/bin
-            ;;
+      MACH_TYPE=macosx
+      X11=/usr/X11/bin
+      LOCALBIN=/usr/local/bin:/usr/local/sbin
+      LOCALBIN=$LOCALBIN:$(brew --prefix coreutils)/libexec/gnubin
+      LOCALBIN=$LOCALBIN:/sbin:/usr/sbin:/sw/bin:/sw/sbin
+      MANPATH=$(brew --prefix coreutils)/gnuman:$MANPATH
+      # setting path for Python 3.4
+      PREPATH=/Library/Frameworks/Python.framework/Versions/3.4/bin
+      ;;
     *freebsd*)
-            MACH_TYPE=fbsd
-            X11=/usr/X11R6/bin
-            LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/local/sbin
-            LOCALBIN=$LOCALBIN:/sbin:/usr/sbin:/usr/local/pilot/bin
-            ;;
+      MACH_TYPE=fbsd
+      X11=/usr/X11R6/bin
+      LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/local/sbin
+      LOCALBIN=$LOCALBIN:/sbin:/usr/sbin:/usr/local/pilot/bin
+      ;;
     *openbsd*)
-            MACH_TYPE=obsd
-            X11=/usr/X11R6/bin
-            LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/local/sbin
-            LOCALBIN=$LOCALBIN:/sbin:/usr/sbin
-            ;;
+      MACH_TYPE=obsd
+      X11=/usr/X11R6/bin
+      LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/local/sbin
+      LOCALBIN=$LOCALBIN:/sbin:/usr/sbin
+      ;;
     *linux*)
-            MACH_TYPE=linux
-            X11=/usr/X11R6/bin
-            LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/local/sbin
-            LOCALBIN=$LOCALBIN:/sbin:/usr/sbin:/usr/local/nmh/bin
-            LOCALBIN=$LOCALBIN:/usr/local/jdk1.2.2/bin
-
-            # strip out system provided aliases
-            unalias -a
-            ;;
+      MACH_TYPE=linux
+      X11=/usr/X11R6/bin
+      LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/local/sbin
+      LOCALBIN=$LOCALBIN:/sbin:/usr/sbin:/usr/local/nmh/bin
+      LOCALBIN=$LOCALBIN:/usr/local/jdk1.2.2/bin
+      
+      # strip out system provided aliases
+      unalias -a
+      ;;
     *sun*)
-            MACH_TYPE=$(/bin/arch)
-            X11=/usr/openwin/bin:/usr/openwin/bin/xview
-            LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/local/sbin
-            LOCALBIN=$LOCALBIN:/opt/bin:/sbin:/usr/sbin:/usr/ccs/bin
-            LOCALBIN=$LOCALBIN:$HOME/lib/Office51/bin:/usr/local/ar/bin
-            LOCALBIN=$LOCALBIN:/usr/local/nmh/bin
-            LOCALBIN=$LOCALBIN:/home/proj/partnet/ws3/SUNWspro/bin
-            LD_LIBRARY_PATH=/usr/openwin/lib
-            MANPATH=/usr/man:/usr/share/man:/usr/local/man:/usr/openwin/share/man
-            OPENWINHOME=/usr/openwin
-            XFILESEARCHPATH=$OPENWINHOME/lib/locale/%L/%T/%N%S:$OPENWINHOME/lib/%T/%N%S
-            export LD_LIBRARY_PATH MANPATH OPENWINHOME XFILESEARCHPATH
-            ;;
+      MACH_TYPE=$(/bin/arch)
+      X11=/usr/openwin/bin:/usr/openwin/bin/xview
+      LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/local/sbin
+      LOCALBIN=$LOCALBIN:/opt/bin:/sbin:/usr/sbin:/usr/ccs/bin
+      LOCALBIN=$LOCALBIN:$HOME/lib/Office51/bin:/usr/local/ar/bin
+      LOCALBIN=$LOCALBIN:/usr/local/nmh/bin
+      LOCALBIN=$LOCALBIN:/home/proj/partnet/ws3/SUNWspro/bin
+      LD_LIBRARY_PATH=/usr/openwin/lib
+      MANPATH=/usr/man:/usr/share/man:/usr/local/man:/usr/openwin/share/man
+      OPENWINHOME=/usr/openwin
+      XFILESEARCHPATH=$OPENWINHOME/lib/locale/%L/%T/%N%S:$OPENWINHOME/lib/%T/%N%S
+      export LD_LIBRARY_PATH MANPATH OPENWINHOME XFILESEARCHPATH
+      alias killall="echo ALERT! you said killall on solaris!"
+      ;;
     *irix*)
-            MACH_TYPE=irix
-            X11=/usr/bin/X11:/usr/sbin:/usr/demos/bin
-            LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/local/games:/usr/bsd
-            LOCALBIN=${LOCALBIN}:/usr/local/news/bin
-            LOCALBIN=/usr/kerberos/bin:${LOCALBIN}
-            ;;
+      MACH_TYPE=irix
+      X11=/usr/bin/X11:/usr/sbin:/usr/demos/bin
+      LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/local/games:/usr/bsd
+      LOCALBIN=${LOCALBIN}:/usr/local/news/bin
+      LOCALBIN=/usr/kerberos/bin:${LOCALBIN}
+      ;;
     *mips*)
-            MACH_TYPE=mips
-            X11=/usr/local/X11R5/bin:/usr/bin/X11
-            X11=${X11}:/usr/RISCwindows4.0/contrib/bin
-            X11=${X11}:/usr/RISCwindows4.0/demos/bin:/usr/local/X11R4/bin
-            LOCALBIN=/usr/gnu/bin:/usr/local/bin:/usr/local/etc
-            LOCALBIN=${LOCALBIN}:/usr/local/games
-            LOCALBIN=${LOCALBIN}:/usr/bsd43/bin:/usr/local/news/bin
-            ;;
+      MACH_TYPE=mips
+      X11=/usr/local/X11R5/bin:/usr/bin/X11
+      X11=${X11}:/usr/RISCwindows4.0/contrib/bin
+      X11=${X11}:/usr/RISCwindows4.0/demos/bin:/usr/local/X11R4/bin
+      LOCALBIN=/usr/gnu/bin:/usr/local/bin:/usr/local/etc
+      LOCALBIN=${LOCALBIN}:/usr/local/games
+      LOCALBIN=${LOCALBIN}:/usr/bsd43/bin:/usr/local/news/bin
+      ;;
     *hp-ux*)
-            MACH_TYPE=hp
-            X11=/usr/local/bin/X11:/usr/contrib/bin/X11:/usr/bin/X11
-            LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/contrib/bin
-            LOCALBIN=${LOCALBIN}:/usr/contrib/games
-            ;;
+      MACH_TYPE=hp
+      X11=/usr/local/bin/X11:/usr/contrib/bin/X11:/usr/bin/X11
+      LOCALBIN=/usr/local/bin:/usr/local/etc:/usr/contrib/bin
+      LOCALBIN=${LOCALBIN}:/usr/contrib/games
+      ;;
     *cygwin*)
-	MACH_TYPE=cygwin
-	cyg="/cygcrive/c/Program Files"
-	X11="${cyg}/Broadcom/Broadcom 802.11/Driver"
-	X11="${X11}:${cyg}/Common Files/Microsoft Shared/Windows Live"
-	X11="${X11}:${cyg} (x86)/Common Files/Microsoft Shared/Windows Live"
-	X11="${X11}:/cygdrive/c/Windows/system32"
-	X11="${X11}:/cygdrive/c/Windows"
-	X11="${X11}:/cygdrive/c/Windows/System32/Wbem"
-	X11="${X11}:/cygdrive/c/Windows/System32/WindowsPowerShell/v1.0"
-	X11="${X11}:${cyg} (x86)/Common Files/Roxio Shared/DLLShared"
-	X11="${X11}:${cyg} (x86)/Common Files/Roxio Shared/DLLShared"
-	X11="${X11}:${cyg} (x86)/Common Files/Roxio Shared/12.0/DLLShared"
-	X11="${X11}:${cyg} (x86)/Windows Live/Shared"
-	X11="${X11}:${cyg}/WIDCOMM/Bluetooth Software"
-	X11="${X11}:${cyg}/WIDCOMM/Bluetooth Software/syswow64"
-	X11="${X11}:${cyg}/Broadcom/WHL"
-	X11="${X11}:${cyg}/Broadcom/WHL/syswow64"
-	X11="${X11}:${cyg}/Broadcom/WHL/SysWow64"
-	X11="${X11}:${cyg}/Broadcom/WHL/SysWow64/syswow64"
-	X11="${X11}:${cyg} (x86)/GNU/GnuPG/pub"
-	X11="${X11}:${cyg} (x86)/Nmap"
-	LOCALBIN=/usr/local/bin
-	;;
+      MACH_TYPE=cygwin
+      cyg="/cygcrive/c/Program Files"
+      X11="${cyg}/Broadcom/Broadcom 802.11/Driver"
+      X11="${X11}:${cyg}/Common Files/Microsoft Shared/Windows Live"
+      X11="${X11}:${cyg} (x86)/Common Files/Microsoft Shared/Windows Live"
+      X11="${X11}:/cygdrive/c/Windows/system32"
+      X11="${X11}:/cygdrive/c/Windows"
+      X11="${X11}:/cygdrive/c/Windows/System32/Wbem"
+      X11="${X11}:/cygdrive/c/Windows/System32/WindowsPowerShell/v1.0"
+      X11="${X11}:${cyg} (x86)/Common Files/Roxio Shared/DLLShared"
+      X11="${X11}:${cyg} (x86)/Common Files/Roxio Shared/DLLShared"
+      X11="${X11}:${cyg} (x86)/Common Files/Roxio Shared/12.0/DLLShared"
+      X11="${X11}:${cyg} (x86)/Windows Live/Shared"
+      X11="${X11}:${cyg}/WIDCOMM/Bluetooth Software"
+      X11="${X11}:${cyg}/WIDCOMM/Bluetooth Software/syswow64"
+      X11="${X11}:${cyg}/Broadcom/WHL"
+      X11="${X11}:${cyg}/Broadcom/WHL/syswow64"
+      X11="${X11}:${cyg}/Broadcom/WHL/SysWow64"
+      X11="${X11}:${cyg}/Broadcom/WHL/SysWow64/syswow64"
+      X11="${X11}:${cyg} (x86)/GNU/GnuPG/pub"
+      X11="${X11}:${cyg} (x86)/Nmap"
+      LOCALBIN=/usr/local/bin
+      ;;
     *)
-            MACH_TYPE=unknown
-            X11=/usr/bin/X11
-            LOCALBIN=/usr/local/bin
-            ;;
+      MACH_TYPE=unknown
+      X11=/usr/bin/X11
+      LOCALBIN=/usr/local/bin
+      ;;
   esac
   unset hostout
 else

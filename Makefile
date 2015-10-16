@@ -10,3 +10,6 @@ force:
 	./update_dot_files -f
 	./update_dirs
 
+compare:
+	./compare_dot_files
+

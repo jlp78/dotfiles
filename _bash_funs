@@ -1,8 +1,20 @@
 # -*- shell-script -*-
 
-settitle () {
-  echo -en "\033]0;$1\a"
-}
+case "x$TERM" in
+  xxterm*|xscreen)
+    # probably can support title bar setting with ansi codes
+    settitle () {
+      echo -en "\033]0;$1\a"
+    }
+    ;;
+esac
+    
+if tput tsl >/dev/null; then
+  # definitely supports title bar/status line setting
+  settitle () {
+    tput tsl; echo -n "$1"; tput fsl
+  }
+fi
 
 setenv () {
   export $1="$2"
@@ -88,7 +100,7 @@ remember () {
   if [ -f $MEMORY_FILE ]; then
     case "x$1" in
       x)
-        less $MEMORY_FILE
+        less -i $MEMORY_FILE
         ;;
       *)
         grep -i "$1" $MEMORY_FILE | less -i
@@ -157,4 +169,116 @@ epoch() {
       date +%s
     fi
   fi
+}
+
+qtype () {
+  # quiet type - just return the exit code
+  type "$@" >/dev/null 2>&1
+}
+
+nkill () {
+  usage="usage: nkill [ -u uid ] [ -s signal ] pattern"
+
+  # defaults
+  uid=`id -u`
+  sig=TERM
+
+  # process args
+  while [ "$1" ]; do
+    case "x$1" in
+      x-u)
+	uid="$2"
+	shift; shift
+	;;
+      x-s)
+	sig="$2"
+	shift; shift;
+	;;
+      x)
+	echo "no pattern passed"
+	echo $usage
+	return
+	;;
+      x*)
+	pattern="$1"
+	shift
+	;;
+    esac
+  done
+
+  # sanity check args
+  case "x$uid" in
+    x)
+      echo "-u option specified but no uid given"
+      echo $usage
+      return
+      ;;
+    x*[^0-9]*)
+      echo "uid for -u option must be numeric"
+      echo $usage
+      return
+      ;;
+  esac
+
+  case "x$sig" in
+    xSIG*)
+      :
+      ;;
+    x[0-9]*)
+      :
+      ;;
+    *)
+      sig="SIG$sig"
+      ;;
+  esac
+    
+  if kill -l | grep -sqw "$sig"; then
+    :
+  else
+    echo "unknown signal, select from one of these"
+    kill -l
+    echo $usage
+    return
+  fi
+
+  if qtype pkill; then
+    pkill -"$sig" -U "$uid" "$pattern"
+  elif qtype killall; then
+    killall -u "$uid" -"$sig" "$pattern"
+  else
+    ps -efu | awk '/$pattern/ {print $1, $2}' | awk '/^$uid / {print $2}' |
+      while read pid; do
+	kill -"$sig" $pid
+      done
+  fi
+}
+
+prompt_update () {
+  case "$interactive" in
+    true)
+      :
+      ;;
+    *)
+      return
+      ;;
+  esac
+  
+  # update the history
+  history -a; history -c; history -r #nkill -s USR1 bash
+
+  # virtual env active?
+  if [ "$VIRTUAL_ENV" ]; then
+    venv="(`basename \"$VIRTUAL_ENV\"`) "
+  else
+    venv=""
+  fi
+
+  # set the title bar/status line if we can
+  qtype settitle && settitle "$(id -nu)@$(hostname -s):$(pwd)"
+
+  # default in case __git_ps1 isn't there
+  PS1="${venv}\u@\h:\w\n\! bash\\\$ "
+
+  # set up the PS1, ugh, what a mess
+  qtype __git_ps1 && __git_ps1 "${venv}\u@\h:\w" "\n\! bash\\\$ "
 }

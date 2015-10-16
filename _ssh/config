@@ -1,12 +1,21 @@
-Host jay1.jay-one.org janpeterson-wkrst
-  ProxyCommand bash -c "bastion-helper %h %p"
+Host jay1.jay-one.org
+  Port 222
+  User jlp
 
-Host *.unifiedlayer.com asterisk*.bluehost.com box*.bluehost.com 10.*
-  ForwardAgent yes
-  ForwardX11 yes
-  RequestTTY yes
-  ProxyCommand ssh -p 5190 zugzug2.bluehost.com -W %h:%p
-# ProxyCommand bash -c "ssh -p 5190 zugzug2.bluehost.com nc %h %p" 2>/dev/null
+# for Verisys
+Host 172.* 10.*
+  User jpeterson
 
-Host zugzug*.bluehost.com
-  Port 5190
+# for Bluehost
+#Host jay1.jay-one.org janpeterson-wkrst
+#  ProxyCommand bash -c "bastion-helper %h %p"
+#
+#Host *.unifiedlayer.com asterisk*.bluehost.com box*.bluehost.com 10.*
+#  ForwardAgent yes
+#  ForwardX11 yes
+#  RequestTTY yes
+#  ProxyCommand ssh -p 5190 zugzug2.bluehost.com -W %h:%p
+## ProxyCommand bash -c "ssh -p 5190 zugzug2.bluehost.com nc %h %p" 2>/dev/null
+#
+#Host zugzug*.bluehost.com
+#  Port 5190

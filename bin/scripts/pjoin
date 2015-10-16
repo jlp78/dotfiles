@@ -1,0 +1,18 @@
+#! /usr/bin/perl
+
+# pjoin, access perl's join functionality for data from command line
+#
+# sometimes, we get a list of things that we actually want to be a
+# comma separated list all on one line.  while we can use tr to change
+# the linefeeds to commas, that also changes the last linefeed to a
+# comma, which is probably not what we want.  perl's join function
+# nicely does exactly what we want, but it's a pain to type it out all
+# the time, so this script just collects it's stdin or arg list, joins
+# it up with a comma separator, and dumps it back out
+
+while (<>) {
+    chomp;
+    push(@list, $_);
+}
+
+print join(',', @list), "\n";

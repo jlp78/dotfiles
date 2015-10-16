@@ -1,0 +1,4 @@
+#! /bin/sh
+
+player=`type -path aplay || type -path afplay`
+exec $player $HOME/lib/sounds/gong.au >/dev/null 2>&1

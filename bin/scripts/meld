@@ -1,0 +1,85 @@
+#! /bin/bash
+
+# wrapper for Mac version of meld..., sorry, we use some
+# bash constructs, so this doesn't work in plain old sh
+
+abspath(){
+  # lifted this from http://stackoverflow.com/a/21951256
+  # convert relative path to absolute path, even on darwin
+  local thePath
+  if [[ ! "$1" =~ ^/ ]];then
+    thePath="$PWD/$1"
+  else
+    thePath="$1"
+  fi
+  echo "$thePath"|(
+    IFS=/
+    read -a parr
+    declare -a outp
+    for i in "${parr[@]}";do
+      case "$i" in
+        ''|.) continue ;;
+        ..)
+          len=${#outp[@]}
+          if ((len==0));then
+            continue
+          else
+            unset outp[$((len-1))] 
+          fi
+          ;;
+        *)
+          len=${#outp[@]}
+          outp[$len]="$i"
+          ;;
+      esac
+      done
+    echo /"${outp[*]}"
+  )
+}
+
+# do we need to do this?
+case `uname -s | tr '[A-Z]' '[a-z]'` in
+  darwin)
+    # yes, we need to do this
+
+    if [ -d /Applications/Meld.app ]; then
+
+      # darwin meld doesn't seem to like relative paths, so...
+      declare -a alist
+      for a in "$@"; do
+	if [ -e "$a" ]; then
+	  # looks like a file, abspath it
+	  a=`abspath "$a"`
+	fi
+	alist+=("$a")
+      done
+      # put it back in ARGV
+      set "${alist[@]}"
+
+      exec open -a Meld --args "$@"
+    fi
+
+    echo "you don't have the Meld app installed, get it from"
+    echo "https://github.com/yousseb/meld/releases"
+    exit 1
+    ;;
+
+  *)
+    # we're not on darwin?  let's see if we even have meld...
+
+    if [ `type -a meld | grep -v $0 | wc -l` -lt 1 ]; then
+      # the only meld we found was ourself!
+      echo "you don't have meld!  try installing it via your"
+      echo "package management system (apt-get or yum are"
+      echo "good choices)"
+      exit 1
+    fi
+
+    # looks like we have at least one meld that's not us
+    # let's try to use the first one we found...
+    meld_bin=`type -a meld | grep -v $0 | awk '{print $NF; exit}'`
+    exec $meld_bin "$@"
+    ;;
+esac
+
+    

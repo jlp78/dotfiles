@@ -105,7 +105,7 @@ LESS=qedm
 PAGER=`type -path less || type -path more`
 # special hacks for LESS
 case $MACH_TYPE in
-  linux)
+  linux|macosx)
     LESS="${LESS}X"
     ;;
 esac
@@ -168,13 +168,29 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
+# this doesn't appear to be working the way I want it to, need to
+# play with it some more
+trap 'history -r' USR1
+
 if [ "$PS1" ]; then
 
   # interactive shell
   interactive=true
 
+  if [ -e ~/lib/sh/git-prompt.sh ]; then
+    . ~/lib/sh/git-prompt.sh
+    GIT_PS1_SHOWDIRTYSTATE=t
+    GIT_PS1_SHOWSTASHSTATE=t
+    GIT_PS1_SHOWUNTRACKEDFILES=t
+    GIT_PS1_SHOWUPSTREAM="auto"
+    GIT_PS1_SHOWCOLORHINTS=t
+  fi
+
   # prompt string looks like "user@host:working/directory history bash$ "
+  # but it is really managed by the prompt_update command, see .bash_funs
   PS1="\u@\h:\w \! bash\\\$ "
+  PROMPT_DIRTRIM=2
+  PROMPT_COMMAND='prompt_update'
 
   if test -n "$PBEMMODE"; then
     PS1="PBEM: $PS1"
@@ -195,16 +211,13 @@ if [ "$PS1" ]; then
   no_exit_on_failed_exec=
   notify=
 
-  qtype () {
-      # quiet type - just return the exit code
-      type "$@" >/dev/null 2>&1
-  }
-
   if test -t; then
     # we are talking to a tty
-#    stty dec
+    # stty dec  some unixes don't have this?!
     stty erase '^?' intr '^C' kill '^U' eof '^D' susp '^Z'
-#    stty werase '^W'
+    if stty -a | grep -sq werase; then
+      stty werase '^W'
+    fi
     qtype mesg && mesg n
   fi
 
@@ -232,6 +245,10 @@ fi
 
 export HOMEBREW_GITHUB_API_TOKEN=bc2c12a301a0da609811f6ddfc38473f059805fc
 
+export PYENV_ROOT=/usr/local/var/pyenv
+qtype pyenv && eval "$(pyenv init -)"
+qtype pyenv-virtualenv-init && eval "$(pyenv virtualenv-init -)"
+
 # clean up the PATH (get rid of duplicates, missing dirs, and blank entries)
 PATH=`perl -e '
   $path = $ENV{PATH};
@@ -245,3 +262,16 @@ PATH=`perl -e '
   print "$newpath\n"; '`
 export PATH
 
+# for verisys
+
+PATH=/usr/local/share/python:$PATH
+export WORKON_HOME=$HOME/.virtualenvs
+export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
+export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
+# we handle the prompt in our prompt_update function
+export VIRTUAL_ENV_DISABLE_PROMPT=t
+export PIP_VIRTUALENV_BASE=$WORKON_HOME
+export PIP_RESPECT_VIRTUALENV=true
+if [[ -r /usr/local/bin/virtualenvwrapper.sh ]]; then
+  . /usr/local/bin/virtualenvwrapper.sh
+fi

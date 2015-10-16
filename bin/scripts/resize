@@ -1,0 +1,4 @@
+#! /bin/sh
+
+rc=`stty size`
+echo $rc | awk '/([0-9][0-9]*) ([0-9][0-9]*)/ {print "export LINES=" $1; print "export COLUMNS=" $2}'

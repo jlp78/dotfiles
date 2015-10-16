@@ -27,4 +27,4 @@ case $MACH_TYPE in
     ;;
 esac
 
-
+alias ve='pyenv-virtualenv'
