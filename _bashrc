@@ -243,7 +243,7 @@ if [ "$PS1" ]; then
 
 fi
 
-export HOMEBREW_GITHUB_API_TOKEN=bc2c12a301a0da609811f6ddfc38473f059805fc
+export HOMEBREW_GITHUB_API_TOKEN=EtG+xjtiWAQbITrf/o15fZFmjlI
 
 export PYENV_ROOT=/usr/local/var/pyenv
 qtype pyenv && eval "$(pyenv init -)"
