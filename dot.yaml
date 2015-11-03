@@ -1,0 +1,15 @@
+# configuration for dot_secrets.  each file contains a list of
+# key:value pairs.  the key is a description of the particular item,
+# while the value is a regular expression matching the line in the
+# file that needs to be tweaked.  in the regexp, the first and third
+# parenthesized tokens are retained and the second one represents the
+# actual "secret" text that needs to be elided.
+---
+.bashrc:
+  homebrew token: (HOMEBREW_GITHUB_API_TOKEN=)(.*)($)
+.emacs:
+  nntp pass: (nntp-authinfo-pass ")([^"]+)(")
+  nntp user: (nntp-authinfo-user ")([^"]+)(")
+.irssi/config:
+  proxy pass: (^\s*proxy_password\s*=\s*")([^"]+)(")
+  server pass: (^\s*password\s*=\s*")([^"]+)(")

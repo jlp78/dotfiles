@@ -1,7 +1,6 @@
 :
 # login script for bash (login shells only)
 
-mesg n
 echo TERM was $TERM
 case $TERM in
   dialup|network|s4|PC7300|pc7300)

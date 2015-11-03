@@ -9,6 +9,10 @@ case "x$TERM" in
     ;;
 esac
     
+# on some terminals, such as bad vt100 clones, this can cause
+# crap to pop out all over the screen.  on real vt100 terminals
+# and others that have a hardware status line, this updates the
+# status bar on the bottom line
 if tput tsl >/dev/null; then
   # definitely supports title bar/status line setting
   settitle () {
@@ -16,6 +20,7 @@ if tput tsl >/dev/null; then
   }
 fi
 
+# old csh commands
 setenv () {
   export $1="$2"
 }
@@ -24,14 +29,87 @@ unsetenv () {
   unset $*
 }
 
+# quiet type - just return the exit code
+qtype () {
+  type "$@" >/dev/null 2>&1
+}
+
+# recursive ls piped through $PAGER
 lr () {
-  ls -alR $* | less
+  ls -alR $* | $PAGER
 }
 
+# annoyingly, some versions of dc don't support everything
+# that this command requires.  get used to using jot on those.
 range () {
-  echo '[li p' ${3-1} '+ d si' $2 '!<a] sa' $1 'silax' | dc
+  case "x$2" in
+    x)
+      start=1
+      end=$1
+      incr=1
+      ;;
+    x[0-9]*)
+      start=$1
+      end=$2
+      case "x$3" in
+        x)
+          incr=1
+          ;;
+        x[0-9]*)
+          incr=$3
+          ;;
+      esac
+  esac
+  usage=0
+  case "x$start" in
+    x*[^0-9]*|x)
+      usage=1
+      ;;
+  esac
+  case "x$end" in
+    x*[^0-9]*|x)
+      usage=1
+      ;;
+  esac
+  case "x$incr" in
+    x*[^0-9]*|x)
+      usage=1
+      ;;
+  esac
+  if [ $usage -eq 1 ]; then
+      echo "args must be numeric"
+      echo "usage: range [ a [ b { c } ] ]"
+      echo "  if one argument, arg is end, start and incr is 1."
+      echo "  if two arguments, args are start and end, incr is 1."
+      echo "  if three arguments, args are start, end, and incr."
+      return -1
+  fi
+
+  if qtype jot; then
+    jot - $start $end $incr
+  elif qtype dc; then
+    echo '[li p' $incr '+ d si' $end '!<a] sa' $start 'silax' | dc
+  elif qtype perl; then
+    # no dc or jot?  sheesh, let's just fake it with perl
+    perl -e '$start = shift; $end = shift; $incr = shift;
+             for ($i = $start; $i <= $end; $i += $incr) {
+               print $i, "\n";
+             }' $start $end $incr
+  else
+    # no perl, either?  gasp!
+    echo "sorry, man, I tried.  you're on your own.  here, let me"
+    echo "get you started... 1 2 3 4"
+    return -1
+  fi
 }
 
+# csh used to have this thing called "which" that would tell you
+# which thing in your path was going to get run when you typed a
+# non-qualified command in.  unfortunately, the csh version ran
+# in a subshell and could get it wrong if you had locally modified
+# your path in some way.  this shell function uses the shell builtin
+# "type" to do the same thing, but it's more accurate since it runs
+# right in the same shell you are using.
 which () {
   local doall=
   local shellin=
@@ -41,7 +119,7 @@ which () {
 
   if [ "$1" = "" ]; then
     echo $usage
-    return
+    return -1
   fi
   if [ "$1" = "-a" -o "$1" = "-s" ]; then
     if [ "$1" = "-a" ]; then
@@ -64,8 +142,7 @@ which () {
     return
   fi
 
-  while [ "$1" != "" ]
-    do
+  while [ "$1" != "" ]; do
 
     if [ "$1" != "`basename $1`" ]; then
       echo "which: do not specify a path"
@@ -75,9 +152,14 @@ which () {
     type $doall $shellin $1
 
     shift
-    done
+  done
 }
 
+# some simple functions to handle remembering choice tidbits
+# in a plain text file.  I use this thing all the time.  I
+# used to have MEMORY_FILE be $HOME/.memory, but I've since
+# moved it into my Drobox, which is very handy as it automatically
+# stays up-to-date on multiple machines now.
 memorize () {
   if [ -f $MEMORY_FILE ]; then
     echo "-- " >> $MEMORY_FILE
@@ -110,7 +192,6 @@ remember () {
 }
 
 ## functions for bluehost/EIG
-
 k () {
   ssh keyserv.unifiedlayer.com "$1"
 }
@@ -139,6 +220,9 @@ extract () {
    fi
 }
 
+# this doesn't appear to work any more... maybe weatherunderground
+# is requiring a key of some kind for their api access.  It appears
+# to work from my browser, but not from curl.
 weather() {
     wu="http://api.wunderground.com/auto/wui/geo/ForcastXML/index.xml"
     curl -s "$wu?query=${@:-84123}" |
@@ -171,11 +255,11 @@ epoch() {
   fi
 }
 
-qtype () {
-  # quiet type - just return the exit code
-  type "$@" >/dev/null 2>&1
-}
-
+# named kill, yeah, some platforms have "killall" that does this, but on
+# some other platforms (I'm looking at you, Solaris), killall will shut
+# the system down for you (if you're root).  probably don't want to do that.
+# this script tries to figure out if you've got pkill or a sane killall
+# and falls back to grepping the output of ps if all else fails.
 nkill () {
   usage="usage: nkill [ -u uid ] [ -s signal ] pattern"
 
@@ -253,17 +337,21 @@ nkill () {
   fi
 }
 
+# update the PS1 string... and other magic.
 prompt_update () {
   case "$interactive" in
     true)
       :
       ;;
     *)
+      # don't be setting the prompt on a non-interactive shell
       return
       ;;
   esac
   
-  # update the history
+  # update the history... this keeps a common history between
+  # all shells on the same machine.  this takes some getting used
+  # to unless you're familiar with ksh that does this by default.
   history -a; history -c; history -r #nkill -s USR1 bash
 
   # virtual env active?
@@ -279,6 +367,9 @@ prompt_update () {
   # default in case __git_ps1 isn't there
   PS1="${venv}\u@\h:\w\n\! bash\\\$ "
 
-  # set up the PS1, ugh, what a mess
+  # set up the PS1, ugh, what a mess.  yes, we have embedded a newline
+  # in the prompt string.  I used to really hate prompts that do this,
+  # but there is just too much noise in the prompt to keep it on the same
+  # line as the command entry now.
   qtype __git_ps1 && __git_ps1 "${venv}\u@\h:\w" "\n\! bash\\\$ "
 }

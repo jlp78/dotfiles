@@ -12,6 +12,7 @@ oPATH="$PATH"
 PATH=/bin:/usr/bin:/usr/local/bin
 export PATH
 
+# this fixes some badness in X access when using sudo
 if [ `id -u` -eq 0 ]; then
   if [ "$XAUTHORITY" == "$HOME/.Xauthority" ]; then
     if [ "$DISPLAY" == ":0" ]; then
@@ -52,6 +53,7 @@ else
   X11=/usr/bin/X11
   LOCALBIN=/usr/local/bin
 fi
+
 # set up path stuff
 if [ -d ~/bin/$MACH_TYPE ]; then
   MY_BIN=$HOME/bin/scripts:$HOME/bin/$MACH_TYPE
@@ -59,6 +61,8 @@ else
   MY_BIN=$HOME/bin/scripts
 fi
 
+# xtools was a linkedin thing... probably don't need it unless you
+# are at linkedin.
 MY_BIN=$MY_BIN:.:/export/apps/xtools/bin
 
 # extra bin dirs
@@ -74,9 +78,11 @@ if [ -e $HOME/android-sdk-* ]; then
   EBIN=$EBIN:`echo $HOME/android-sdk-*/platform-tools`
 fi
 
+# set up the path
 PATH=$PREPATH:$MY_BIN:$LOCALBIN:$X11:/usr/ucb:/usr/bin:/bin:/usr/5bin
 PATH=$PATH:/usr/etc:/etc:/usr/hosts:/usr/new:/usr/old:$EBIN:/usr/games
 
+# mips and sun have separate bin directories for SysV-ish tools vs. BSD-ish
 case $MACH_TYPE in
   mips)
         bsd_path=$PATH
@@ -92,16 +98,25 @@ case $MACH_TYPE in
         ;;
 esac
 
-# don't allow group writes
+# don't allow group writes, use this if you don't have your own
+# private group (pretty much all dists give you a private group
+# now, so you probably don't need this).
 #umask 022
 
 # don't dump any cores (doesn't work on HP/UX?)
-#ulimit -c 0
+case $MACH_TYPE in
+  hp)
+	;;
+  *)
+	ulimit -c 0
+	;;
+esac
 
-# env vars:
+# miscellaneous env vars:
 EDITOR=`type -path jove || type -path vi`
 MORE=-c
 LESS=qedm
+LESSCHARSET=latin1
 PAGER=`type -path less || type -path more`
 # special hacks for LESS
 case $MACH_TYPE in
@@ -117,6 +132,8 @@ case $PAGER in
     less_version=unknown
     ;;
 esac
+# some older versions of less did things a little differently, unlikely
+# to need this stuff any more
 case $less_version in
   332)
     LESS="${LESS}w"
@@ -129,29 +146,46 @@ case $less_version in
     ;;
 esac
 
+# nethack >> rogue
 NETHACKOPTIONS="DECgraphics,noconfirm,male,fixinv,nohelp,news,nonull"
 NETHACKOPTIONS="${NETHACKOPTIONS},nopickup,norest_on_space,silent"
 NETHACKOPTIONS="${NETHACKOPTIONS},sortpack,standout,time,noverbose"
 NETHACKOPTIONS="${NETHACKOPTIONS},dogname:Spike,catname:Puff,fruit:mango"
+
+# this is used by tip, or it was, when tip was a thing
 REMOTE=~/.remote
+
 XSHELL=`type -path bash`
+
+# when using a mips workstation, this was important.  probably not so
+# much any more.
 KEYMAP=mips
+
 PGPPATH=$HOME/.pgp
 IMM_IMAGE_DIR=$HOME/lib/images
 DISPLAY_GAMMA=2.2
+
+# fetch is a BSD thing.
 FETCH_CMD="fetch -p"
+
+# old palm pilot support for jpilot.  don't really use this any more.
 PILOTRATE=38400
 PILOTPORT=/dev/pilot
+
+# MM == mime encode/decode tools, used with NMH and exmh.
 MM_CHARSET=iso-8859-1
 #LANG=en_US
-LESSCHARSET=latin1
 
+# more linkedin stuff
 MANPATH="$MANPATH:/usr/local/linkedin/man"
 
+# export all the vars!
 export EDITOR MORE LESS MANPATH NETHACKOPTIONS NNTPSERVER PAGER PRINTER
 export REMOTE XSHELL KEYMAP PGPPATH IMM_IMAGE_DIR DISPLAY_GAMMA FETCH_CMD
 export PILOTRATE PILOTPORT MM_CHARSET LANG LESSCHARSET
 
+# got a Dropbox mounted?  use that for persistent memory storage. otherwise
+# use a local file.
 if [ -e "$HOME/Dropbox/memory.txt" ]; then
   MEMORY_FILE="$HOME/Dropbox/memory.txt"
 else
@@ -165,18 +199,24 @@ if [ -f ~/.bash_funs ]; then source ~/.bash_funs; fi
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
-	. /etc/bashrc
+  . /etc/bashrc
 fi
 
 # this doesn't appear to be working the way I want it to, need to
-# play with it some more
+# play with it some more.  the intention is to automatically update
+# the history behind the scenes whenever a command prompt is shown,
+# no matter which shell it is in.
 trap 'history -r' USR1
 
+# do I have a prompt already?  then I'm probably an interactive shell.
 if [ "$PS1" ]; then
 
   # interactive shell
   interactive=true
 
+  # stick some git branch and status info in the prompt if in a git
+  # working directory.  this magic comes courtesy of Shawn O. Pearce.
+  # https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh
   if [ -e ~/lib/sh/git-prompt.sh ]; then
     . ~/lib/sh/git-prompt.sh
     GIT_PS1_SHOWDIRTYSTATE=t
@@ -192,13 +232,18 @@ if [ "$PS1" ]; then
   PROMPT_DIRTRIM=2
   PROMPT_COMMAND='prompt_update'
 
+  # I used to play a game of Traveller via e-mail.  Had a different MH
+  # config for use when playing and this was to help me know if my current
+  # shell was in PBEM mode or not.  http://www.shoestring-graphics.com/traveller/
+  # has historical info about the game and a log of the mail associated with
+  # the game.  I haven't looked at this stuff in a looooooong time.
   if test -n "$PBEMMODE"; then
     PS1="PBEM: $PS1"
   fi
 
   # interactive-only variables
   shopt -s checkhash
-  # shopt -s checkjobs
+  # shopt -s checkjobs		# I don't remember why I don't use this any more
   shopt -s checkwinsize
   shopt -s cmdhist
 
@@ -218,10 +263,15 @@ if [ "$PS1" ]; then
     if stty -a | grep -sq werase; then
       stty werase '^W'
     fi
+    # stiffle "talk" requests... but no one uses that any more, anyway.
     qtype mesg && mesg n
   fi
 
-  # terminal management for use with UW
+  # terminal management for use with UW.  UW was the "windowing"
+  # system on the AT&T 7300.  I had one of these at home for a
+  # few years to use as a terminal.  This is where the "s4"
+  # terminal type came from.  The 7300 was also known as the 3b1.
+  # http://toastytech.com/guis/unixpc.html.  Also see http://www.unixpc.org/.
   if [ $TERM = s4 ]; then export UW_TERM="s4"; fi
   if [ $TERM = vt100 ]; then export UW_TERM="vt100"; fi
   if [ $TERM = ansi ]; then export UW_TERM="ansi"; fi
@@ -233,18 +283,25 @@ if [ "$PS1" ]; then
 #     stty 2400 >/dev/tty
     fi
   fi
+  # UW took advantage of shell layers, too.  I also used shell layers
+  # on the 3b2.
   if [ x$LAYER != x ]; then
     export TERMINFO=$HOME/.terminfo
   fi
 
+  # this was for systems that didn't have the terminal size in the tty structure.
+  # the resize command output commands to set the ROWS and COLUMNS environment
+  # variables.
   #if [ x$WINDOWID != x ]; then
   #  eval `resize`
   #fi
-
 fi
 
-export HOMEBREW_GITHUB_API_TOKEN=EtG+xjtiWAQbITrf/o15fZFmjlI
+# homebrew is for additional software on MacOS X.  http://brew.sh
+export HOMEBREW_GITHUB_API_TOKEN=$SECRET:EtG+xjtiWAQbITrf/o15fZFmjlI:SECRET$
 
+# some python stuff here... pyenv is a slick mechanism for having different
+# python builds installed that you can use with different projects.
 export PYENV_ROOT=/usr/local/var/pyenv
 qtype pyenv && eval "$(pyenv init -)"
 qtype pyenv-virtualenv-init && eval "$(pyenv virtualenv-init -)"
@@ -262,8 +319,7 @@ PATH=`perl -e '
   print "$newpath\n"; '`
 export PATH
 
-# for verisys
-
+# more pyenv stuff for verisys
 PATH=/usr/local/share/python:$PATH
 export WORKON_HOME=$HOME/.virtualenvs
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7

@@ -1,22 +1,27 @@
 # -*- shell-script -*-
 # misc aliases
 
+# print the time in seconds since the epoch (unixy thing)
 alias ptime="perl -e 'print time, \"\\n\";'"
 
+# shortcuts for some commands
 alias j='jobs -l'
 alias up='uptime'
+alias pop='popd'
+alias pd='pushd'
 
+# various ls options
 alias la='ls -aC'
 alias laf='ls -aFC'
 alias lf='ls -FC'
 alias ls='ls -C'
 alias ll='ls -al'
-alias pop='popd'
-alias pd='pushd'
 
+# manage a local vnc server
 alias vncstart='vncserver -geometry 1200x750'
 alias vncstop='vncserver -kill :1'
 
+# mips had some weird su things, but I mainly use sudo now.
 case $MACH_TYPE in
   mips)
     alias su='/bin/su -e'
@@ -27,4 +32,5 @@ case $MACH_TYPE in
     ;;
 esac
 
+# shortcut to pyenv
 alias ve='pyenv-virtualenv'

@@ -1,19 +1,119 @@
 servers = (
-  {
-    address = "";
-    chatnet = "IRC";
+  { address = "irc.ubuntu.com"; chatnet = "Ubuntu"; port = "8001"; },
+  { address = "eu.irc6.net"; chatnet = "IRCnet"; port = "6667"; },
+  { address = "open.ircnet.net"; chatnet = "IRCnet"; port = "6667"; },
+  { address = "irc.efnet.org"; chatnet = "EFNet"; port = "6667"; },
+  { 
+    address = "irc.undernet.org";
+    chatnet = "Undernet";
     port = "6667";
+  },
+  { address = "irc.dal.net"; chatnet = "DALnet"; port = "6667"; },
+  { 
+    address = "irc.quakenet.org";
+    chatnet = "QuakeNet";
+    port = "6667";
+  },
+  { address = "irc.oftc.net"; chatnet = "OFTC"; port = "6667"; },
+  {
+    address = "irc.gamesurge.net";
+    chatnet = "GameSurge";
+    port = "6667";
+  },
+  { address = "irc.webchat.org"; chatnet = "WebChat"; port = "6667"; },
+  { address = "irc.rizon.net"; chatnet = "Rizon"; port = "6667"; },
+  { address = "irc.link-net.org"; chatnet = "LinkNet"; port = "6667"; },
+  { address = "silc.silcnet.org"; chatnet = "SILC"; port = "706"; },
+
+  {
+    address = "127.0.0.1";
+    chatnet = "ZNC";
+    port = "6669";
+    autoconnect = "true";
     use_ssl = "yes";
+    password = "$SECRET:3OXFqbRpBXSXaUQQfYY58RsriB8:SECRET$";
+  },
+  {
+    address = "kiwiirc.com";
+    chatnet = "KiwiIRC";
+    port = "6667";
     autoconnect = "true";
   }
 );
 
-
-chatnets = { IRC = { type = "IRC"; }; };
+chatnets = {
+  ZNC = { type = "IRC"; };
+  IRCnet = {
+    type = "IRC";
+    max_kicks = "4";
+    max_msgs = "5";
+    max_whois = "4";
+    max_query_chans = "5";
+  };
+  KiwiIRC = { type = "IRC"; };
+  EFNet = { 
+    type = "IRC";
+    max_kicks = "4";
+    max_msgs = "3";
+    max_whois = "1";
+  };
+  Undernet = {
+    type = "IRC";
+    max_kicks = "1";
+    max_msgs = "3";
+    max_whois = "30";
+  };
+  DALnet = {
+    type = "IRC";
+    max_kicks = "4";
+    max_msgs = "3";
+    max_whois = "30";
+  };
+  QuakeNet = {
+    type = "IRC";
+    max_kicks = "1";
+    max_msgs = "3";
+    max_whois = "30";
+  };
+  OFTC = { 
+    type = "IRC";
+    max_kicks = "1";
+    max_msgs = "3";
+    max_whois = "30";
+  };
+  GameSurge = {
+    type = "IRC";
+    max_kicks = "1";
+    max_msgs = "3";
+    max_whois = "30";
+  };
+  WebChat = {
+    type = "IRC";
+    max_kicks = "1";
+    max_msgs = "3";
+    max_whois = "30";
+  };
+  Rizon = { 
+    type = "IRC";
+    max_kicks = "1";
+    max_msgs = "3";
+    max_whois = "30";
+  };
+  LinkNet = {
+    type = "IRC";
+    max_kicks = "1";
+    max_msgs = "3";
+    max_whois = "30";
+  };
+  SILC = { type = "SILC"; };
+  Ubuntu = { type = "IRC"; };
+  Freenode = { type = "IRC"; };
+  localhost = { type = "IRC"; };
+};
 
 channels = (
   { name = "#irssi"; chatnet = "ircnet"; autojoin = "No"; },
-  { name = "silc"; chatnet = "silc"; autojoin = "No"; },
+  { name = "silc"; chatnet = "silc"; autojoin = "No"; }
 );
 
 aliases = {
@@ -196,10 +296,13 @@ statusbar = {
 
 settings = {
   core = {
-    real_name = "Jan Peterson";
+    real_name = "Jan L. Peterson";
     user_name = "jlp";
-    nick = "jlp_";
-    use_proxy = "no";
+    nick = "jlp";
+    use_proxy = "yes";
+    proxy_address = "localhost";
+    proxy_port = "6669";
+    proxy_password = "$SECRET:uIXdelDlikqolsxw23dYQ4H+Rbc:SECRET$";
     timestamp_format = "%d %H:%M";
   };
   "fe-text" = { actlist_sort = "refnum"; };
@@ -231,143 +334,32 @@ settings = {
 
 hilights = (
   {
-    text = "cloud-nimbus";
-    color = "%g";
-    act_color = "%4";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "cloud-ncs";
-    color = "%g";
-    act_color = "%4";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "cloud-session";
-    color = "%g";
-    act_color = "%4";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "cloud-limited-release";
-    color = "%g";
-    act_color = "%4";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "graphdb";
-    color = "%g";
-    act_color = "%4";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "graph-middle-tier";
-    color = "%g";
-    act_color = "%4";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "connections-bps";
-    color = "%g";
-    act_color = "%4";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "connections-ds";
-    color = "%g";
-    act_color = "%4";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "connections-databusrelay";
-    color = "%g";
-    act_color = "%4";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "cloud-sre";
-    color = "%g";
-    act_color = "%4";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "brent";
-    color = "%m";
-    act_color = "%5";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "scallist";
-    color = "%m";
-    act_color = "%5";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "stephenz";
-    color = "%m";
-    act_color = "%5";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "jeward";
-    color = "%m";
-    act_color = "%5";
-    nick = "no";
-    word = "yes";
-    fullword = "yes";
-  },
-  {
-    text = "japeters";
+    text = "jlp";
     color = "%r";
     act_color = "%1";
     nick = "no";
     word = "no";
-    fullword = "yes";
+    fullword = "no";
   }
 );
-
 
 logs = { };
 ignores = ( { level = "JOINS PARTS QUITS"; } );
 keyboard = (
   { key = "meta-s"; id = "command"; data = "_spellcheck "; },
-  { key = "meta-[M"; id = "command"; data = "mouse_xterm "; }
+  { key = "meta-[M"; id = "command"; data = "mouse_xterm "; },
+  { key = "meta-["; id = "key"; data = "meta2"; },
+  { key = "meta2-M"; id = "command"; data = "\"mouse_xterm \""; }
 );
 windows = {
-  1 = { immortal = "yes"; name = "(status)"; level = "ALL"; };
+  1 = { importal = "yes"; name = "(status)"; level = "ALL"; };
   2 = {
     items = (
-      {
+      { 
         type = "CHANNEL";
         chat_type = "IRC";
-        name = "#admins";
-        tag = "IRC";
+        name = "##j1";
+        tag = "ZNC";
       }
     );
   };
@@ -376,31 +368,20 @@ windows = {
       {
         type = "CHANNEL";
         chat_type = "IRC";
-        name = "#adminsonly";
-        tag = "IRC";
+        name = "#pebble";
+        tag = "ZNC";
       }
     );
   };
   4 = {
     items = (
-      {
+      { 
         type = "CHANNEL";
         chat_type = "IRC";
-        name = "#halsupport";
-        tag = "IRC";
+        name = "#utah";
+        tag = "ZNC";
       }
     );
   };
-  5 = {
-    items = (
-      {
-        type = "CHANNEL";
-        chat_type = "IRC";
-        name = "#trends";
-        tag = "IRC";
-      }
-    );
-  };
-  13 = { name = "hilight"; sticky = "yes"; };
 };
-mainwindows = { 2 = { first_line = "1"; lines = "21"; }; };
+mainwindows = { 4 = { first_line = "1"; lines = "21"; }; };
