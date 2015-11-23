@@ -1,0 +1,3 @@
+_bashrc filter=secrets
+_emacs filter=secrets
+_irssi/config filter=secrets
