@@ -13,8 +13,8 @@ esac
 # crap to pop out all over the screen.  on real vt100 terminals
 # and others that have a hardware status line, this updates the
 # status bar on the bottom line
-if tput tsl >/dev/null; then
-  # definitely supports title bar/status line setting
+if tput tsl >/dev/null 2>&1; then
+  # definitely supports title bar/status line setting... and we have tput
   settitle () {
     tput tsl; echo -n "$1"; tput fsl
   }
@@ -191,6 +191,10 @@ remember () {
   fi
 }
 
+memory () {
+  $EDITOR $MEMORY_FILE
+}
+
 ## functions for bluehost/EIG
 k () {
   ssh keyserv.unifiedlayer.com "$1"
@@ -337,7 +341,79 @@ nkill () {
   fi
 }
 
-# update the PS1 string... and other magic.
+# based on http://brettterpstra.com/2015/02/20/shell-trick-printf-rules/
+# don't know if I'll use them, but they're pretty cool.  I've tweaked them
+# up a bit to use the smacs and rmacs sequences if available.  Note that on
+# some terminals (notably "screen") you have to send enacs once first, before
+# smacs and rmacs will work as expected.
+
+_rule () {
+  if tput cols >/dev/null 2>&1; then
+    cols=$(( $(tput cols) - 2 ))
+  else
+    # try to get columns from terminal
+    if stty -a | grep -sq columns; then
+      cols=$(stty -a | grep columns | sed -e 's/^.*columns //' -e 's/;$//')
+    else
+      # try to get columns from environment
+      if [ "$COLUMNS" ]; then
+	cols=$COLUMNS
+      else
+	# punt?
+	cols=80
+      fi
+    fi
+    cols=$(( $cols - 2 ))
+  fi
+  if [ "$1" ]; then
+    # user specified a line drawing character of their choice, use it
+    _lc="$1"
+  else
+    # default to '-'
+    _lc="-"
+    
+    # unless the terminal supports smacs, in which case we will use
+    # the magic line drawing characters in the alternate character set
+    if tput smacs >/dev/null 2>&1; then
+      case "$TERM" in
+	screen)
+	  # screen and tmux require sending enacs before smacs and rmacs
+	  # will work, so do that now (originally was going to just send
+	  # it once at the beginning of the terminal session, but if anyone
+	  # (I'm looking at you, "reset(1)") resets the terminal, you'll
+	  # have to send it again.  since it doesn't hurt to send it, just
+	  # do it here.
+	  if tput enacs >/dev/null 2>&1; then
+	    tput enacs
+	  fi
+	  ;;
+      esac
+	
+      tput smacs
+      # "q" is the magical horizontal line character
+      _lc="q"
+    fi
+  fi
+  printf -v _hr "%*s" $cols && echo -n ${_hr// /${_lc}}
+  if tput rmacs >/dev/null 2>&1; then
+    tput rmacs
+  fi
+}
+
+rule () {
+  echo $(_rule "$1")
+}
+
+rulem () {
+  if [ $# -eq 0 ]; then
+    echo "usage: rulem MESSAGE [RULE_CHARACTER]"
+    return 1
+  fi
+  echo -n $(_rule "$2")
+  tput hpa 2 && echo "$1"
+}
+
+# generate my prompt string... this is evolving
 prompt_update () {
   case "$interactive" in
     true)
@@ -364,12 +440,16 @@ prompt_update () {
   # set the title bar/status line if we can
   qtype settitle && settitle "$(id -nu)@$(hostname -s):$(pwd)"
 
-  # default in case __git_ps1 isn't there
-  PS1="${venv}\u@\h:\w\n\! bash\\\$ "
+  # draw a horizontal line between commands?
+  hrule=$(_rule)
+  hpa2=$(tput hpa 2)
 
-  # set up the PS1, ugh, what a mess.  yes, we have embedded a newline
-  # in the prompt string.  I used to really hate prompts that do this,
-  # but there is just too much noise in the prompt to keep it on the same
-  # line as the command entry now.
-  qtype __git_ps1 && __git_ps1 "${venv}\u@\h:\w" "\n\! bash\\\$ "
+  # pay no attention to the millions of backslashes to follow...
+
+  # default in case __git_ps1 isn't there
+  PS1="${hrule}\r${hpa2} ${venv}\u@\h:\w \n\! bash\\\$ "
+
+  # use __get_ps1 to set up the PS1 if available
+  qtype __git_ps1 && \
+    __git_ps1 "${hrule}\r${hpa2} ${venv}\u@\h:\w" " \n\! bash\\\$ "
 }

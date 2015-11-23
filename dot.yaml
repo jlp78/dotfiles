@@ -5,11 +5,11 @@
 # parenthesized tokens are retained and the second one represents the
 # actual "secret" text that needs to be elided.
 ---
-.bashrc:
-  homebrew token: (HOMEBREW_GITHUB_API_TOKEN=)(.*)($)
-.emacs:
+_bashrc:
+  homebrew token: (HOMEBREW_GITHUB_API_TOKEN=)([0-9a-f]+)($)
+_emacs:
   nntp pass: (nntp-authinfo-pass ")([^"]+)(")
   nntp user: (nntp-authinfo-user ")([^"]+)(")
-.irssi/config:
+_irssi/config:
   proxy pass: (^\s*proxy_password\s*=\s*")([^"]+)(")
   server pass: (^\s*password\s*=\s*")([^"]+)(")

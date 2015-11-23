@@ -20,6 +20,29 @@
      (setq Ever 'unknown))
 
 
+; some utility functions
+(defun chomp (str)
+  "Chomp trailing whitespace from STR like Perl."
+  (while (string-match "\\s-+$\\|\n+\\'"
+		       str)
+    (setq str (replace-match "" t t str)))
+  str)
+(defun get-string-from-file (filePath)
+  "Return filePath's file content as a string."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (buffer-string)))
+
+; load path from file
+(setq path-file (expand-file-name "~/.mypath"))
+(if (file-exists-p path-file)
+    (progn
+      (setq path-string (chomp (get-string-from-file path-file)))
+      (setenv "PATH" path-string)
+      (setq exec-path (append exec-path
+			      (split-string path-string "\\:")))))
+
+
 (setq enable-local-variables 1)
 ;(setq search-exit-char ?\^M)	; make ESC work properly in search
 (normal-erase-is-backspace-mode 0)	; fix the DELETE key
@@ -36,8 +59,8 @@
 (setq gnus-save-newsrc-file nil)
 (setq gnus-select-method
       '(nntp "free.teranews.com"
-	     (nntp-authinfo-user "$SECRET:Tc1dSpFn0rFz3VegfZkMXY7XWb4:SECRET$")
-	     (nntp-authinfo-pass "$SECRET:pMp6zlk9reqCKotvEpktWD4r8BY:SECRET$")))
+	     (nntp-authinfo-user "SECRET:4dcd5d4a9167d2b173dd57a07d990c5d8ed759be:SECRET")
+	     (nntp-authinfo-pass "SECRET:a4ca7ace593dadea822a8b6f12992d583e2bf016:SECRET")))
 
 (garbage-collect)
 
@@ -79,7 +102,7 @@
 
 
 ;(fset 'gnus-my-save
-;   "to")
+;   "to")
 ;(defun gnus-my-save ()
 ;  "ensure saving with all headers intact."
 ;  (interactive)
@@ -198,6 +221,12 @@
 (add-to-list 'load-path (expand-file-name "~/lib/emacs/emacs-color-theme-solarized"))
 (require 'color-theme-solarized)
 (color-theme-solarized-dark)
+
+(add-to-list 'load-path (expand-file-name "~/git/full-ack"))
+(autoload 'ack-same "full-ack" nil t)
+(autoload 'ack "full-ack" nil t)
+(autoload 'ack-find-same-file "full-ack" nil t)
+(autoload 'ack-find-file "full-ack" nil t)
 
 (require 'zoom-frm)
 (define-key ctl-x-map [(control ?+)] 'zoom-in/out)
