@@ -17,8 +17,10 @@ are stored.
 
 Using dot_secrets requires a little setup within the repo, also... you have
 to add some filter commands:
+```sh
     git config filter.secrets.clean=dot_secrets clean %f
     git config filter.secrets.smudge=dot_secrets smudge %f
     git config filter.secrets.required=true
+ ```
 and you will need to add the attributes to the files that you want to
 filter (see the .gitattributes file for my usage).
