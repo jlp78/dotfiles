@@ -9,7 +9,7 @@ use File::Find;
 use File::Copy;
 
 if ($ARGV[0] eq '-f') {
-  $force++;			# force overwrites
+  $force++;         # force overwrites
 }
 
 foreach $d (<*>) {
@@ -19,8 +19,8 @@ foreach $d (<*>) {
 }
 
 find({ wanted => sub { next if m/^_/;
-		       -f $_ and push(@files, $_);
-		       -d $_ and push(@dirs, $_); },
+               -f $_ and push(@files, $_);
+               -d $_ and push(@dirs, $_); },
        no_chdir => 1,}, @top_dirs);
 
 foreach $d (@dirs) {
@@ -67,6 +67,8 @@ if (scalar(@missing_dirs)) {
   }
 }
 
+push(@needs_update, @missing_files);
+
 if (scalar(@local_mods) > 0) {
   print "These files have local mods:\n";
   foreach $f (@local_mods) {
@@ -84,7 +86,7 @@ if (scalar(@needs_update)) {
   print "Updating ...\n";
   foreach $f (@needs_update) {
     $tf = $ENV{HOME} . '/' . $f;
-    print "  copying $f over $tf\n";
+    print "  copying $f", (-e $tf ? " over $tf" : ""), "\n";
     copy($f, $tf);
   }
   print "done.\n";
