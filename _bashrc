@@ -116,7 +116,6 @@ esac
 EDITOR=`type -path jove || type -path vi`
 MORE=-c
 LESS=qedm
-LESSCHARSET=latin1
 PAGER=`type -path less || type -path more`
 # special hacks for LESS
 case $MACH_TYPE in
@@ -176,13 +175,24 @@ PILOTPORT=/dev/pilot
 MM_CHARSET=iso-8859-1
 #LANG=en_US
 
+case "$LANG" in
+  *[Uu][Tt][Ff]*)
+    ;;
+  *)
+    # not sure if this is still needed, causes some issues on systems
+    # where the default encoding is utf-8
+    LESSCHARSET=latin1
+    export LESSCHARSET
+    ;;
+esac
+
 # more linkedin stuff
 MANPATH="$MANPATH:/usr/local/linkedin/man"
 
 # export all the vars!
 export EDITOR MORE LESS MANPATH NETHACKOPTIONS NNTPSERVER PAGER PRINTER
 export REMOTE XSHELL KEYMAP PGPPATH IMM_IMAGE_DIR DISPLAY_GAMMA FETCH_CMD
-export PILOTRATE PILOTPORT MM_CHARSET LANG LESSCHARSET
+export PILOTRATE PILOTPORT MM_CHARSET LANG
 
 # got a Dropbox mounted?  use that for persistent memory storage. otherwise
 # use a local file.
