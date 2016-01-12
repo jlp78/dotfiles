@@ -5,6 +5,9 @@ Host jay1.jay-one.org
 # for Verisys
 Host 172.* 10.*
   User jpeterson
+  ForwardAgent yes
+  ForwardX11 yes
+  ServerAliveInterval 15
 
 # for Bluehost
 #Host jay1.jay-one.org janpeterson-wkrst

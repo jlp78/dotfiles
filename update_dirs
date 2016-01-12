@@ -4,18 +4,38 @@
 #               corresponding directories in the user's home
 #               directory.
 
+use strict;
+
 use File::Compare;
 use File::Find;
 use File::Copy;
+use Getopt::Long qw(GetOptions);
 
-if ($ARGV[0] eq '-f') {
-  $force++;         # force overwrites
-}
+our $force;
+our $terse;
+our @top_dirs;
+our @files;
+our @dirs;
+our @missing_dirs;
+our @missing_files;
+our @not_a_dir;
+our @needs_update;
+our @local_mods;
 
-foreach $d (<*>) {
-  next if $d eq '.' or $d eq '..';
-  next unless -d $d;
-  push(@top_dirs, $d);
+our $usage = <<EOL;
+usage: $0 [--force] [--terse] [-ft]
+       --force (-f) force updates even if there are local mods
+       --terse (-t) terse (machine readable) output
+EOL
+
+Getopt::Long::Configure("bundling");
+GetOptions('f|force' => \$force,
+           't|terse' => \$terse) or die $usage;
+
+foreach my $d (<*>) {
+    next if $d eq '.' or $d eq '..';
+    next unless -d $d;
+    push(@top_dirs, $d);
 }
 
 find({ wanted => sub { next if m/^_/;
@@ -23,73 +43,86 @@ find({ wanted => sub { next if m/^_/;
                -d $_ and push(@dirs, $_); },
        no_chdir => 1,}, @top_dirs);
 
-foreach $d (@dirs) {
-  # check that target dir exists
-  $td = $ENV{HOME} . '/' . $d;
-  if (not -d $td) {
-    push(@missing_dirs, $td);
-    if (-e $td) {
-      # exists, but isn't a directory!
-      push(@not_a_dir, $td);
+foreach my $d (@dirs) {
+    # check that target dir exists
+    my $td = $ENV{HOME} . '/' . $d;
+    if (not -d $td) {
+        push(@missing_dirs, $td);
+        if (-e $td) {
+            # exists, but isn't a directory!
+            push(@not_a_dir, $td);
+        }
     }
-  }
 }
 
-foreach $f (@files) {
-  $tf = $ENV{HOME} . '/' . $f;
-  if (not -e $tf) {
-    push(@missing_files, $f);
-  } elsif (compare($f, $tf)) {
-    # files are different, check dates
-    if (-M $tf < $f) {
-      push(@local_mods, $f);
-    } else {
-      push(@needs_update, $f);
+foreach my $f (@files) {
+    my $tf = $ENV{HOME} . '/' . $f;
+    if (not -e $tf) {
+        push(@missing_files, $f);
+    } elsif (compare($f, $tf)) {
+        # files are different, check dates
+        if (-M $tf < -M $f) {
+            push(@local_mods, $f);
+        } else {
+            push(@needs_update, $f);
+        }
     }
-  }
 }
 
 if (scalar(@not_a_dir)) {
-  print "abort: The following are directories in\n";
-  print "       the repo, but not directories in\n";
-  print "       $ENV{HOME}\n\n";
-  foreach $f (@not_a_dir) {
-    print "  $f\n";
-  }
-  exit(1);
+    if (not $terse) {
+        print "abort: The following are directories in\n";
+        print "       the repo, but not directories in\n";
+        print "       $ENV{HOME}\n\n";
+    }
+    foreach my $f (@not_a_dir) {
+        print "not_dir" if $terse;
+        print "  $f\n";
+    }
+    exit(1);
 }
 
 if (scalar(@missing_dirs)) {
-  print "Creating missing directories:\n";
-  foreach $d (@missing_dirs) {
-    print "  $d\n";
-    mkdir $d;
-  }
+    print "Creating missing directories:\n"
+        unless $terse;
+    foreach my $d (@missing_dirs) {
+        print "missing_dir" if $terse;
+        print "  $d\n";
+        mkdir $d;
+    }
 }
 
 push(@needs_update, @missing_files);
 
 if (scalar(@local_mods) > 0) {
-  print "These files have local mods:\n";
-  foreach $f (@local_mods) {
-    print "  $file\n";
-  }
-  if ($force) {
-    print "Updating them, anyway.\n";
-    push(@needs_update, @local_mods);
-  } else {
-    print "Not updating them.\n";
-  }
+    print "These files have local mods:\n"
+        unless $terse;
+    foreach my $f (@local_mods) {
+        print "local_mods" if $terse;
+        print "  $f\n";
+    }
+    if ($force) {
+        print "Updating them, anyway.\n"
+            unless $terse;
+        push(@needs_update, @local_mods);
+    } else {
+        print "Not updating them.\n"
+            unless $terse;
+    }
 }
 
 if (scalar(@needs_update)) {
-  print "Updating ...\n";
-  foreach $f (@needs_update) {
-    $tf = $ENV{HOME} . '/' . $f;
-    print "  copying $f", (-e $tf ? " over $tf" : ""), "\n";
-    copy($f, $tf);
-  }
-  print "done.\n";
+    print "Updating ...\n"
+        unless $terse;
+    foreach my $f (@needs_update) {
+        my $tf = $ENV{HOME} . '/' . $f;
+        print "  " unless $terse;
+        print "copying $f", (-e $tf ? " over $tf" : ""), "\n";
+        copy($f, $tf);
+    }
+    print "done.\n"
+        unless $terse;
 } else {
-  print "No files to copy.\n";
+    print "Nothing to do.\n"
+        unless $terse;
 }

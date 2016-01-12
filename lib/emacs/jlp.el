@@ -270,7 +270,24 @@ set to non-nil."
 
   (make-local-variable 'write-contents-hooks)
   (add-hook 'write-contents-hooks 'any-mode-untabify)
+
+  (whitespace-mode 1)
   )
 
 (add-hook 'cperl-mode-hook 'jlp-cperl-mode-hook)
 
+(defun jlp-python-mode-hook ()
+  "mods for Fusion"
+  (make-local-variable 'write-contents-hooks)
+  (add-hook 'write'contents-hooks 'any-mode-untabify)
+
+  (whitespace-mode 1)
+  )
+(add-hook 'python-mode-hook 'jlp-python-mode-hook)
+
+(defun jlp-makefile-mode-hook ()
+  "special sauce!"
+  (make-local-variable 'whitespace-style)
+  (setq whitespace-style '(face lines-tail trailing empty tabs-mark))
+  )
+(add-hook 'makefile-mode-hook 'jlp-makefile-mode-hook)

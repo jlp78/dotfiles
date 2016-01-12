@@ -65,7 +65,7 @@
 (garbage-collect)
 
 
-(if (or (eq Ever '19) (eq Ever '20) (eq Ever '21) (eq Ever '22) (eq Ever '23) (eq Ever '24))
+(if (or (eq Ever '19) (eq Ever '20) (eq Ever '21) (eq Ever '22) (eq Ever '23) (eq Ever '24) (eq Ever '25))
     (progn
       
 ;      (setq load-path (cons (expand-file-name "~/dev/android/android-mode/")
@@ -148,16 +148,6 @@
 ;; ============================
 ;; End of Options Menu Settings
 
-(load "cperl-mode" nil t)
-(defalias 'perl-mode 'cperl-mode)
-
-(defun jlp-python-mode-hook ()
-  "mods for Fusion"
-  (make-local-variable 'write-contents-hooks)
-  (add-hook 'write-contents-hooks 'any-mode-untabify)
-)
-(add-hook 'python-mode-hook 'jlp-python-mode-hook)
-
 ;(load "psvn" nil t)
 
 (if (locate-library "edit-server")
@@ -228,6 +218,8 @@
 (autoload 'ack-find-same-file "full-ack" nil t)
 (autoload 'ack-find-file "full-ack" nil t)
 
+(setq whitespace-style '(face lines-tail trailing tabs empty))
+
 (require 'zoom-frm)
 (define-key ctl-x-map [(control ?+)] 'zoom-in/out)
 (define-key ctl-x-map [(control ?-)] 'zoom-in/out)
@@ -249,20 +241,18 @@
 (require 'python-mode)
 (setq py-shell-name "ipython")
 
-(if (file-exists-p "/usr/local/share/emacs/site-lisp/web-mode")
-    (progn
-    (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/web-mode")
-    (require 'web-mode)
-    (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-    (setq web-mode-enable-engine-detection t)
-    (setq web-mode-enable-sql-detection t)))
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/web-mode")
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(setq web-mode-enable-engine-detection t)
+(setq web-mode-enable-sql-detection t)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
