@@ -15,48 +15,49 @@
 (setq delete-old-versions t)
 (setq visible-bell t)
 (setq auto-mode-alist
-       '(("\\.crypt$"             . text-mode)       
-	 ("\\.org$"               . org-mode)
-	 ("\\.pic$"    		  . picture-mode)	  
-	 ("\\.pl$"     		  . cperl-mode)	  
-	 ("\\.pm$"     		  . cperl-mode)	  
-	 ("\\.otl$"    		  . outline-mode)	  
-	 ("\\.tbl$"    		  . nroff-mode)	  
-	 ("\\.txt$"    		  . text-mode)	  
-	 ("\\.ms$"     		  . nroff-mode)	  
-	 ("\\.me$"     		  . nroff-mode)	  
-	 ("\\.c$"      		  . c-mode)	  
-	 ("\\.y$"      		  . c-mode)	  
-	 ("\\.h$"      		  . c-mode)	  
-	 ("\\.el$"     		  . emacs-lisp-mode) 
-	 ("\\.js$"		  . js2-mode)
-	 ("\\.text$"   		  . text-mode)	  
-	 ("\\.tex$"    		  . TeX-mode)	  
-	 ("\\.scm$"    		  . scheme-mode)	  
-	 ("\\.l$"      		  . lisp-mode)	  
-	 ("\\.lisp$"   		  . lisp-mode)	  
-	 ("\\.f$"      		  . fortran-mode)	  
-	 ("\\.mss$"    		  . scribe-mode)	  
-;	 ("\\.pl$"     		  . prolog-mode)	  
-	 ("\\.TeX$"    		  . TeX-mode)	  
-	 ("\\.sty$"    		  . LaTeX-mode)	  
-	 ("\\.bbl$"    		  . LaTeX-mode)	  
-	 ("\\.bib$"    		  . text-mode)	  
-	 ("\\.article$"           . text-mode)
-	 ("\\.letter$"            . text-mode)
-	 ("\\.texinfo$"           . texinfo-mode)	
-	 ("\\.lsp$"     	  . lisp-mode)	
-	 ("\\.prolog$"  	  . prolog-mode)	
-	 ("^/tmp/Re"    	  . text-mode)    
-	 ("^/tmp/fol/"            . text-mode)
-	 ("/Message[0-9]*$"       . text-mode)
-	 ("\\.cc$"                . c-mode)
-	 ("\\.scm.[0-9]*$"        . scheme-mode)
-	 ("[]>:/]\\..*emacs"      . emacs-lisp-mode)
-	 ("\\.ml$"                . lisp-mode)
-	 ("\\.html$"              . html-helper-mode)
-	 ("/.Mail/drafts/[0-9]*$" . my-mh-draft-mode)
-	 ))
+      '(("\\.crypt$"              . text-mode)
+	("\\.py$"                 . python-mode)
+	("\\.org$"                . org-mode)
+	("\\.pic$"    		  . picture-mode)
+	("\\.pl$"     		  . cperl-mode)
+	("\\.pm$"     		  . cperl-mode)
+	("\\.otl$"    		  . outline-mode)
+	("\\.tbl$"    		  . nroff-mode)
+	("\\.txt$"    		  . text-mode)
+	("\\.ms$"     		  . nroff-mode)
+	("\\.me$"     		  . nroff-mode)
+	("\\.c$"      		  . c-mode)
+	("\\.y$"      		  . c-mode)
+	("\\.h$"      		  . c-mode)
+	("\\.el$"     		  . emacs-lisp-mode)
+	("\\.js$"		  . js2-mode)
+	("\\.text$"   		  . text-mode)
+	("\\.tex$"    		  . TeX-mode)
+	("\\.scm$"    		  . scheme-mode)
+	("\\.l$"      		  . lisp-mode)
+	("\\.lisp$"   		  . lisp-mode)
+	("\\.f$"      		  . fortran-mode)
+	("\\.mss$"    		  . scribe-mode)
+;	 ("\\.pl$"     		  . prolog-mode)
+	("\\.TeX$"    		  . TeX-mode)
+	("\\.sty$"    		  . LaTeX-mode)
+	("\\.bbl$"    		  . LaTeX-mode)
+	("\\.bib$"    		  . text-mode)
+	("\\.article$"            . text-mode)
+	("\\.letter$"             . text-mode)
+	("\\.texinfo$"            . texinfo-mode)
+	("\\.lsp$"     	          . lisp-mode)
+	("\\.prolog$"  	          . prolog-mode)
+	("^/tmp/Re"    	          . text-mode)
+	("^/tmp/fol/"             . text-mode)
+	("/Message[0-9]*$"        . text-mode)
+	("\\.cc$"                 . c-mode)
+	("\\.scm.[0-9]*$"         . scheme-mode)
+	("[]>:/]\\..*emacs"       . emacs-lisp-mode)
+	("\\.ml$"                 . lisp-mode)
+	("\\.html$"               . html-helper-mode)
+	("/.Mail/drafts/[0-9]*$"  . my-mh-draft-mode)
+	))
 
 (setq mail-archive-file-name "|/usr/local/lib/mh/rcvstore -create +outbox")
 
@@ -85,50 +86,50 @@
 (if (or (eq Ever '21) (eq Ever '22) (eq Ever '23))
     (progn
 
-      (iswitchb-mode 1)
+      ; iswitchb is obsolete?  look at icomplete-mode or ido-mode
+      ;(iswitchb-mode 1)
 
+      ;(defun iswitchb-local-keys ()
+	;(mapc (lambda (K)
+		;(let* ((key (car K)) (fun (cdr K)))
+		  ;(define-key iswitchb-mode-map (edmacro-parse-keys key) fun)))
+	      ;'(("<right>" . iswitchb-next-match)
+		;("<left>"  . iswitchb-prev-match)
+		;("<up>"    . ignore             )
+		;("<down>"  . ignore             ))))
+
+      ;(add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys)
+
+      ;(defadvice iswitchb-kill-buffer (after rescan-after-kill activate)
+	;"*Regenerate the list of matching buffer names after a kill.
+;Necessary if using `uniquify' with `uniquify-after-kill-buffer-p'
+;set to non-nil."
+	;(setq iswitchb-buflist iswitchb-matches)
+	;(iswitchb-rescan))
+
+      ;(defun iswitchb-rescan ()
+	;"*Regenerate the list of matching buffer names."
+	;(interactive)
+	;(iswitchb-make-buflist iswitchb-default)
+	;(setq iswitchb-rescan t))
+
+      ;(setq iswitchb-default-method 'samewindow)
       ))
 
 (load "edmacro" nil t)
 
-(defun iswitchb-local-keys ()
-  (mapc (lambda (K)
-	  (let* ((key (car K)) (fun (cdr K)))
-	    (define-key iswitchb-mode-map (edmacro-parse-keys key) fun)))
-	'(("<right>" . iswitchb-next-match)
-	  ("<left>"  . iswitchb-prev-match)
-	  ("<up>"    . ignore             )
-	  ("<down>"  . ignore             ))))
-
-(add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys)
-
-(defadvice iswitchb-kill-buffer (after rescan-after-kill activate)
-  "*Regenerate the list of matching buffer names after a kill.
-Necessary if using `uniquify' with `uniquify-after-kill-buffer-p'
-set to non-nil."
-  (setq iswitchb-buflist iswitchb-matches)
-  (iswitchb-rescan))
-
-(defun iswitchb-rescan ()
-  "*Regenerate the list of matching buffer names."
-  (interactive)
-  (iswitchb-make-buflist iswitchb-default)
-  (setq iswitchb-rescan t))
-
-(setq iswitchb-default-method 'samewindow)
-
 (defun jlp-c-mode-hook ()
   "Invoke jlp mods to oly-c-mode"
   ;; set C style variables
-  (setq c-argdecl-indent 0)
+  ;(setq c-argdecl-indent 0)    obsolete?  need to revisit c-mode
   (setq c-auto-newline nil)
-  (setq c-brace-imaginary-offset 0)
-  (setq c-label-offset -2)
+  ;(setq c-brace-imaginary-offset 0)
+  ;(setq c-label-offset -2)
   (setq c-tab-always-indent nil)
 
-  (setq c-brace-offset 0)
-  (setq c-continued-statement-offset 4)
-  (setq c-indent-level 0)
+  ;(setq c-brace-offset 0)
+  ;(setq c-continued-statement-offset 4)
+  ;(setq c-indent-level 0)
   (setq case-fold-search nil)
   )
 (add-hook 'c-mode-hook 'jlp-c-mode-hook)
@@ -136,7 +137,8 @@ set to non-nil."
 (defun fix-html-faces () "set up faces for html mode"
       (make-face 'deemphasized)
       (set-face-foreground 'deemphasized "grey40")
-      (setq html-deemphasize-style 'deemphasized))
+      ;(setq html-deemphasize-style 'deemphasized)       obsolete?
+      ))
 (add-hook 'html-mode-hook 'turn-on-auto-fill)
 
 (defun setup-icicles () "set up emacs for icicles"
