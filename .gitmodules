@@ -1,0 +1,6 @@
+[submodule "lib/emacs/emacs-color-theme-solarized"]
+	path = lib/emacs/emacs-color-theme-solarized
+	url = https://github.com/sellout/emacs-color-theme-solarized.git
+[submodule "lib/emacs/ws-butler"]
+	path = lib/emacs/ws-butler
+	url = https://github.com/lewang/ws-butler.git
