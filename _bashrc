@@ -333,7 +333,13 @@ export PATH
 # more pyenv stuff for verisys
 PATH=/usr/local/share/python:$PATH
 export WORKON_HOME=$HOME/.virtualenvs
-export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
+if [[ -x /usr/local/bin/python2.7 ]]; then
+    export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
+elif [[ -x /usr/bin/python2.7 ]]; then
+    export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python2.7
+elif qtype python2.7; then
+    export VIRTUALENVWRAPPER_PYTHON=`which -p python2.7`
+fi
 export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
 # we handle the prompt in our prompt_update function
 export VIRTUAL_ENV_DISABLE_PROMPT=t
@@ -341,6 +347,10 @@ export PIP_VIRTUALENV_BASE=$WORKON_HOME
 export PIP_RESPECT_VIRTUALENV=true
 if [[ -r /usr/local/bin/virtualenvwrapper.sh ]]; then
   . /usr/local/bin/virtualenvwrapper.sh
+elif [[ -r /usr/bin/virtualenvwrapper.sh ]]; then
+  . /usr/bin/virtualenvwrapper.sh
+elif qtype virtualenvwrapper.sh; then
+  . `which -p virtualenvwrapper.sh`
 fi
 
 # dump path to temp file for other apps to pick up
