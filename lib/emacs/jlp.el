@@ -138,7 +138,7 @@
       (make-face 'deemphasized)
       (set-face-foreground 'deemphasized "grey40")
       ;(setq html-deemphasize-style 'deemphasized)       obsolete?
-      ))
+      )
 (add-hook 'html-mode-hook 'turn-on-auto-fill)
 
 (defun setup-icicles () "set up emacs for icicles"
@@ -281,7 +281,7 @@
 (defun jlp-python-mode-hook ()
   "mods for Fusion"
   (make-local-variable 'write-contents-hooks)
-  (add-hook 'write'contents-hooks 'any-mode-untabify)
+  (add-hook 'write-contents-hooks 'any-mode-untabify)
 
   (whitespace-mode 1)
   )
