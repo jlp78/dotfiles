@@ -161,6 +161,10 @@
 (load "tramp" nil t)
 (add-to-list 'tramp-default-proxies-alist
 	     '("" "\\`root\\'" "/ssh:%h:"))
+;; disable caching of tramp connections because our stupid network
+;; can't keep the connection up without dropping it after 15 minutes
+;; of idleness
+(setq tramp-persistency-file-name nil)
 
 (put 'narrow-to-region 'disabled nil)
 (custom-set-variables
@@ -260,3 +264,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(sh-heredoc ((t (:foreground "yellow1" :weight bold)))))
+
+(package-initialize)
+(elpy-enable)
+(set-face-attribute 'default nil :height 180)
