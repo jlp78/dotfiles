@@ -3,7 +3,7 @@
 case "x$TERM" in
   xxterm*|xscreen)
     # probably can support title bar setting with ansi codes
-    settitle () {
+    _settitle () {
       echo -en "\033]0;$1\a"
     }
     ;;
@@ -15,10 +15,16 @@ esac
 # status bar on the bottom line
 if tput tsl >/dev/null 2>&1; then
   # definitely supports title bar/status line setting... and we have tput
-  settitle () {
+  _settitle () {
     tput tsl; echo -n "$1"; tput fsl
   }
 fi
+
+# override automatic titlebar setting with a fixed string
+settitle () {
+  _tb_override="$*"
+  _settitle "$*"
+}
 
 # old csh commands
 setenv () {
@@ -481,7 +487,9 @@ prompt_update () {
   fi
 
   # set the title bar/status line if we can
-  qtype settitle && settitle "$(id -nu)@$(hostname -s):$(pwd)"
+  if [ -z "$_tb_override" ]; then
+    qtype _settitle && _settitle "$(id -nu)@$(hostname -s):$(pwd)"
+  fi
 
   # draw a horizontal line between commands?
   hrule=$(_rule)
