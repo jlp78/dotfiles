@@ -206,6 +206,40 @@ k () {
   ssh keyserv.unifiedlayer.com "$1"
 }
 
+## functions for Verisys
+deploy () {
+  if [ -d .git ]; then
+    if git branch --list -a | grep -sq remotes/origin/deploy; then
+      local orig_branch
+      local project
+
+      # NOTE: this depends on the remote url looking something like
+      #       git@github.com:verisys/<project>.git
+      project=`git config remote.origin.url | 
+               sed -e 's/^git\@github.com:verisys\///; s/\.git$//'`
+
+      orig_branch=`git symbolic-ref --short HEAD`
+
+      git checkout master
+      git pull && git checkout deploy && git merge --ff-only master && git push
+      git checkout "$orig_branch"
+
+      Mail -s "please deploy $project" itsupport@verisys.com <<EOL
+Code has been merged to the deploy branch of $project.  Please
+activate the deployment process at your earliest convenience.
+
+Thank you.
+EOL
+    else
+      echo "there is no remote 'deploy' branch in this repo.  it is"
+      echo "unlikely that we will be able to deploy it.  sorry."
+    fi
+  else
+    echo "this doesn't look like a repo..."
+    echo "please run deploy from within a repo working dir"
+  fi
+}
+
 # from quora:
 # http://www.quora.com/What-are-some-of-the-best-command-prompt-or-terminal-tricks
 
