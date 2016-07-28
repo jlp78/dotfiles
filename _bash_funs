@@ -4,21 +4,29 @@ case "x$TERM" in
   xxterm*|xscreen)
     # probably can support title bar setting with ansi codes
     _settitle () {
-      echo -en "\033]0;$1\a"
+      echo -en "\033]0;$*\a"
     }
     ;;
+
+  *)
+    # on some terminals, such as bad vt100 clones, this can cause
+    # crap to pop out all over the screen.  on real vt100 terminals
+    # and others that have a hardware status line, this updates the
+    # status bar on the bottom line.  hopefully, termlib is in good
+    # shape for the terminal we are using.
+    if tput tsl >/dev/null 2>&1; then
+      # definitely supports title bar/status line setting... and we have tput
+      _settitle () {
+        tput tsl; echo -n "$*"; tput fsl
+      }
+    else
+      # we can't set the title, :-(
+      _settitle () {
+        :
+      }
+    fi
+    ;;
 esac
-    
-# on some terminals, such as bad vt100 clones, this can cause
-# crap to pop out all over the screen.  on real vt100 terminals
-# and others that have a hardware status line, this updates the
-# status bar on the bottom line
-if tput tsl >/dev/null 2>&1; then
-  # definitely supports title bar/status line setting... and we have tput
-  _settitle () {
-    tput tsl; echo -n "$1"; tput fsl
-  }
-fi
 
 # override automatic titlebar setting with a fixed string
 settitle () {
