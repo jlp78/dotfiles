@@ -202,10 +202,10 @@ else
   MEMORY_FILE="$HOME/.memory"
 fi
 
-# load aliases
-if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi
-# and shell functions
+# load shell functions
 if [ -f ~/.bash_funs ]; then source ~/.bash_funs; fi
+# and aliases
+if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then

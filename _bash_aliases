@@ -32,5 +32,14 @@ case $MACH_TYPE in
     ;;
 esac
 
+if qtype ack; then
+  :
+elif qtype ack-grep; then	# silly linux
+  alias ack='ack-grep'
+else
+  echo "you probably want to install ack at some point"
+fi
+
+
 # shortcut to pyenv
 alias ve='pyenv-virtualenv'

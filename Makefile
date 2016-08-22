@@ -1,6 +1,6 @@
 # makefile to automatically install dot files.  it makes a (minor)
 # attempt to avoid clobbering any local changes, but no guarantees.
-# use "make force" if you _want_ to clobber them.  "make reimport"
+# use "make force" if you _want_ to clobber them.  "make import"
 # will pull local changes back to the git working directory.
 
 default:

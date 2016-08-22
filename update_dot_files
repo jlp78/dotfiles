@@ -27,6 +27,7 @@ Getopt::Long::Configure("bundling");
 GetOptions('f|force' => \$force,
            't|terse' => \$terse) or die $usage;
 
+# map file from Git name to full path of installed file
 sub map_file {
     my $ufile = shift;
     my $dfile = $ufile;
@@ -35,13 +36,14 @@ sub map_file {
     return $dfile;
 }
 
+# find all files that either start with _ or are in directories
+# that start with _, build list into @files
 find({ wanted => sub { -f $_ and push(@files, $_); },
        no_chdir => 1,}, <_*>);
 
 foreach my $ufile (@files) {
     $ufile =~ s,^\./,,;
-    my $dfile = $ufile; $dfile =~ s,^_,.,;
-    $dfile = $ENV{HOME} . '/' . $dfile;
+    my $dfile = map_file($ufile);
 
     if (not -e $dfile) {
         push(@needs_update, $ufile);
@@ -60,7 +62,9 @@ if (scalar(@local_mods) > 0) {
         unless $terse;
     foreach my $file (@local_mods) {
         print "local_mod" if $terse;
-        print "  $file\n";
+        print "  ", $file;
+	print " ", map_file($file) unless $terse;
+	print "\n";
     }
     if ($force) {
         print "Updating them, anyway.\n"
