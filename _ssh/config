@@ -1,4 +1,4 @@
-Host jay1.jay-one.org
+Host *.jay-one.org
   Port 222
   User jlp
 

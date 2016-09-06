@@ -218,11 +218,13 @@ sub main {
     my $dict = '';
     my $num_pws = 1;
     my $num_sep = 1;
+    my $num_parts = 2;
     my $help = 0;
 
     GetOptions("dictionary=s" => \$dict,
                "num-pws=i"    => \$num_pws,
                "num-sep=i"    => \$num_sep,
+               "num-parts=i"  => \$num_parts,
                "verbose"      => \$debug,
                "help"         => \$help) or &usage();
     &usage() if $help;
@@ -238,35 +240,11 @@ sub main {
         &debug("generating $num_pws password(s)");
         for (my $i = 1; $i <= $num_pws; $i++) {
             &debug("password $i:");
-            $front = $words[int(rand(scalar(@words)))];
-            $back  = $words[int(rand(scalar(@words)))];
-            &debug("  words selected: $front $back");
-
-            if (rand(1) < 0.5) {
-                $f = substr($front, 0, 4);
-                $b = substr($back, length($back)-3);
-            } else {
-                $f = substr($front, 0, 3);
-                $b = substr($back, length($back)-4);
+            $pw = &pick_word();
+            for (my $j = 1; $j < $num_parts; $j++) {
+                $pw .= &pick_sep();
+                $pw .= &pick_word();
             }
-
-            # now check if either of the words we selected was also
-            # a three- or four-letter word, if so, let's grab two
-            # entirely new words and try again.
-            if (exists($stopwords{$f}) or exists($stopwords{$b})) {
-                &debug("   word $front rejected because it matched shortword $f")
-                    if exists($stopwords{$f});
-                &debug("   word $back rejected because it matched shortword $b")
-                    if exists($stopwords{$b});
-                &debug("   selecting new words...");
-                redo;
-            }
-
-            $s = "";
-            for (my $i = 0; $i < $num_sep; $i++) {
-                $s .= $sepchars[int(rand(scalar(@sepchars)))];
-            }
-            $pw = $f . $s . $b;
 
             my @salt = &make_salt();
 
@@ -287,6 +265,38 @@ sub main {
                join('", "', @salt) . "\"");
         &show_pw($pw, @salt);
     }
+}
+
+sub pick_word {
+    my $short_word;
+  PICK:
+    my $word = $words[int(rand(scalar(@words)))];
+    my $l = int(rand(2) + 3);
+    &debug("  picked word $word, using l $l");
+    if (rand(1) < 0.5) {
+        &debug("   selecting beginning of word");
+        $short_word = substr($word, 0, $l);
+    } else {
+        &debug("   selecting ending of word");
+        $short_word = substr($word, length($word)-$l);
+    }
+    # make sure the part of the word we picked isn't also a word
+    if (exists($stopwords{$short_word})) {
+        &debug("   $word rejected because it matched shortword $short_word");
+        goto PICK;              # he used goto?  yes, he did
+    }
+    &debug("  using short word $short_word");
+    return $short_word;
+}
+
+sub pick_sep {
+    my $sep_ct = shift;
+    my $s;
+    for (my $i = 0; $i <= $sep_ct; $i++) {
+        $s .= $sepchars[int(rand(scalar(@sepchars)))];
+    }
+    &debug("  picked sep $s");
+    return $s;
 }
 
 sub load_dict {
