@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-# This code is Copyright (c) 2010 by Jan L. Peterson
+# This code is Copyright (c) 2009-2016 by Jan L. Peterson
 # All rights reserved.
 #
 # You may use this program without charge.  You may copy it for
@@ -25,7 +25,7 @@
 
 use strict;
 use Getopt::Long;
-my $VERSION = 1.1;
+my $VERSION = 1.2;
 
 =head1 NAME
 
@@ -35,7 +35,7 @@ mkpw - generate simple passwords
 
 =over
 
-=item B<mkpw> [ --verbose ] [ --dictionary=I<dict_location> ] [ --num-pws=I<nn> ] [ --num-sep=I<nn> ]
+=item B<mkpw> [ --verbose ] [ --dictionary=I<dict_location> ] [ --num-pws=I<nn> ] [ --num-sep=I<nn> ] [ --num-parts=I<nn> ]
 
 =item B<mkpw> [ --verbose ] [ password [ salt ... ] ]
 
@@ -49,9 +49,9 @@ In the first form, B<mkpw> will generate one or more passwords using
 either the system dictionary or the specified dictionary.  The
 dictionary will be scanned for lowercase words six characters or
 longer.  The password(s) will be formed using the leading three or
-four characters of a randomly selected word, some number of separator
-character (specified by I<--num-sep> and defaulting to 1), and the
-trailing four or three characters of another randomly selected word.
+four characters of some number of randomly selected word (specified
+by I<--num-parts> and defaulting to 2) joined by number of separator
+character (specified by I<--num-sep> and defaulting to 1).
 The separator characters will come from the set 0-9, S<! (bang)>, S<$
 (dollar)>, S<% (percent)>, S<^ (hat)>, S<& (ampersand)>, S<*
 (asterisk)>, S<+ (plus)>, S<- (minus)>, S<_ (underscore)>, and S<,
@@ -85,6 +85,14 @@ newline character.
 =item B<--num-pws>
 
 specify the number of passwords to generate.
+
+=item B<--num-sep>
+
+specify the number of separator characters to use between parts.
+
+=item B<--num-parts>
+
+specify the number of parts to join together.
 
 =item B<--verbose>
 
@@ -137,6 +145,16 @@ This example produces five passwords:
   gypp1ets => 7azg9C.dm/SRA $1$.gpMnONc$KYX/udjg4jq3ZyeHKX1T7/
   sno2lect => Pk6g2LMKZxJBc $1$jvHbo0/x$tJokqM9wrZvdnWRkVbr.H0
   chee%lly => exW1dYMyXFXLs $1$SrrjL2wc$3BQJ24nxrACEOBmx6X2uU.
+
+This example uses four parts:
+
+  $ mkpw --num-parts=4
+  bla4foa6scoo1ple => tt1JqDgd9ARY2 $1$4nNkM72e$ZXiMc1qnk5TaJ7BCLjLEC/
+
+This example shows three separator characters:
+
+  $ mkpw --num-sep=3
+  ude4!8$dist => RJrj6.2tycdzE $1$5MOL1PVn$7RMtIIQSQU5l3D3uaPgZ7.
 
 This example shows using a custom dictionary:
 
@@ -242,7 +260,7 @@ sub main {
             &debug("password $i:");
             $pw = &pick_word();
             for (my $j = 1; $j < $num_parts; $j++) {
-                $pw .= &pick_sep();
+                $pw .= &pick_sep($num_sep);
                 $pw .= &pick_word();
             }
 
