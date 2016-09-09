@@ -105,6 +105,10 @@ do not capitalize anything... lower-case only.
 
 print debugging information.
 
+=item B<--version>
+
+print the version and exit.
+
 =item B<--help>
 
 show help text.
@@ -245,6 +249,7 @@ sub main {
     my $num_sep = 1;
     my $num_parts = 2;
     my $lc_only = 0;
+    my $show_version = 0;
     my $help = 0;
 
     GetOptions("dictionary=s" => \$dict,
@@ -253,8 +258,16 @@ sub main {
                "num-parts=i"  => \$num_parts,
                "lc-only"      => \$lc_only,
                "verbose"      => \$debug,
+               "version"      => \$show_version,
                "help"         => \$help) or &usage();
     &usage() if $help;
+
+    if ($show_version) {
+        my $basename = $0;
+        ($basename =~ s,^.*/,,);
+        print "$basename version $VERSION\n";
+        exit 0;
+    }
 
     my $pw = shift(@ARGV);
 
@@ -405,9 +418,11 @@ sub debug {
 sub usage {
     print <<'EOL';
 usage: mkpw [ --verbose ] [ --dictionary=dict_location ]
-            [ --num-pws=nn ] [ --num-sep=nn ]
+            [ --num-pws=nn ] [ --num-sep=nn ] [ --num-parts=nn ]
+            [ --lc-only ]
        mkpw [ --verbose ] [ password [ salt ... ] ]
-       mkpw [ --help ]
+       mkpw --version
+       mkpw --help
 
     --dictionary specify where the system dictionary is.  by
                  default, the program will look in the following
@@ -418,6 +433,9 @@ EOL
     }
     print <<'EOL';
     --num-pws    specify the number of passwords to generate.
+    --num-seps   specify the number of separator characters between parts.
+    --num-parts  specify the number of words to join together.
+    --lc-only    do not include any upper-case characters.
     --verbose    print debugging information.
     --help       show this message.
     password     a user supplied password to show the encrypted

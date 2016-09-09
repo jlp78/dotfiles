@@ -671,6 +671,13 @@ prompt_update () {
 }
 
 
+# from Aaron Toppence (eightyeight) https://ae7.st/p/734
+expandurl () {
+  torsocks wget --spider -O - -S $1 2>&1 |
+    awk '/^Location/ {gsub("\\?utm_.*$",""); a=$2} END {print a}'
+}
+
+
 # some OS specific utilities
 case $MACH_TYPE in
   macosx)
