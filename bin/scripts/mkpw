@@ -12,7 +12,7 @@
 # remain attached to all copies and derivitive works.
 #
 # if you make modifications that you think others would like, please
-# send diffs of your changes to the author at
+# send diffs of your changes (or open a pull request) to the author at
 # <jlp+cpan@peterson.ath.cx>.
 
 # the basic algorithm is fairly simple.  we produce a list of words,
@@ -20,12 +20,12 @@
 # words that have non-alpha characters (such as apostrophes).  the
 # list of words comes from the system dictionary.
 
-# if, on the other hand, the user supplies a password, then let's
-# just use that
+# if, on the other hand, the user supplies a password, then we just
+# use that.
 
 use strict;
 use Getopt::Long;
-my $VERSION = 1.2;
+my $VERSION = 1.3;
 
 =head1 NAME
 
@@ -35,7 +35,7 @@ mkpw - generate simple passwords
 
 =over
 
-=item B<mkpw> [ --verbose ] [ --dictionary=I<dict_location> ] [ --num-pws=I<nn> ] [ --num-sep=I<nn> ] [ --num-parts=I<nn> ]
+=item B<mkpw> [ --verbose ] [ --dictionary=I<dict_location> ] [ --num-pws=I<nn> ] [ --num-sep=I<nn> ] [ --num-parts=I<nn> ] [ --lc-only ]
 
 =item B<mkpw> [ --verbose ] [ password [ salt ... ] ]
 
@@ -55,7 +55,10 @@ character (specified by I<--num-sep> and defaulting to 1).
 The separator characters will come from the set 0-9, S<! (bang)>, S<$
 (dollar)>, S<% (percent)>, S<^ (hat)>, S<& (ampersand)>, S<*
 (asterisk)>, S<+ (plus)>, S<- (minus)>, S<_ (underscore)>, and S<,
-(comma)>.  The goal is to present the user with a password that is
+(comma)>.  Unless I<--lc-only> is set, one letter in each part will
+also be capitalized.
+
+The goal is to present the user with a password that is
 easy to remember, but hard to guess.  The encrypted forms of these
 generated passwords are shown, as well, using randomly generated salts
 as described below.  See B<SALT GENERATION> below for more information
@@ -93,6 +96,10 @@ specify the number of separator characters to use between parts.
 =item B<--num-parts>
 
 specify the number of parts to join together.
+
+=item B<--lc-only>
+
+do not capitalize anything... lower-case only.
 
 =item B<--verbose>
 
@@ -237,12 +244,14 @@ sub main {
     my $num_pws = 1;
     my $num_sep = 1;
     my $num_parts = 2;
+    my $lc_only = 0;
     my $help = 0;
 
     GetOptions("dictionary=s" => \$dict,
                "num-pws=i"    => \$num_pws,
                "num-sep=i"    => \$num_sep,
                "num-parts=i"  => \$num_parts,
+               "lc-only"      => \$lc_only,
                "verbose"      => \$debug,
                "help"         => \$help) or &usage();
     &usage() if $help;
@@ -253,15 +262,15 @@ sub main {
         &debug("no password supplied, generate new passwords");
 
         &load_dict($dict);
-        my ($front, $back, $f, $s, $b, $pw);
+        my $pw;
 
         &debug("generating $num_pws password(s)");
         for (my $i = 1; $i <= $num_pws; $i++) {
             &debug("password $i:");
-            $pw = &pick_word();
+            $pw = &pick_word($lc_only);
             for (my $j = 1; $j < $num_parts; $j++) {
                 $pw .= &pick_sep($num_sep);
-                $pw .= &pick_word();
+                $pw .= &pick_word($lc_only);
             }
 
             my @salt = &make_salt();
@@ -286,6 +295,7 @@ sub main {
 }
 
 sub pick_word {
+    my $lc_only = shift;
     my $short_word;
   PICK:
     my $word = $words[int(rand(scalar(@words)))];
@@ -303,6 +313,10 @@ sub pick_word {
         &debug("   $word rejected because it matched shortword $short_word");
         goto PICK;              # he used goto?  yes, he did
     }
+
+    # uppercase a random letter of the string
+    substr($short_word, rand($l), 1) ^= ' ' unless $lc_only;
+
     &debug("  using short word $short_word");
     return $short_word;
 }
