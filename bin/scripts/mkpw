@@ -337,7 +337,7 @@ sub pick_word {
 sub pick_sep {
     my $sep_ct = shift;
     my $s;
-    for (my $i = 0; $i <= $sep_ct; $i++) {
+    for (my $i = 0; $i < $sep_ct; $i++) {
         $s .= $sepchars[int(rand(scalar(@sepchars)))];
     }
     &debug("  picked sep $s");
