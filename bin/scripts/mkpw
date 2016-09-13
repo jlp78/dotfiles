@@ -241,14 +241,17 @@ my @dict_locations = ('/usr/share/dict/words', '/usr/dict/words',
 my $debug;
 my @words;
 my %stopwords;
+my @generated_parts;
 
 sub main {
     # defaults for getopt processing
     my $dict = '';
     my $num_pws = 1;
     my $num_sep = 1;
-    my $num_parts = 2;
+    my $num_parts = 4;
     my $lc_only = 0;
+    my $generate_encrypted = 0;
+    my $show_words = 0;
     my $show_version = 0;
     my $help = 0;
 
@@ -257,6 +260,8 @@ sub main {
                "num-sep=i"    => \$num_sep,
                "num-parts=i"  => \$num_parts,
                "lc-only"      => \$lc_only,
+               "encrypt"      => \$generate_encrypted,
+               "show-parts"   => \$show_words,
                "verbose"      => \$debug,
                "version"      => \$show_version,
                "help"         => \$help) or &usage();
@@ -285,16 +290,26 @@ sub main {
                 $pw .= &pick_sep($num_sep);
                 $pw .= &pick_word($lc_only);
             }
+            print "$pw";
 
-            my @salt = &make_salt();
+            if ($show_words) {
+                print " from: ", join(" ", @generated_parts);
+            }
 
-            &debug("  using password: $pw with salt: \"" .
-                   join('", "', @salt) . "\"");
-            &show_pw($pw, @salt);
+            if ($generate_encrypted) {
+                my @salt = &make_salt();
+
+                &debug("  using password: $pw with salt: \"" .
+                       join('", "', @salt) . "\"");
+                &show_pw($pw, @salt);
+            }
+            print "\n";
         }
     } else {
         # user has given us a password, did they give us any salt to use?
         my @salt = @ARGV;
+
+        print "$pw";
 
         if (!defined($salt[0])) {
             # no, let's make some up
@@ -304,6 +319,7 @@ sub main {
         &debug("using password: $pw with salt: \"" .
                join('", "', @salt) . "\"");
         &show_pw($pw, @salt);
+        print "\n";
     }
 }
 
@@ -317,9 +333,11 @@ sub pick_word {
     if (rand(1) < 0.5) {
         &debug("   selecting beginning of word");
         $short_word = substr($word, 0, $l);
+        substr($word, 0, $l) ^= ' ' x $l;
     } else {
         &debug("   selecting ending of word");
         $short_word = substr($word, length($word)-$l);
+        substr($word, length($word)-$l) ^= ' ' x $l;
     }
     # make sure the part of the word we picked isn't also a word
     if (exists($stopwords{$short_word})) {
@@ -331,6 +349,7 @@ sub pick_word {
     substr($short_word, rand($l), 1) ^= ' ' unless $lc_only;
 
     &debug("  using short word $short_word");
+    push(@generated_parts, $word);
     return $short_word;
 }
 
@@ -396,7 +415,6 @@ sub make_salt {
 
 sub show_pw {
     my $pw = shift;
-    print "$pw";
 
     if (scalar(@_) > 0) {
         # some salts have been provided
@@ -406,7 +424,6 @@ sub show_pw {
             print " ", $epw;
         }
     }
-    print "\n";
 }
 
 sub debug {
