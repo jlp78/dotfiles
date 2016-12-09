@@ -31,7 +31,7 @@ servers = (
     port = "6669";
     autoconnect = "true";
     use_ssl = "yes";
-    password = "$SECRET:3OXFqbRpBXSXaUQQfYY58RsriB8:SECRET$";
+    password = "SECRET:fe3ab570afc180ccb90bf68e07daa7be6ab0d725:SECRET";
   },
   {
     address = "kiwiirc.com";
@@ -302,7 +302,7 @@ settings = {
     use_proxy = "yes";
     proxy_address = "localhost";
     proxy_port = "6669";
-    proxy_password = "$SECRET:uIXdelDlikqolsxw23dYQ4H+Rbc:SECRET$";
+    proxy_password = "SECRET:9825a42ded4702554e55f0f887f8a60faa7b9699:SECRET";
     timestamp_format = "%d %H:%M";
   };
   "fe-text" = { actlist_sort = "refnum"; };

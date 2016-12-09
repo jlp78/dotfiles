@@ -22,7 +22,8 @@ diff:
 	while read key file; do \
 	  sfile=`echo $$file | sed -e 's/^_/./'`; \
 	  sfile="$$HOME/$$sfile"; \
-	  diff -c $$file $$sfile; \
+          echo diff $$file $$sfile; \
+	  diff $$file $$sfile; \
 	done; \
 	exit 0
 

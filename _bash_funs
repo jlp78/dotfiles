@@ -175,38 +175,38 @@ which () {
 # moved it into my Drobox, which is very handy as it automatically
 # stays up-to-date on multiple machines now.
 memorize () {
-  if [ -f $MEMORY_FILE ]; then
-    echo "-- " >> $MEMORY_FILE
+  if [ -f "$MEMORY_FILE" ]; then
+    echo "-- " >> "$MEMORY_FILE"
   fi
 
   case "x$1" in
     x)
       echo "enter text to be memorized"
-      cat - >> $MEMORY_FILE
+      cat - >> "$MEMORY_FILE"
       echo "text has been memorized"
       ;;
     *)
-      echo "$@" >> $MEMORY_FILE
+      echo "$@" >> "$MEMORY_FILE"
       echo "arguments have been memorized"
       ;;
   esac
 }
 
 remember () {
-  if [ -f $MEMORY_FILE ]; then
+  if [ -f "$MEMORY_FILE" ]; then
     case "x$1" in
       x)
-        less -i $MEMORY_FILE
+        less -i "$MEMORY_FILE"
         ;;
       *)
-        grep -i "$1" $MEMORY_FILE | less -i
+        grep -i "$1" "$MEMORY_FILE" | less -i
         ;;
     esac
   fi
 }
 
 memory () {
-  $EDITOR $MEMORY_FILE
+  $EDITOR "$MEMORY_FILE"
 }
 
 ## functions for bluehost/EIG

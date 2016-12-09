@@ -450,7 +450,7 @@ EOL
     }
     print <<'EOL';
     --num-pws    specify the number of passwords to generate.
-    --num-seps   specify the number of separator characters between parts.
+    --num-sep    specify the number of separator characters between parts.
     --num-parts  specify the number of words to join together.
     --lc-only    do not include any upper-case characters.
     --verbose    print debugging information.

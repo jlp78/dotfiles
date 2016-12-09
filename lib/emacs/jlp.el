@@ -1,7 +1,20 @@
 (load "misc-funs" nil t)
 
+(add-hook 'gfm-mode-hook 'turn-off-auto-fill)
+;(add-hook 'gfm-mode-hook 'turn-on-visual-line-mode)
+
+(defun my-text-mode-hook ()
+  "Customize text-mode hooks."
+  ;; Enable auto-fill-mode, except when using markdown- or gfm- modes
+  (if (or (eq major-mode 'gfm-mode)
+	  (eq major-mode 'markdown-mode))
+      (progn
+	(visual-line-mode 1))
+    (progn
+      (turn-on-auto-fill))))
+
 (setq-default case-fold-search t)
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
+(add-hook 'text-mode-hook 'my-text-mode-hook)
 (add-hook 'my-mh-draft-mode-hook 'turn-on-auto-fill)
 (setq enable-recursive-minibuffers t)
 (setq track-eol nil)
@@ -57,6 +70,7 @@
 	("\\.ml$"                 . lisp-mode)
 	("\\.html$"               . html-helper-mode)
 	("/.Mail/drafts/[0-9]*$"  . my-mh-draft-mode)
+	("\\.md$"                 . gfm-mode) ;usually editing for github
 	))
 
 (setq mail-archive-file-name "|/usr/local/lib/mh/rcvstore -create +outbox")

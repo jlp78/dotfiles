@@ -1,24 +1,60 @@
+Host *
+  ForwardAgent yes
+  ServerAliveInterval 15
+
 Host *.jay-one.org
   Port 222
   User jlp
 
-# for Verisys
-Host 172.* 10.*
-  User jpeterson
-  ForwardAgent yes
-  ForwardX11 yes
-  ServerAliveInterval 15
+### for t0
 
-# for Bluehost
+Host vpn vpn.corp.t0.com
+  User ec2-user
+
+## overstock VPC
+Host 172.16.*
+  User ubuntu
+  ProxyCommand ssh 52.25.181.43 -W %h:%p
+
+# bastion VPC and default VPC
+Host 172.255.255.* 172.31.*
+  User ubuntu
+  Port 22
+  ProxyCommand ssh ubuntu@52.40.232.133 -p 22122 -W %h:%p
+
+Host 172.17.30.* 172.17.31.* 172.17.32.* 172.17.33.*
+  User ubuntu
+  Port 22
+
+Host 52.40.232.133
+  User ubuntu
+  Port 22122
+
+### end t0
+
+### for Verisys
+
+#Host 172.* 10.*
+#  User jpeterson
+#  ForwardAgent yes
+#  ForwardX11 yes
+#  ServerAliveInterval 15
+
+### end Verisys
+
+### for Bluehost
+
 #Host jay1.jay-one.org janpeterson-wkrst
 #  ProxyCommand bash -c "bastion-helper %h %p"
-#
+
 #Host *.unifiedlayer.com asterisk*.bluehost.com box*.bluehost.com 10.*
 #  ForwardAgent yes
 #  ForwardX11 yes
 #  RequestTTY yes
 #  ProxyCommand ssh -p 5190 zugzug2.bluehost.com -W %h:%p
 ## ProxyCommand bash -c "ssh -p 5190 zugzug2.bluehost.com nc %h %p" 2>/dev/null
-#
+
 #Host zugzug*.bluehost.com
 #  Port 5190
+
+### end Bluehost

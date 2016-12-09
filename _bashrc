@@ -196,9 +196,13 @@ export PILOTRATE PILOTPORT MM_CHARSET LANG
 
 # got a Dropbox mounted?  use that for persistent memory storage. otherwise
 # use a local file.
-if [ -e "$HOME/Dropbox/memory.txt" ]; then
-  MEMORY_FILE="$HOME/Dropbox/memory.txt"
-else
+for db in "Dropbox (Personal)" "Dropbox"; do
+  if [ -e "$HOME/$db/memory.txt" ]; then
+    MEMORY_FILE="$HOME/$db/memory.txt"
+    break
+  fi
+done
+if [ ! -e "$MEMORY_FILE" ]; then
   MEMORY_FILE="$HOME/.memory"
 fi
 
@@ -355,3 +359,10 @@ fi
 
 # dump path to temp file for other apps to pick up
 echo $PATH > ~/.mypath
+
+# bash completion
+for base in "" "/usr/local"; do
+  if [ -e ${base}/etc/bash_completion ]; then
+    . ${base}/etc/bash_completion
+  fi
+done

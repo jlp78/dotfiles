@@ -16,6 +16,8 @@
 	  (setq Ever '23))
       (if (string= (substring emacs-version 0 2) "24")
 	  (setq Ever '24))
+      (if (string= (substring emacs-version 0 2) "25")
+	  (setq Ever '25))
       t)
      (setq Ever 'unknown))
 
@@ -178,38 +180,6 @@
  '(sh-basic-offset 2)
  '(sh-indentation 2)
  '(show-paren-mode t))
-;(custom-set-faces
-;  ;; custom-set-faces was added by Custom.
-;  ;; If you edit it by hand, you could mess it up, so be careful.
-;  ;; Your init file should contain only one such instance.
-;  ;; If there is more than one, they won't work right.
-; '(default ((t (:foreground "#f0f0f0" :background "#000000" :size "12" :family "courier"))))
-; '(cperl-array-face ((t (:foreground "orangered" :bold t))))
-; '(cperl-hash-face ((t (:foreground "Red" :bold t))))
-; '(cperl-nonoverridable-face ((t (:foreground "orange" :bold t))))
-; '(custom-button-face ((t (:bold t :foreground "#3fdfcf"))) t)
-; '(custom-group-tag-face ((t (:underline t :foreground "blue"))) t)
-; '(custom-saved-face ((t (:underline t :foreground "orange"))) t)
-; '(custom-state-face ((t (:foreground "green3"))) t)
-; '(custom-variable-button-face ((t (:bold t :underline t :foreground "white"))) t)
-; '(dired-face-permissions ((t (:foreground "green3"))))
-; '(font-lock-comment-face ((t (:foreground "#ee7600"))))
-; '(font-lock-doc-string-face ((t (:foreground "green3"))))
-; '(font-lock-function-name-face ((t (:foreground "blue" :bold t))))
-; '(font-lock-keyword-face ((t (:foreground "#f939ff"))))
-; '(font-lock-preprocessor-face ((t (:foreground "red"))))
-; '(font-lock-reference-face ((t (:foreground "green3"))))
-; '(font-lock-string-face ((t (:foreground "green3"))))
-; '(font-lock-type-face ((t (:foreground "#886fff" :bold t))))
-; '(font-lock-variable-name-face ((t (:foreground "#9a2fff" :bold t))))
-; '(font-lock-warning-face ((t (:foreground "Violetred" :bold t))))
-; '(highlight ((t (:foreground "red3" :background "white"))))
-; '(isearch ((t (:foreground "red" :background "white"))))
-; '(list-mode-item-selected ((t (:foreground "green3"))) t)
-; '(message-cited-text ((t (:bold t))))
-; '(secondary-selection ((t (:foreground "white" :background "red"))))
-; '(text-cursor ((t (:foreground "black" :background "green3"))) t)
-; '(zmacs-region ((t (:background "RoyalBlue"))) t))
 
 (add-to-list 'load-path (expand-file-name "~/lib/emacs/color-theme"))
 (add-to-list 'load-path (expand-file-name "~/lib/emacs/emacs-color-theme-solarized"))
@@ -230,6 +200,9 @@
 (define-key ctl-x-map [(control ?=)] 'zoom-in/out)
 (define-key ctl-x-map [(control ?0)] 'zoom-in/out)
 
+;; "fix" mouse scrolling
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+(setq mouse-wheel-progressive-speed nil)
 (global-set-key (if (boundp 'mouse-wheel-down-event)
 		    (vector (list 'control
 				  mouse-wheel-down-event))
@@ -266,5 +239,5 @@
  '(sh-heredoc ((t (:foreground "yellow1" :weight bold)))))
 
 (package-initialize)
-(elpy-enable)
+; (elpy-enable)
 (set-face-attribute 'default nil :height 180)
