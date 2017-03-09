@@ -1,0 +1,718 @@
+#! /usr/bin/perl
+#
+# subnetter - calculate various things about subnets
+#
+$version = '$Id: subnetter,v 1.3 2003/02/08 05:40:04 jp78 Exp $';
+#
+# This code is Copyright(c) 1998 by Jan L. Peterson
+# All rights reserved.
+#
+# You may use this program without charge, you may copy it for
+# backup purposes, you may even give it away to anyone you like.
+# You may not charge a fee for it.  You may charge a fee for
+# a distribution mechanism (such as a CD-ROM containing it), but
+# such fee must not exceed the amount required to recoup costs.
+# You may modify it for your own purposes, but this notice must
+# remain attached to all copies and derivitive works.
+#
+# If you make modifications that you think others would like, please
+# send diffs of your changes to the author at
+# <jlp+sourceforge@peterson.ath.cx>.
+
+use Socket;
+use Tcl::pTk;
+use Tk::Dialog;
+
+# CPAN support
+
+my $VERSION = 2.0;
+
+=head1 NAME
+
+subnetter - subnet calculator
+
+=head1 DESCRIPTION
+
+given an IP address and subnet bits, produce the network
+number, subnet mask, cisco mask, and ranges of hosts
+
+=head1 README
+
+This is a subnet calculator.  The idea was developed based on a PalmOS
+application.
+
+=head1 PREREQUISITES
+
+Socket
+Tcl::pTk
+Tk::Dialog
+
+=pod OSNAMES
+
+any
+
+=pod SCRIPT CATEGORIES
+
+Networking
+
+=cut
+
+# constants
+
+%bg = (-background => 'alice blue');
+%hilight = (-background => 'light steel blue');
+%sel_bg = (-background => 'dodger blue');
+%lbl_font = (-font => '-misc-fixed-medium-*-*-*-15-*-*-*-*-*-*-*');
+%hdr_font = (-font => '-*-fixed-bold-r-*-*-15-*-*-*-*-*-*-*');
+%lbo = (%bg, %lbl_font);
+%lbh = (%bg, %hdr_font);
+%can_font = (-font => '-misc-fixed-medium-*-*-*-12-*-*-*-*-*-*-*');
+%can_bfont = (-font => '-misc-fixed-bold-*-*-*-12-*-*-*-*-*-*-*');
+%slide_font = (-font => '-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*');
+
+%class_bits = (A => 8,
+	       B => 16,
+	       C => 24,
+	       D => 0,
+	       E => 0);
+
+%class_names = (8, 'A', 16, 'B', 24, 'C');
+
+$about_str = qq(This is a Subnet Calculator.  I had seen applications like
+it for PCs and for the Palm Pilot, but did not have one available that
+would run on Unix.  Since I avoid Microsoft(tm) operating systems [sic]
+like the plague, I decided to write something that would do the job
+under Unix with X Windows.  I also decided that I would like to use the
+Perl/Tk modules, since my preferred programming language is Perl and I
+wanted to get more familiar with Tk under Perl (I had used Tk before,
+with tcl, but didn't think it was suitable for this program due to the 
+amount of bit fiddling required).
+
+The tool is very easy to use.  Enter an IP address in the entry field
+at the top.  Hit return, then adjust the class and subnet sliders as
+desired.  The reason for different class and subnet sliders is that you
+may have a /25 block from your network provider.  If you wish to further
+subnet this block, you don't want to be presented with all of the subnets
+that don't belong to you.  You can adjust the class slider to 25, then
+play with the subnet slider to see how it affects your number of nets
+and hosts.
+
+You can click on the subnet mask, cisco mask (used for programming acl
+lists for cisco routers), or the network, broadcast, and valid hosts.
+Clicking on them makes them be the primary X selection, so you can then
+paste them into an xterm (for example).
+
+Any comments or suggestions should be sent to the author at the e-mail
+address listed below.
+
+	<jlp+sourceforge\@peterson.ath.cx>
+
+This code is Copyright (c) 1998 by Jan L. Peterson.  All rights are
+reserved.  Please see the source code for licensing restrictions.
+
+This is $version.
+    );
+$about_str =~ s/([^\n])\n([^\n])/$1 $2/gs;
+
+# maintenance subroutines
+
+# this is anoying... we need to take into account the fact
+# that some machines use a different byte order than others
+
+sub make_order {
+    my $packed = pack('L', 1);
+
+    if (unpack('N', $packed) == unpack('L', $packed)) {
+	# network order is same as machine order
+	eval q!sub order { my $val = shift; $val }!;
+    } else {
+	# network order is different from machine order
+	eval q!sub order { my $val = shift; 
+                          my $ret = unpack('N4', pack('L4', $val));
+                          $ret; }!;
+    }
+}
+ 
+&make_order;   
+
+
+sub sanity_check_quad {
+    my $ip_quad = shift;
+    
+    my (@ip) = split(m/\./, $ip_quad);
+
+    return undef unless scalar(@ip) == 4;
+
+    while ($octet = shift @ip) {
+	return undef unless $octet >= 0 && $octet <= 255;
+	return undef unless $octet =~ m/^\d+$/;
+    }
+
+    1;
+}
+
+sub sanity_check_nbits {
+    my $nbits = shift;
+
+    return undef unless $nbits >= 0 && $nbits <= 32;
+    1;
+}
+
+sub quad_to_long {
+    my $ip_quad = shift;
+    return undef unless &sanity_check_quad($ip_quad);
+
+    unpack('L', inet_aton($ip_quad));
+}
+
+sub long_to_quad {
+    my $long = shift;
+    my $ip_quad = inet_ntoa(pack('L', $long));
+    return undef unless &sanity_check_quad($ip_quad);
+
+    $ip_quad;
+}
+
+sub long_to_hex {
+    my $long = shift;
+    my $hex = sprintf('0x%08x', &order($long));
+
+    $hex;
+}
+
+sub bits_to_mask {
+    my $nbits = shift;
+    my $str = '1' x $nbits . '0' x (32 - $nbits);
+    my $mask = unpack('L', pack('B*', $str));
+    $mask;
+}
+
+sub nets_from_nbits {
+# given a.b.c.d and nbits
+# return network, subnet mask, bcast addr and cisco mask as dotted quads
+# and valid host range first addr and last addr as dotted quads
+
+    my $ip_long = shift;
+    my $nbits = shift;
+
+    my $mask_long, $cisco_long, $network, $subnet_mask;
+    my $broadcast, $cisco_mask, $first_addr, $last_addr;
+
+    $mask_long = &bits_to_mask($nbits);
+    $cisco_long = 0xffffffff ^ $mask_long;
+
+    $network = $ip_long & $mask_long;
+    $broadcast = $ip_long | $cisco_long;
+
+    $first_addr = &order(&order($network) + 1);
+    $last_addr = &order(&order($broadcast) - 1);
+
+    ($network, $mask_long, $broadcast, $cisco_long,
+     $first_addr, $last_addr);
+}
+
+sub find_class {
+    my $ip_long = shift;
+    my $class;
+
+    $ip_long = &order($ip_long);
+    if (($ip_long & 0x80000000) == 0x00000000) {
+	$class = 'A';
+    } elsif (($ip_long & 0xc0000000) == 0x80000000) {
+	$class = 'B';
+    } elsif (($ip_long & 0xe0000000) == 0xc0000000) {
+	$class = 'C';
+    } elsif (($ip_long & 0xf0000000) == 0xe0000000) {
+	$class = 'D';
+    } else {
+	$class = 'E';
+    }
+
+    $class;
+}
+
+sub do_exit {
+    $main->destroy();
+}
+
+sub about_post {
+    $about = $main->Toplevel(-title => 'About Subnet Calculator', %bg);
+    my $fl = $about->Frame(%bg)
+	->pack(-side => 'left', -expand => 'yes', -fill => 'both');
+    $fl->Label(-bitmap => 'info', %bg)
+	->pack(-side => 'top', -expand => 'yes', -padx => 50, -fill => 'both');
+    $fl->Button(-text => 'Dismiss', -command => [\&about_unpost], %bg)
+	->pack(-side => 'bottom');
+    $about->Message(-text => $about_str, %bg, %slide_font,
+		  -aspect => 300)->pack(-side => 'left');
+}
+
+sub about_unpost {
+    $about->destroy;
+}
+
+sub err_post {
+    my $msg = shift;
+
+    my $d = $main->Dialog(-title => 'Error',
+			  -text => $msg,
+			  -default_button => 'OK',
+			  -buttons => ['OK'], %bg);
+
+    $d->Show;
+}
+			  
+
+sub do_gen {
+    # get these values from something
+    my $ip = $ip_entry->get;
+    my $cidr_bits = shift;
+    $nbits = shift;
+
+    unless (&sanity_check_quad($ip)) {
+	&err_post(qq("$ip" does not look like a valid IP address.));
+	return;
+    }
+
+    my $ip_long = &quad_to_long($ip);
+
+
+    my @bits = split(m//, unpack('B*', pack('L', $ip_long)));
+    my $i;
+    for ($i = 0; $i < scalar(@bits); $i++) {
+	$can->itemconfigure("bit$i", -text => $bits[$i]);
+    }
+
+    my $class = &find_class($ip_long);
+
+    $cidr_bits = $class_bits{$class} unless $cidr_bits =~ m/^\d+$/;
+    $nbits = $cidr_bits unless $nbits =~ m/^\d+$/;
+    $nbits = $cidr_bits if $nbits < $cidr_bits;
+
+    my ($network, $subnet_mask, $broadcast, $cisco_mask, $first_addr,
+	$last_addr) = &nets_from_nbits($ip_long, $nbits);
+    $this_net = $network;
+
+    &can_draw_class($cidr_bits);
+    &can_draw_subnet($nbits);
+
+    my $cbits = ($cidr_bits > 0) ? $cidr_bits :
+	$class_bits{$class};
+
+    my $xbits = $cbits;
+    my $ybits = $nbits - $cbits;
+    $nnets = 2 ** $ybits;
+    $zbits = 32 - $nbits;
+    my $nhosts = 2 ** $zbits - 2;
+
+    ($base_long, @rest) = &nets_from_nbits($ip_long, $xbits);
+    
+    # output these values
+    
+    $snm_label->configure(-text => &long_to_quad($subnet_mask));
+    $snmx_label->configure(-text => &long_to_hex($subnet_mask));
+    $cism_label->configure(-text => &long_to_quad($cisco_mask));
+    $snct_label->configure(-text => "$nnets subnets, $nhosts hosts per net");
+
+    &clear_selection;
+    &clear_table(0, 10);
+    $sb->set(0, 1);
+    return if $nhosts < 1;
+    &load_table(0, ($nnets > 10) ? 10 : $nnets);
+}
+
+sub clear_table {
+    my $start = shift;
+    my $end = shift;
+    my $i;
+
+    for ($i = $start; $i < $end; $i++) {
+	$tb{$i,'arrow'}->configure(-image => 'blank', %bg);
+	$tb{$i,'network'}->configure(-text => '', %bg);
+	$tb{$i,'broadcast'}->configure(-text => '', %bg);
+	$tb{$i,'first'}->configure(-text => '', %bg);
+	$tb{$i,'hyphen'}->configure(-text => '', %bg);
+	$tb{$i,'last'}->configure(-text => '', %bg);
+
+	$tb{$i,'network'}->bind('<1>', [\&noop]);
+	$tb{$i,'broadcast'}->bind('<1>', [\&noop]);
+	$tb{$i,'first'}->bind('<1>', [\&noop]);
+	$tb{$i,'last'}->bind('<1>', [\&noop]);
+    }
+}
+
+sub load_table {
+    my $start = shift;
+    my $end = shift;
+    my $i, $tlong, $arr, %b;
+    my $network, $subnet_mask, $broadcast, $cisco_mask, $first_addr;
+    my $last_addr;
+
+    for ($i = $start, $ty = 0; $i < $end; $i++, $ty++) {
+	$tlong = &order($base_long) + ($i << $zbits);
+	($network, $subnet_mask, $broadcast, $cisco_mask, $first_addr,
+	 $last_addr) = &nets_from_nbits(&order($tlong), $nbits);
+
+	if ($this_net == $network) {
+	    $arr = 'arrow';
+	    %b = %hilight;
+	} else {
+	    $arr = 'blank';
+	    %b = %bg;
+	}
+
+	$tb{$ty,'arrow'}->configure(-image => $arr, %bg);
+	$tb{$ty,'network'}->configure(-text => &long_to_quad($network), %b);
+	$tb{$ty,'broadcast'}->
+	    configure(-text => &long_to_quad($broadcast), %b);
+	$tb{$ty,'first'}->configure(-text => &long_to_quad($first_addr), %b);
+	$tb{$ty,'hyphen'}->configure(-text => ' - ', %b);
+	$tb{$ty,'last'}->configure(-text => &long_to_quad($last_addr), %b);
+
+	$tb{$ty,'network'}->bind('<1>', [\&make_selection, Ev('W')]);
+	$tb{$ty,'broadcast'}->bind('<1>', [\&make_selection, Ev('W')]);
+	$tb{$ty,'first'}->bind('<1>', [\&make_selection, Ev('W')]);
+	$tb{$ty,'last'}->bind('<1>', [\&make_selection, Ev('W')]);
+    }
+    &clear_table($ty, 10);
+    if ($nnets > 0) {
+	$spct = $start / $nnets;
+	$epct = $end / $nnets;
+    } else {
+	$spct = 0;
+	$epct = 1;
+    }
+    $sb->set($spct, $epct);
+}
+
+sub do_mouse_scroll {
+    my $w = shift;
+    my $d = shift;
+
+    do_scroll('scroll', -$d, 'units');
+}
+
+sub do_scroll {
+    my ($type, $distance, $what) = @_;
+
+    if ($type eq 'moveto') {
+	# $distance is a percentage
+	$distance = 0 if $distance < 0;
+	$distance = 1 if $distance > 1;
+	$first = int($distance * $nnets);
+    } elsif ($type eq 'scroll') {
+	# $distance is an offset from cur, $what tells if units or pages
+	my ($cur_first, $cur_last) = $sb->get;
+	$first = int($cur_first * $nnets);
+	if ($what eq 'units') {
+	    $first += $distance;
+	} else {
+	    $first += ($distance * 10);
+	}
+    }
+
+    $first = 0 if $first < 0;
+
+    $last = $first + 10;
+
+    if ($last > $nnets) {
+	$last = $nnets;
+	$first = $nnets - 10;
+    }
+
+    $first = 0 if $first < 0;
+
+    &load_table($first, $last);
+}
+
+sub initialize {
+    $main = MainWindow->new(%bg);
+    $main->title('Subnet Calculator');
+    
+    my $f1 = $main->Frame(%bg)->pack(-expand => 'yes', -fill => 'x');
+    $f1->Button(-text => 'Exit', %bg, -command => [\&do_exit])
+	->pack(-side => 'left');
+    $f1->Label(%lbh)->pack(-side => 'left', -expand => 'yes', -fill => 'x');
+    $f1->Label(-text => 'IP Address:  ', %lbh, -anchor => 'e')
+	->pack(-side => 'left');
+    $f1->Button(-text => 'About', %bg, -command => [\&about_post])
+	->pack(-side => 'right');
+    $f1->Label(%lbh)->pack(-side => 'right', -expand => 'yes', -fill => 'x');
+    $ip_entry = $f1->Entry(%bg)->pack(-side => 'right');
+
+    my $f2 = $main->Frame(%bg)->pack(-expand => 'yes', -fill => 'both');
+    $can = $f2->Canvas(-width => '19.5c', -height => '4.5c', %bg)
+	->pack(-expand => 'yes', -fill => 'both');
+
+    my $f3 = $main->Frame(%bg)->pack;
+    my $f3a = $f3->Frame(%bg)->pack(-side => 'left');
+    $f3a->Label(%lbh, -text => 'Subnet Mask: ', -anchor => 'e',
+		-width => 15)->pack;
+    $f3a->Label(%lbh, -text => 'Cisco Mask: ', -anchor => 'e',
+		-width => 15)->pack;
+    my $f3b = $f3->Frame(%bg)->pack(-side => 'left');
+    $snm_label = $f3b->
+	Label(%lbo, -text => '', -anchor => 'w',
+	      -width => 15)->pack;
+    $cism_label = $f3b->
+	Label(%lbo, -text => '', -anchor => 'w',
+	      -width => 15)->pack;
+    my $f3c = $f3->Frame(%bg)->pack(-side => 'left');
+    $snmx_label = $f3c->
+	Label(%lbo, -text => '', -anchor => 'w',
+	      -width => 10)->pack;
+    $snct_label = $f3c->
+	Label(%lbo, -text => '', -anchor => 'w')->pack;
+
+    my $f4 = $main->Frame(%bg)->pack;
+
+    my $f4a = $f4->Frame(%bg)->pack(-side => 'left');
+    my $f4b = $f4->Frame(%bg)->pack(-side => 'left');
+    my $f4c = $f4->Frame(%bg)->pack(-side => 'left');
+    my $f4d = $f4->Frame(%bg)->pack(-side => 'left');
+    my $f4e = $f4->Frame(%bg)->pack(-side => 'left', -fill => 'y', -expand => 1);
+
+    $f4a->Label(%lbo, -text => ' ')->pack;
+    $f4b->Label(%lbh, -text => 'Network', -anchor => 'w')->pack;
+    $f4c->Label(%lbh, -text => 'Broadcast', -anchor => 'w')->pack;
+    $f4d->Label(%lbh, -text => 'Valid Hosts Range')->pack;
+    $f4e->Label(%lbo, -text => ' ')->pack;
+
+    my $f4d1 = $f4d->Frame(%bg)->pack(-side => 'left');
+    my $f4d2 = $f4d->Frame(%bg)->pack(-side => 'left');
+    my $f4d3 = $f4d->Frame(%bg)->pack(-side => 'left');
+
+    my $arrow_str = q(
+#define arrow2_width 10
+#define arrow2_height 7
+static char arrow2_bits[] = {
+   0x60, 0x00, 0xe0, 0x00, 0xff, 0x01, 0xff, 0x03, 0xff, 0x01, 0xe0, 0x00,
+   0x60, 0x00};
+		      );
+    $main->Bitmap('arrow', -data => $arrow_str);
+    my $blank_str = q(
+#define blank_width 1
+#define blank_height 1
+static char blank_bits[] = {
+    0x00};
+		      );
+    $main->Bitmap('blank', -data => $blank_str);
+
+    # prime the table
+    my $i, $j, $tf;
+    for ($i = 0; $i < 10; $i++) {
+	$tf = $f4a->Frame(%bg)->pack;
+	$tf->Label(%lbo, -text => ' ')->pack(-side => 'left');
+	$tb{$i,'arrow'} = $tf->Label(%bg, -image => 'blank', -width => 15)
+	    ->pack(-side => 'left');
+	$tb{$i,'network'} = $f4b->
+	    Label(%lbo, -width => 15, -anchor => 'w')->pack;
+	$tb{$i,'broadcast'} = $f4c->
+	    Label(%lbo, -width => 15, -anchor => 'w')->pack;
+	$tb{$i,'first'} = $f4d1->
+	    Label(%lbo, -width => 15, -anchor => 'e')->pack;
+	$tb{$i,'hyphen'} = $f4d2->Label(%lbo, -width => 3)->pack;
+	$tb{$i,'last'} = $f4d3->
+	    Label(%lbo, -width => 15, -anchor => 'w')->pack;
+    }
+
+    $sb = $f4e->Scrollbar(-command => [ \&do_scroll ])
+	->pack(-expand => '1', -fill => 'y');
+
+    # prime the canvas
+    my $bit, $x1, $x2, $xs, $xt, $titem, $tx, $tb;
+    for ($i = 1, $bit = 0; $i <= 15; $i += 4.5, $bit--) {
+	($x1, $x2) = ($i, $i + 4);
+	$can->create('line', "${x1}c", "2c", "${x2}c", "2c");
+	$can->create('line', "${x1}c", "2.5c", "${x2}c", "2.5c");
+	for ($j = 0; $j <= 8; $j++, $bit++) {
+	    $xs = $j * 0.5 + $i;
+	    $titem = $can->create('line', "${xs}c", "2c", "${xs}c", "2.5c");
+	    ($tx, $ty) = $can->coords($titem);
+	    if (($j < 8 && $i == 1)
+		|| ($j > 0 && $i == 14.5)
+		|| ($j > 0 && $j < 8)) {
+		$bit_xs[$tb++] = int($tx);
+	    }
+	    $xt = $j * 0.5 + $i + 0.25;
+	    $can->create('text', "${xt}c", "2.25c", -anchor => 'center',
+			 -tags => "bit$bit", %can_font)
+		unless $j == 8;
+	}
+	if ($i <= 10) {
+	    $xt = $i + 4.25;
+	    $titem = $can->create('text', "${xt}c", "2.25c", %can_bfont,
+				  -anchor => 'center', -text => '.');
+	    ($tx, $ty) = $can->coords($titem);
+	    $bit_xs[$tb++] = int($tx);
+	}
+    }
+
+    # some bindings
+
+    $can->bind('subnet', '<1>' => [\&can_select_subnet]);
+    $can->bind('class', '<1>' => [\&can_select_class]);
+    $can->CanvasBind('<B1-Motion>' => [\&can_move_selected]);
+    $can->CanvasBind('<Any-ButtonRelease-1>' => [\&can_release_selected]);
+    $ip_entry->bind('<Return>' => [\&do_gen]);
+    $main->bind('<MouseWheel>' => [\&do_mouse_scroll, Ev('D')]);
+
+    $snm_label->bind('<1>' => [\&make_selection, Ev('W')]);
+    $snmx_label->bind('<1>' => [\&make_selection, Ev('W')]);
+    $cism_label->bind('<1>' => [\&make_selection, Ev('W')]);
+}
+
+sub noop {
+}
+
+sub clear_selection {
+    if ($cur_selection) {
+	$cur_selection->configure(%s_bg);
+	if ($cur_selection->SelectionOwner) {
+	    $main->clipboardClear;
+	    $cur_selection->SelectionClear;
+	}
+	undef $cur_selection;
+    }
+}
+
+sub handle_selection {
+    my ($offset, $max) = @_;
+
+    return undef unless ($cur_selection);
+    substr($cur_selection->cget('-text'), $offset, $max);
+}
+
+sub make_selection {
+    my $w = shift;
+    
+    &clear_selection;
+    $cur_selection = $w;
+
+    $s_bg{'-background'} = $cur_selection->cget('-background');
+    $cur_selection->configure(%sel_bg);
+
+    my $s = $cur_selection->cget('-text');
+    $main->clipboardAppend($s);
+    $cur_selection->SelectionHandle([\&handle_selection]);
+    $cur_selection->SelectionOwn(-command => [\&clear_selection]);
+}
+
+# canvas support routines
+sub can_select_subnet {
+    my $c = shift;
+    $selected = 'subnet';
+}
+
+sub can_select_class {
+    my $c = shift;
+    $selected = 'class';
+}
+
+sub can_move_selected {
+    my $c = shift;
+    return unless defined($selected);
+
+    my $e = $c->XEvent;
+    my ($x, $y) = ($e->x, $e->y);
+    my ($cx, $cy) = ($c->canvasx($x, "0.25c"), $c->canvasy($y));
+    my ($ox, $oy) = $c->coords($selected);
+    my $offset = &x_to_offset($cx);
+
+
+    if ($selected eq 'class') {
+	&can_draw_class($offset);
+    } elsif ($selected eq 'subnet') {
+	&can_draw_subnet($offset);
+    }
+}
+
+sub can_release_selected {
+    my $c = shift;
+    undef $selected;
+    &do_gen($current_cbits, $current_nbits);
+}
+
+sub x_to_offset {
+    my $x = shift;
+    my $i, $tdistance, $distance = 25000;
+
+    for ($i = 0; $i <= 32; $i++) {
+	$tdistance = abs($x - $bit_xs[$i]);
+	last if $tdistance > $distance;
+	$distance = $tdistance if $tdistance < $distance;
+    }
+
+    $i - 1;
+}
+
+sub create_tri {
+    my $tag = shift;
+    my $label = shift;
+    my $offset = shift;
+    my $apex = shift;
+    my $end = shift;
+
+    my $fudge = int($offset / 8) * 0.5;
+    if ($fudge <= 0) {
+	$fudge = 0;
+    } elsif ($offset == 32) {
+	$fudge -= 0.5;
+    } elsif ($offset % 8 == 0) {
+	$fudge -= 0.25;
+    }
+
+    my $ax = ($offset * 0.5) + 1 + $fudge;
+    my ($bx, $cx) = ($ax - 0.25, $ax + 0.25);
+
+    my $ay = 2.25 + $apex;
+    my $bcy = 2.25 + $end;
+
+    $can->create('polygon', "${ax}c", "${ay}c", "${bx}c", "${bcy}c",
+		 "${cx}c", "${bcy}c", -tags => $tag);
+
+    my $tx = $ax;
+    my $ty = 2.25 + ($apex * 2);
+
+    $can->create('text', "${tx}c", "${ty}c", %slide_font,
+		 -anchor => ($apex > 0) ? 'n' : 's',
+		 -justify => 'center', -tags => $tag,
+		 -text => $label);
+}
+
+sub can_draw_class {
+    my $cbits = shift;
+    my $class = $class_names{$cbits};
+    my $label;
+
+    if ($class) {
+	$label = "Class\n$class";
+    } else {
+	$label = "CIDR\n$cbits Bits";
+    }
+    if ($cbits != $current_cbits) {
+	$can->delete('class');
+	&create_tri('class', $label, $cbits, -0.35, -0.6);
+	$current_cbits = $cbits;
+    }
+}
+
+sub can_draw_subnet {
+    my $nbits = shift;
+
+    if ($nbits != $current_nbits) {
+	$can->delete('subnet');
+	&create_tri('subnet', "$nbits\nSubnet\nBits", $nbits, 0.35, 0.6);
+	$current_nbits = $nbits;
+    }
+}
+
+&initialize;
+if ($ARGV[0] =~ m,^(\d+\.\d+\.\d+\.\d+)\/?(\d+)?,) {
+    ($net, $mask) = ($1, $2);
+    $ip_entry->insert(0, $net);
+    &do_gen($mask, $mask);
+}
+
+
+MainLoop;
