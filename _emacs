@@ -212,11 +212,12 @@
   (global-set-key (vector (list 'control mouse-wheel-up-event))
 		  'zoom-out))
 
-(setq python-mode-dir (expand-file-name "~/lib/emacs/python-mode.el-6.2.0/"))
+(setq python-mode-dir (expand-file-name "~/lib/emacs/python-mode/"))
 (add-to-list 'load-path python-mode-dir)
 (setq py-install-directory python-mode-dir)
 (require 'python-mode)
 (setq py-shell-name "ipython")
+(setq py-indent-paren-spanned-multilines-p nil)
 
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/web-mode")
 (require 'web-mode)
