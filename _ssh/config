@@ -11,6 +11,9 @@ Host *.jay-one.org
 Host vpn vpn.corp.t0.com
   User ec2-user
 
+Host 192.168.111.12
+  User ubuntu
+
 ## overstock VPC
 Host 172.16.*
   User ubuntu
@@ -22,7 +25,7 @@ Host 172.255.255.* 172.31.*
   Port 22
   ProxyCommand ssh ubuntu@52.40.232.133 -p 22122 -W %h:%p
 
-Host 172.17.30.* 172.17.31.* 172.17.32.* 172.17.33.*
+Host 172.17.30.* 172.17.31.* 172.17.32.* 172.17.33.* 172.29.*
   User ubuntu
   Port 22
 

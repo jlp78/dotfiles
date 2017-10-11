@@ -704,3 +704,36 @@ case $MACH_TYPE in
     }
     ;;
 esac 
+
+# completion helpers
+_eject () {
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  local IFS=$'\n'
+  local escaped_single_quote="'\''"
+  local i=0
+
+  COMPREPLY=( $( cd /Volumes; compgen -o dirnames -- "$cur" ) )
+
+  for entry in ${COMPREPLY[*]}; do
+    if [[ "${cur:0:1}" == "'" ]]; then
+      # started with single quote, escaping only other single quotes
+      # [']bla'bla"bla\bla bla --> [']bla'\''bla"bla\bla bla
+      COMPREPLY[$i]="${entry//\'/${escaped_single_quote}}"
+    elif [[ "${cur:0:1}" == "\"" ]]; then
+      # started with double quote, escaping all double quotes and all backslashes
+      # ["]bla'bla"bla\bla bla -> ["]bla'bla\"bla\\bla bla
+      entry="${entry//\\/\\\\}"
+      COMPREPLY[$i]="${entry//\"/\\\"}"
+    else
+      # no quotes in front, escaping _everything_
+      # [ ]bla'bla"bla\bla bla -> [ ]bla\'bla\"bla\\bla\ blal
+      entry="${entry//\\/\\\\}"
+      entry="${entry//\'/\'}"
+      entry="${entry//\"/\\\"}"
+      COMPREPLY[$i]="${entry// /\\ }"
+    fi
+    (( i++ ))
+  done
+  return 0
+}
+complete -F _eject eject
