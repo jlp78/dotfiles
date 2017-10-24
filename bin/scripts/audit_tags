@@ -1,0 +1,52 @@
+#! /bin/bash
+
+case "x$1" in
+  x)
+    repos="AnsibleConfig AuthService FixTestFramework LedgerInterface"
+    repos="$repos LedgerRecorder LiteTrader SkynetClient TickerPlant"
+    repos="$repos TradingApp t0-final tollbooth"
+    ;;
+  *)
+    repos="$*"
+    ;;
+esac
+
+cd $HOME/Work
+
+for repo in $repos; do
+  (echo "repo $repo:"
+   cd $repo
+   (git checkout master; git pull --tags) >/dev/null 2>&1
+   to_del=""
+   for tag in `git tag -l --sort=version:refname "v*"`; do
+     echo -n "  $tag "
+     read op
+     case "$op" in
+       d*)
+	 echo "    marking tag $tag for deletion"
+	 to_del="$to_del $tag"
+	 ;;
+     esac
+   done
+  
+   if [ "$to_del" ]; then
+     echo "  deleting tags: $to_del"
+     echo -n "  okay? "
+     read op
+     case "$op" in
+       y*)
+	 echo -n "  deleting ..."
+	 (git push --delete origin $to_del
+	  git tag -d $to_del) >/dev/null 2>&1
+	 echo " done"
+	 ;;
+       *)
+	 echo "  NOT deleting"
+	 ;;
+     esac
+   else
+     echo "  no tags marked for deletion"
+   fi
+  )
+done
+  

@@ -1,0 +1,18 @@
+#! /bin/sh
+
+while :; do
+  p=`ps guaxww | grep -i soundflowerbed | grep -v grep | awk '{print $2}'`
+  case "x$p" in
+    x)
+      break
+      ;;
+    *)
+      kill $p
+      sleep 1
+      ;;
+  esac
+done
+
+open /Applications/SoundflowerBed.app
+
+

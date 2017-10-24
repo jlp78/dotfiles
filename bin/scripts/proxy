@@ -1,0 +1,18 @@
+#! /bin/sh
+
+case "x$1" in
+  xon)
+    networksetup -setsocksfirewallproxystate Wi-Fi on
+    networksetup -setsocksfirewallproxy Wi-Fi localhost 5555 0
+    ;;
+  xoff)
+    networksetup -setsocksfirewallproxystate Wi-Fi off
+    ;;
+  xstatus|x)
+    networksetup -getsocksfirewallproxy Wi-Fi
+    ;;
+  *)
+    echo "usage: $basename on|off|status"
+    exit 1
+    ;;
+esac

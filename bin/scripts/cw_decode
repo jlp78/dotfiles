@@ -1,0 +1,69 @@
+#! /usr/bin/perl
+
+$EXPLICIT_CALLSIGN_HEADER = "de=";
+$GRID_SQUARE_HEADER = "at=";
+$CW_FRAME_HEADER_BASEFMT = "cw=";
+$CW_FRAME_HEADER_XFMT = "cx=";
+
+while (<>) {
+    chomp;
+    @parts = split(m/,/);
+    for $part (@parts) {
+        if ($part =~ m/^de=(.*)$/) {
+            # decode from callsign
+        } elsif ($part =~ m/^at=(.*)$/) {
+            # decode gridsquare
+        } elsif ($part =~ m/^cw=(.*)$/) {
+            # decode base frame
+        } elsif ($part =~ m/^cx=(.*)$/) {
+            # decode xfmt frame
+        } else {
+            next;               # frame is invalid
+        }
+    }
+}
+
+sub rot_char {
+    my $char = shift;
+    my $c = ord($char);
+
+    if ($c >= ord(',')) {
+        $c--;
+    }
+
+    $c += 46;
+    if ($c > ord('}')-1) {
+        $c = ord('!') + $c - ord('}');
+    }
+
+    if ($c >= ord(',')) {
+        $c++;
+    }
+
+    return(chr($c));
+}
+
+sub rot46_enc_dec {
+    my $message = shift;
+
+    # strip non-valid characters
+    $message =~ tr/!-}//cd;
+    $message =~ tr/,//d;
+
+    $message =~ s/(.)/rot_char($1)/ge;
+
+    return($message);
+}
+
+sub decode_number_basefmt {
+    my $buf = shift;
+
+    # buf should be two characters long
+    $buf =~ tr/!-~//cd;
+    if (length($buf) < 2) {
+	return(-32768);
+    }
+
+    return((ord(substr($buf, 0, 1)) - ord('!'))*94 +
+	   (ord(substr($buf, 1, 1)) - ord('!')) - 4418);
+}

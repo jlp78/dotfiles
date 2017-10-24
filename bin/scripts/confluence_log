@@ -1,0 +1,172 @@
+#! /usr/bin/perl
+
+BEGIN {
+  $perl_lib = $ENV{'HOME'} . "/lib/perl";
+
+  if (-e $perl_lib) {
+    unshift(@INC, $perl_lib);
+  }
+}
+use Confluence;
+
+=head1 confluence blogging utility
+
+Use this program to enter your daily developer journal entries in
+the confluence system.  It will create a blog entry with the current
+date string (i.e. "2008 12 01 (1 Dec)") as a title.  If a blog entry
+with this title already exists, it will append the new text to the
+existing entry.
+
+=head2 Usage
+
+        confluence_log "message goes here"
+        confluence_log message goes here
+        echo "message goes here" | confluence_log
+
+In the first example, the message to be added to the developer journal
+is passed as a single argument to the program.  Use this method if your
+log message includes any shell meta characters that you don't want
+interpreted by the shell.
+
+In the second example, the message is passed as multiple arguments.  The
+arguments will be combined into one space separated string and used as
+the log message.
+
+In the third argument, the message to be added is passed in via standard
+input.  This method will also be used if no additional arguments are
+given.  If this method is used, the leading "*" character (interpretted
+as a bullet symbol by confluence) will be suppressed.  Use this method
+if you want to log a multi-line log message or include other wiki markup
+in your log message.
+
+=head2 Authentication
+
+The script needs to know how to authenticate to the confluence system.
+If you have a ".confluencerc" file in your home directory, it will be
+read and evaluated by the script.  The file must contain perl code to
+initialize the values for the $confluence_user and $confluence_pass
+variables.  For example:
+
+ $confluence_user = "my.username";
+ $confluence_pass = "mypassword";
+
+If no .confluencerc file is found in the home directory, the script will
+prompt you for a username and password to use.  It will offer to save
+the supplied username and password for you.  If you want it to save them,
+you must answer "yes" to the prompt.  Any other response will result in
+the script not saving the username and password.  If saved, the values
+will be written to the .confluencerc file in your home directory and
+the file will be set to mode 0600 for security.
+
+B<NOTE:> The username is also used to define the confluence "space" for
+your blog entries.
+
+=head2 Prerequisites
+
+You must have the "Confluence" perl module in your include path.  If you
+have a $HOME/lib/perl directory, that directory will be prepended on
+the include path.
+
+=cut
+
+$| = 1;
+
+# config section
+my $confluence_uri = "http://confluence.oakleynetworks.com:8080/confluence";
+my $confluence_rc = $ENV{'HOME'} . "/.confluencerc";
+my ($confluence_user, $confluence_pass, $config_read);
+
+# initialize user and pass from config file if present
+if (-e $confluence_rc) {
+  open(RC, $confluence_rc);
+  while (<RC>) {
+    chomp;
+    eval $_;
+  }
+  close(RC);
+  $config_read++;
+}
+
+if (!defined($confluence_user)) {
+  print "confluence username: ";
+  $confluence_user = <>;
+  chomp($confluence_user);
+}
+if (!defined($confluence_pass)) {
+  print "confluence password: ";
+  $confluence_pass = <>;
+  chomp($confluence_pass);
+}
+if (! $config_read) {
+  print "do you want to save the username/password for future use (yes/no)? ";
+  my $response = <>;
+  chomp($response);
+  if ($response eq 'yes') {
+    print "saving username/password...";
+    open(RC, ">", $confluence_rc);
+    chmod(0600, $confluence_rc);
+    print RC "\$confluence_user = \"$confluence_user\";\n";
+    print RC "\$confluence_pass = \"$confluence_pass\";\n";
+    close(RC);
+    print " done\n";
+  } else {
+    print "not saving username/password\n";
+  }
+}
+
+# compute title of blog entry
+@month = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+	  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+my ($mday, $mon, $year) = (localtime(time))[3,4,5];
+my $month = $month[$mon];
+$mon++;
+$year += 1900;
+my $datestamp = sprintf("%04d %02d %02d (%d %s)",
+			$year, $mon, $mday, $mday, $month);
+
+# log in to confluence
+$confluence_uri .= "/rpc/xmlrpc";
+my $c = new Confluence $confluence_uri, $confluence_user, $confluence_pass;
+
+# find today's blog entry (if it exists)
+my $entries = $c->getBlogEntries("~" . $confluence_user);
+my ($the_id, $the_entry);
+foreach my $e (@$entries) {
+  if ($e->{'title'} eq $datestamp) {
+    $the_id = $e->{'id'};
+    last;
+  }
+}
+
+# munge or create the entry
+if (defined($the_id)) {
+  $the_entry = $c->getBlogEntry("$the_id");
+  print "appending to existing entry...";
+  delete($the_entry->{'permissions'});
+  delete($the_entry->{'author'});
+  delete($the_entry->{'publishDate'});
+  $the_entry->{'content'} .= "\n";
+} else {
+  print "creating new entry...";
+  $the_entry = {
+    space => "~" . $confluence_user,
+    title => $datestamp,
+    version => "0",
+    content => "",
+  };
+}
+
+# update the entry
+$the_entry->{'version'}++;
+if (scalar(@ARGV) > 0) {
+  $the_entry->{'content'} .= "* @ARGV";
+} else {
+  # log message is on stdin
+  while (<>) {
+    $the_entry->{'content'} .= $_;
+  }
+}
+
+# store the entry
+my $e = $c->storeBlogEntry($the_entry);
+print " done\n";

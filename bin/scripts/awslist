@@ -1,0 +1,6 @@
+#! /usr/bin/perl
+
+use Paws;
+
+my $obj = Paws->service('EC2');
+my $instances = $obj->DescribeInstances(Filters => [

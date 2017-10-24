@@ -15,17 +15,17 @@ Host 192.168.111.12
   User ubuntu
 
 ## overstock VPC
-Host 172.16.*
-  User ubuntu
-  ProxyCommand ssh 52.25.181.43 -W %h:%p
+#Host 172.16.*
+#  User ubuntu
+#  ProxyCommand ssh 52.25.181.43 -W %h:%p
 
 # bastion VPC and default VPC
-Host 172.255.255.* 172.31.*
-  User ubuntu
-  Port 22
-  ProxyCommand ssh ubuntu@52.40.232.133 -p 22122 -W %h:%p
+#Host 172.255.255.* 172.31.*
+#  User ubuntu
+#  Port 22
+#  ProxyCommand ssh ubuntu@52.40.232.133 -p 22122 -W %h:%p
 
-Host 172.17.30.* 172.17.31.* 172.17.32.* 172.17.33.* 172.29.*
+Host 172.17.30.* 172.17.31.* 172.17.32.* 172.17.33.* 172.29.* 172.30.*
   User ubuntu
   Port 22
 

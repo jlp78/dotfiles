@@ -1,0 +1,7 @@
+#! /bin/sh
+
+tbo=/Applications/Tunnelblick.app/Contents/Resources/openvpn
+openvpn=$tbo/openvpn-2.4.3-openssl-1.0.2l/openvpn 
+cd $HOME/secturion.tblk
+sudo $openvpn secturion.conf
+

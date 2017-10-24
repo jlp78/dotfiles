@@ -1,0 +1,12 @@
+#! /usr/bin/perl
+
+$arg = shift;
+
+$arg = time unless defined($arg);
+
+die "argument $arg doesn't look like a timestamp\n"
+  unless $arg =~ m/^\d+$/;
+
+print $arg, "\n";
+print scalar(localtime($arg)), "\n";
+print scalar(gmtime($arg)), "\n";

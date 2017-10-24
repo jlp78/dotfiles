@@ -1,0 +1,7 @@
+#! /bin/sh
+
+while ps guaxww | grep -isq soundflowerbed; do
+  osascript -e 'tell application "SoundflowerBed" to quit'
+  sleep 5
+done
+open /Applications/SoundflowerBed.app

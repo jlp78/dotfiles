@@ -1,0 +1,34 @@
+#! /usr/bin/perl
+
+use DBI;
+
+my $pii_dbh = DBI->connect("dbi:PostgreSQL:??", $pii_user, $pii_pass);
+my $auth_dbh = DBI->connect("dbi:PostgreSQL:??", $auth_user, $auth_pass);
+
+my $user_id = shift @ARGV;
+
+if ($user_id !~ m/^\d+$/) {
+    usage();
+}
+
+# gather info about the user
+$sql =<<EOL;
+SELECT id, auth_id, cust_acct_id, user_type, first_name, last_name, email
+  FROM users
+ WHERE id = %
+EOL
+$sth->prepare($sql);
+$sth->execute($user_id);
+while (@row = $sth->fetchrow_array()) {
+    ($db_user_id, $auth_id, $cust_acct_id, $user_type,
+     $first_name, $last_name, $email) = @row;
+
+    if ($db_user_id != $user_id) {
+        die "something went horribly wrong, $db_user_id != $user_id\n";
+    }
+
+    print "Deleting uid:  $user_id\n";
+    print "        Name:  $first_name $last_name\n";
+    print "        Email: $email\n";
+    print " Account type: $user_type\n";
+
