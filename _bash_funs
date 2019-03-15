@@ -653,7 +653,9 @@ prompt_update () {
 
   # set the title bar/status line if we can
   if [ -z "$_tb_override" ]; then
-    qtype _settitle && _settitle "$(id -nu)@$(hostname -s):$(pwd)"
+    _ts="$(id -nu)@$(hostname -s):$(pwd)"
+    _ts="$_ts ($(tty|sed -e 's,^/dev/tty,,'))"
+    qtype _settitle && _settitle "$_ts"
   fi
 
   # draw a horizontal line between commands?
@@ -673,8 +675,12 @@ prompt_update () {
 
 # from Aaron Toppence (eightyeight) https://ae7.st/p/734
 expandurl () {
-  torsocks wget --spider -O - -S $1 2>&1 |
-    awk '/^Location/ {gsub("\\?utm_.*$",""); a=$2} END {print a}'
+  (torsocks wget --spider -O - -S $1 2>&1 |
+     awk '/^Location/ {gsub("\\?utm_.*$",""); print $2; exit 0} 
+          /socks5 libc connect: Connection refused/ {exit 1}') ||
+    (echo "warning, TOR not enabled"
+      wget --spider -O - -S $1 2>&1 |
+        awk '/^Location/ {gsub("\\?utm_.*$",""); print $2; exit 0}')
 }
 
 
@@ -702,38 +708,38 @@ case $MACH_TYPE in
     ejectall () {
       osascript -e 'tell application "Finder" to eject (every disk whose ejectable is true)'
     }
+    # completion helper
+    _eject () {
+      local cur=${COMP_WORDS[COMP_CWORD]}
+      local IFS=$'\n'
+      local escaped_single_quote="'\''"
+      local i=0
+
+      COMPREPLY=( $( cd /Volumes; compgen -o dirnames -- "$cur" ) )
+
+      for entry in ${COMPREPLY[*]}; do
+	if [[ "${cur:0:1}" == "'" ]]; then
+	  # started with single quote, escaping only other single quotes
+	  # [']bla'bla"bla\bla bla --> [']bla'\''bla"bla\bla bla
+	  COMPREPLY[$i]="${entry//\'/${escaped_single_quote}}"
+	elif [[ "${cur:0:1}" == "\"" ]]; then
+	  # started with double quote, escaping all double quotes and all backslashes
+	  # ["]bla'bla"bla\bla bla -> ["]bla'bla\"bla\\bla bla
+	  entry="${entry//\\/\\\\}"
+	  COMPREPLY[$i]="${entry//\"/\\\"}"
+	else
+	  # no quotes in front, escaping _everything_
+	  # [ ]bla'bla"bla\bla bla -> [ ]bla\'bla\"bla\\bla\ blal
+	  entry="${entry//\\/\\\\}"
+	  entry="${entry//\'/\'}"
+	  entry="${entry//\"/\\\"}"
+	  COMPREPLY[$i]="${entry// /\\ }"
+	fi
+	(( i++ ))
+      done
+      return 0
+    }
+    complete -F _eject eject
     ;;
 esac 
 
-# completion helpers
-_eject () {
-  local cur=${COMP_WORDS[COMP_CWORD]}
-  local IFS=$'\n'
-  local escaped_single_quote="'\''"
-  local i=0
-
-  COMPREPLY=( $( cd /Volumes; compgen -o dirnames -- "$cur" ) )
-
-  for entry in ${COMPREPLY[*]}; do
-    if [[ "${cur:0:1}" == "'" ]]; then
-      # started with single quote, escaping only other single quotes
-      # [']bla'bla"bla\bla bla --> [']bla'\''bla"bla\bla bla
-      COMPREPLY[$i]="${entry//\'/${escaped_single_quote}}"
-    elif [[ "${cur:0:1}" == "\"" ]]; then
-      # started with double quote, escaping all double quotes and all backslashes
-      # ["]bla'bla"bla\bla bla -> ["]bla'bla\"bla\\bla bla
-      entry="${entry//\\/\\\\}"
-      COMPREPLY[$i]="${entry//\"/\\\"}"
-    else
-      # no quotes in front, escaping _everything_
-      # [ ]bla'bla"bla\bla bla -> [ ]bla\'bla\"bla\\bla\ blal
-      entry="${entry//\\/\\\\}"
-      entry="${entry//\'/\'}"
-      entry="${entry//\"/\\\"}"
-      COMPREPLY[$i]="${entry// /\\ }"
-    fi
-    (( i++ ))
-  done
-  return 0
-}
-complete -F _eject eject

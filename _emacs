@@ -18,6 +18,8 @@
 	  (setq Ever '24))
       (if (string= (substring emacs-version 0 2) "25")
 	  (setq Ever '25))
+      (if (string= (substring emacs-version 0 2) "26")
+	  (setq Ever '26))
       t)
      (setq Ever 'unknown))
 
@@ -67,7 +69,7 @@
 (garbage-collect)
 
 
-(if (or (eq Ever '19) (eq Ever '20) (eq Ever '21) (eq Ever '22) (eq Ever '23) (eq Ever '24) (eq Ever '25))
+(if (or (eq Ever '19) (eq Ever '20) (eq Ever '21) (eq Ever '22) (eq Ever '23) (eq Ever '24) (eq Ever '25) (eq Ever '26))
     (progn
       
 ;      (setq load-path (cons (expand-file-name "~/dev/android/android-mode/")
@@ -175,6 +177,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(display-time-mode t)
+ '(package-selected-packages (quote (terraform-mode)))
  '(py-continuation-offset 4)
  '(scroll-bar-mode (quote right))
  '(sh-basic-offset 2)
@@ -219,7 +222,7 @@
 (setq py-shell-name "ipython")
 (setq py-indent-paren-spanned-multilines-p nil)
 
-(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/web-mode")
+;(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/web-mode")
 (require 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
@@ -239,6 +242,13 @@
  ;; If there is more than one, they won't work right.
  '(sh-heredoc ((t (:foreground "yellow1" :weight bold)))))
 
+(require 'package)
+(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+                    (not (gnutls-available-p))))
+       (proto (if no-ssl "http" "https")))
+  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+  (when (< emacs-major-version 24)
+    (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
 ; (elpy-enable)
 (set-face-attribute 'default nil :height 180)

@@ -313,7 +313,7 @@ fi
 
 # homebrew is for additional software on MacOS X.  http://brew.sh
 export ANDROID_HOME=/usr/local/opt/android-sdk
-export HOMEBREW_GITHUB_API_TOKEN=SECRET:12d1bec63b6258041b213adffe8d797d91668e52:SECRET
+#export HOMEBREW_GITHUB_API_TOKEN=SECRET:12d1bec63b6258041b213adffe8d797d91668e52:SECRET
 
 # some python stuff here... pyenv is a slick mechanism for having different
 # python builds installed that you can use with different projects.
@@ -366,3 +366,4 @@ for base in "" "/usr/local"; do
     . ${base}/etc/bash_completion
   fi
 done
+source /Users/jlp/.profile  # Chef-.profile-Lendio

@@ -29,6 +29,7 @@
 (setq visible-bell t)
 (setq auto-mode-alist
       '(("\\.crypt$"              . text-mode)
+	("\\.rb$"                 . ruby-mode)
 	("\\.py$"                 . python-mode)
 	("\\.org$"                . org-mode)
 	("\\.pic$"    		  . picture-mode)
