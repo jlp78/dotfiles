@@ -223,7 +223,7 @@ fi
 trap 'history -r' USR1
 
 # do I have a prompt already?  then I'm probably an interactive shell.
-if [ "$PS1" ]; then
+if [ "$PS1" -a ! "$RUNNING_CSSHX" ]; then
 
   # interactive shell
   interactive=true

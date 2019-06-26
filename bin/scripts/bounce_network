@@ -1,0 +1,67 @@
+#! /bin/sh
+
+trap "rm -f /tmp/bounce_network.$$" 0
+networksetup -listallnetworkservices > /tmp/bounce_network.$$
+
+while read n; do
+  case "$n" in
+    *Ethernet*)
+      lan="$n"
+      ;;
+    *Wi-Fi*)
+      wifi="$n"
+      ;;
+  esac
+done < /tmp/bounce_network.$$
+
+# Thunderbolt Ethernet Slot 1
+# Wi-Fi
+
+tb_state () {
+  osascript -e 'tell application "Tunnelblick.app"' \
+            -e 'get state of first configuration where name = "lendio"' \
+            -e 'end tell'
+}
+
+
+# get tunnelblick state
+state=$(tb_state)
+
+if [ $state = "CONNECTED" ]; then
+  echo "closing tunnel"
+  osascript -e 'tell application "Tunnelblick.app"' \
+            -e 'disconnect "lendio"' \
+            -e 'end tell'
+  while [ $(tb_state) = "CONNECTED" ]; do
+    sleep 1
+  done
+fi
+
+if [ "$lan" ]; then
+  echo "shutting off $lan"
+  networksetup -setv4off "$lan"
+fi
+
+if [ "$wifi" ]; then
+  echo "shutting off $wifi"
+  networksetup -setv4off "$wifi"
+fi
+
+sleep 5
+
+if [ "$lan" ]; then
+  echo "turning on $lan"
+  networksetup -setdhcp "$lan"
+fi
+
+if [ "$wifi" ]; then
+  echo "turning on $wifi"
+  networksetup -setdhcp "$wifi"
+fi
+
+if [ $state = "CONNECTED" ]; then
+  echo "reconnecting tunnel"
+  osascript -e 'tell application "Tunnelblick.app"' \
+            -e 'connect "lendio"' \
+            -e 'end tell'
+fi

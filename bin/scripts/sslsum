@@ -1,0 +1,33 @@
+#! /bin/sh
+
+f="$1"
+shift
+
+usage () {
+  echo "usage: $0 {certfile.crt|keyfile.key}"
+}
+
+case "x$f" in
+  x) usage
+     exit 1
+     ;;
+esac
+
+if [ ! -r "$f" ]; then
+  usage
+  exit 2
+fi
+
+case "$f" in
+  *.crt)
+    mode=x509
+    ;;
+  *.key)
+    mode=rsa
+    ;;
+  *) usage
+     exit 3
+     ;;
+esac
+
+openssl $mode -noout -modulus -in "$f" | openssl md5

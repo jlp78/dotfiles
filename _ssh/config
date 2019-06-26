@@ -60,3 +60,7 @@ Host *.jay-one.org
 #  Port 5190
 #
 ### end Bluehost
+
+### for Teal Drones
+Host 10.73.41.*
+  User jan

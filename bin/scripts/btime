@@ -1,0 +1,66 @@
+#! /bin/sh
+
+# btime - take passed in number of seconds and format in more human
+#         readable format (d HH:MM:SS)
+
+t=$1
+out=""
+
+usage () {
+  if [ -t $1 ]; then		# only if a terminal on stdout
+    echo "usage:   btime NNN"
+    echo "example: btime 3835"
+    echo "         01:03:55"
+  fi
+}
+    
+# sanity check input
+case "x$t" in
+  x)
+    usage
+    exit 1
+    ;;
+  x*[^0-9]*)
+    usage
+    exit 2
+    ;;
+esac
+     
+# a few constants
+spm=60				# seconds per minute
+sph=`expr $spm \* 60`		# seconds per hour
+spd=`expr $sph \* 24`		# seconds per day
+
+# extract days, hours, and minutes from $t
+if [ $t -ge $spd ]; then
+  d=`expr $t / $spd`
+  t=`expr $t - \( $d \* $spd \)`
+else
+  d=0
+fi
+if [ $t -ge $sph ]; then
+  h=`expr $t / $sph`
+  t=`expr $t - \( $h \* $sph \)`
+else
+  h=0
+fi
+if [ $t -ge $spm ]; then
+  m=`expr $t / $spm`
+  t=`expr $t - \( $m \* $spm \)`
+else
+  m=0
+fi
+s=$t
+
+# only print at the resolution necessary
+if [ $d -gt 0 ]; then
+  printf "%dd %02d:%02d:%02d\n" $d $h $m $s
+elif [ $h -gt 0 ]; then
+  printf "%02d:%02d:%02d\n" $h $m $s
+elif [ $m -gt 0 ]; then
+  printf "%02d:%02d\n" $m $s
+else
+  printf "%02d\n" $s
+fi
+
+exit 0

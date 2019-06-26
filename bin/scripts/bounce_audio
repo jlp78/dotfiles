@@ -1,0 +1,13 @@
+#! /bin/sh
+
+p=`ps guaxww | grep /usr/sbin/coreaudiod | grep -v grep | awk '{print $2}'`
+
+case "x$p" in
+  x[0-9]*)
+    sudo kill $p
+    echo "coreaudiod bounced"
+    ;;
+  x)
+    echo "no coreaudiod found?!?  I don't know what to do."
+    ;;
+esac

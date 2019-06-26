@@ -1,0 +1,13 @@
+#! /bin/sh
+
+domysql () {
+  # mysql -h prod-temp.cfusspwxmhkp.us-east-1.rds.amazonaws.com -u root -pvaPaRly+hyD0veHi 2>/dev/null
+  mysql -h prod-cluster.cluster-civpyhkigzas.us-east-1.rds.amazonaws.com -u root '-pfF5q~{wZ&MV[RLXa^t)%4k&~F{UT;BXG.nu)VzLq' 2>/dev/null
+}
+
+echo "show slave status\\G" | domysql |
+  egrep -e "Slave_IO_State|Master_Log|Relay_Log|_Running|Seconds_Behind"
+
+echo ""
+
+echo "select state, info from information_schema.processlist where user = 'system user';" | domysql | sed -e 1d

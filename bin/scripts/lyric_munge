@@ -1,0 +1,32 @@
+#! /usr/bin/perl
+
+$width = 0;
+
+while (<>) {
+    chomp();
+    s/[\(\)\",;:\.\?-]//g;             # strip punctuation
+    @w = split(m/\s+/);         # split words
+    for $w (@w) {
+        $words{lc($w)}++;
+        $width = length($w) if length($w) > $width;
+    }
+}
+
+$words_per_line = int(80 / ($width + 2));
+@words = sort(keys(%words));
+$word_count = scalar(@words);
+$lines = int($word_count / $words_per_line + 0.5);
+
+# print "words per line $words_per_line\n";
+# print "word_count $word_count\n";
+# print "lines $lines\n";
+
+for ($w = 0; $w <= $lines; $w++) {
+    @line_words = ();
+    for ($i = 0; $i < $words_per_line; $i++) {
+#       print "w $w i $i offset ", $i * $lines + $w, "\n";
+        push(@line_words, sprintf("%-*s", $width,
+                                  $words[$i * $lines + $w]));
+    }
+    print join("  ", @line_words), "\n";
+}

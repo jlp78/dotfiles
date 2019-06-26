@@ -32,6 +32,13 @@ case $MACH_TYPE in
     ;;
 esac
 
+case "$TERM" in
+  xterm*)
+    # includes iTerm2
+    alias 25x80='echo -en "\033[8;25;80t"'
+    ;;
+esac
+
 if qtype ack; then
   :
 elif qtype ack-grep; then	# silly linux

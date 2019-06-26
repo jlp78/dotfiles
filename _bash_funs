@@ -679,8 +679,14 @@ expandurl () {
      awk '/^Location/ {gsub("\\?utm_.*$",""); print $2; exit 0} 
           /socks5 libc connect: Connection refused/ {exit 1}') ||
     (echo "warning, TOR not enabled"
-      wget --spider -O - -S $1 2>&1 |
-        awk '/^Location/ {gsub("\\?utm_.*$",""); print $2; exit 0}')
+     echo -n "okay to connect directly? (y/N) "
+     read resp
+     case "x$resp" in
+       x[yY]*)
+	 wget --spider -O - -S $1 2>&1 |
+           awk '/^Location/ {gsub("\\?utm_.*$",""); print $2; exit 0}'
+	 ;;
+     esac)
 }
 
 

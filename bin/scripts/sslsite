@@ -1,0 +1,24 @@
+#! /bin/sh
+
+s="$1"
+shift
+
+usage () {
+  echo "usage: $0 {www.somesite.com}"
+}
+
+case "x$s" in
+  x) usage
+     exit 1
+     ;;
+esac
+
+case `host "$s"` in
+  *NXDOMAIN*)
+    usage
+    exit 2
+    ;;
+esac
+
+echo | openssl s_client -showcerts -connect $s:443 2>/dev/null |
+  openssl x509 -inform pem -noout -text
