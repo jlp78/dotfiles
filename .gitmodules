@@ -4,3 +4,6 @@
 [submodule "lib/emacs/ws-butler"]
 	path = lib/emacs/ws-butler
 	url = https://github.com/lewang/ws-butler.git
+[submodule "lib/emacs/web-mode"]
+	path = lib/emacs/web-mode
+	url = https://github.com/fxbois/web-mode.git

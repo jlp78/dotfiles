@@ -366,4 +366,3 @@ for base in "" "/usr/local"; do
     . ${base}/etc/bash_completion
   fi
 done
-source /Users/jlp/.profile  # Chef-.profile-Lendio

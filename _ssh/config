@@ -2,8 +2,12 @@ Host *
   ForwardAgent yes
   ServerAliveInterval 15
 
-Host *.jay-one.org
-  Port 222
+# for Forcepoint
+Host *.jay-one.org !jay2.jay-one.org
+  ProxyCommand ssh -p 443 jay2.jay-one.org -W %h:%p
+
+Host jay2.jay-one.org
+  Port 443
   User jlp
 
 ### for t0

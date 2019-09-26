@@ -222,7 +222,8 @@
 (setq py-shell-name "ipython")
 (setq py-indent-paren-spanned-multilines-p nil)
 
-;(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/web-mode")
+(setq python-mode-dir (expand-file-name "~/lib/emacs/web-mode/"))
+(add-to-list 'load-path python-mode-dir)
 (require 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))

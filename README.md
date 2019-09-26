@@ -21,7 +21,14 @@ to add some filter commands:
     git config filter.secrets.clean=dot_secrets clean %f
     git config filter.secrets.smudge=dot_secrets smudge %f
     git config filter.secrets.required=true
-
+```
 
 and you will need to add the attributes to the files that you want to
 filter (see the .gitattributes file for my usage).
+
+Also, I use some submodules in lib/emacs so you'll need to initialize
+and clone the submodules the first time you clone this repo:
+``` sh
+     git submodule init
+	 git submodule update
+```

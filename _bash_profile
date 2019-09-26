@@ -13,5 +13,4 @@ export NLS_LANG=American_America.UTF8
 # The orginal version is saved in .bash_profile.pysave
 PATH="/Library/Frameworks/Python.framework/Versions/3.4/bin:${PATH}"
 export PATH
-source /Users/jlp/.profile  # Chef-.profile-Lendio
 [[ -s "$HOME/.avn/bin/avn.sh" ]] && source "$HOME/.avn/bin/avn.sh" # load avn
