@@ -194,11 +194,18 @@ export EDITOR MORE LESS MANPATH NETHACKOPTIONS NNTPSERVER PAGER PRINTER
 export REMOTE XSHELL KEYMAP PGPPATH IMM_IMAGE_DIR DISPLAY_GAMMA FETCH_CMD
 export PILOTRATE PILOTPORT MM_CHARSET LANG
 
-# got a Dropbox mounted?  use that for persistent memory storage. otherwise
-# use a local file.
-for db in "Dropbox (Personal)" "Dropbox"; do
-  if [ -e "$HOME/$db/memory.txt" ]; then
-    MEMORY_FILE="$HOME/$db/memory.txt"
+# got a Dropbox or keybase mounted?  use that for persistent memory
+# storage. otherwise use a local file.
+for db in "/Volumes/Keybase (Jan.Peterson)" \
+	    "/keybase/private/jlp78" \
+	    "Dropbox (Personal)" \
+	    "Dropbox"; do
+  case "$db" in
+    /*) ;;
+    *)  db="$HOME/$db" ;;
+  esac
+  if [ -e "$db/memory.txt" ]; then
+    MEMORY_FILE="$db/memory.txt"
     break
   fi
 done
