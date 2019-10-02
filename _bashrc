@@ -61,21 +61,30 @@ else
   MY_BIN=$HOME/bin/scripts
 fi
 
-# xtools was a linkedin thing... probably don't need it unless you
-# are at linkedin.
-MY_BIN=$MY_BIN:.:/export/apps/xtools/bin
 
 # extra bin dirs
 EBIN=
-#EBIN=.:/usr/local/linkedin/bin
+if [ -e /usr/local/linkedin/bin ]; then
+  EBIN=$EBIN:.:/usr/local/linkedin/bin
+fi
+if [ -e /export/apps/xtools/bin ]; then
+  # xtools was a linkedin thing... probably don't need it unless you
+  # are at linkedin.
+  EBIN=$EBIN:/export/apps/xtools/bin
+fi
+
 if [ -e $HOME/pebble-dev ]; then
   PEBBLE_HOME=$HOME/pebble-dev/PebbleSDK-current
   EBIN=$EBIN:$PEBBLE_HOME/bin
   export PEBBLE_HOME
 fi
+
 if [ -e $HOME/android-sdk-* ]; then
   EBIN=$EBIN:`echo $HOME/android-sdk-*/tools`
   EBIN=$EBIN:`echo $HOME/android-sdk-*/platform-tools`
+fi
+if [ -e /usr/local/opt/android-sdk ]; then
+  export ANDROID_HOME=/usr/local/opt/android-sdk
 fi
 
 # set up the path
@@ -99,9 +108,11 @@ case $MACH_TYPE in
 esac
 
 # don't allow group writes, use this if you don't have your own
-# private group (pretty much all dists give you a private group
-# now, so you probably don't need this).
-#umask 022
+# private group (pretty much all Linux dists give you a private group
+# now, so you probably don't need this... unless you're on a mac?).
+if [ `id -un` != `id -gn` ]; then
+  umask 022
+fi
 
 # don't dump any cores (doesn't work on HP/UX?)
 case $MACH_TYPE in
@@ -125,7 +136,7 @@ case $MACH_TYPE in
 esac
 case $PAGER in
   *less)
-    less_version=`$PAGER -V 2>&1 | sed -e 1q | awk '{print $NF}'`
+    less_version=`$PAGER -V 2>&1 | sed -e 1q | awk '{print $2}'`
     ;;
   *)
     less_version=unknown
@@ -187,17 +198,24 @@ case "$LANG" in
 esac
 
 # more linkedin stuff
-MANPATH="$MANPATH:/usr/local/linkedin/man"
+if [ -e /usr/local/linkedin/man ]; then
+  MANPATH="$MANPATH:/usr/local/linkedin/man"
+fi
 
 # export all the vars!
 export EDITOR MORE LESS MANPATH NETHACKOPTIONS NNTPSERVER PAGER PRINTER
 export REMOTE XSHELL KEYMAP PGPPATH IMM_IMAGE_DIR DISPLAY_GAMMA FETCH_CMD
 export PILOTRATE PILOTPORT MM_CHARSET LANG
 
+# do we have keybase?
+if qtype keybase; then
+  KB_USER=`keybase status | grep ^Username | awk '{print $NF}'`
+fi
+
 # got a Dropbox or keybase mounted?  use that for persistent memory
 # storage. otherwise use a local file.
-for db in "/Volumes/Keybase (Jan.Peterson)" \
-	    "/keybase/private/jlp78" \
+for db in "/Volumes/Keybase ($USER)/private/$KB_USER" \
+	    "/keybase/private/$KB_USER" \
 	    "Dropbox (Personal)" \
 	    "Dropbox"; do
   case "$db" in
@@ -319,7 +337,6 @@ if [ "$PS1" -a ! "$RUNNING_CSSHX" ]; then
 fi
 
 # homebrew is for additional software on MacOS X.  http://brew.sh
-export ANDROID_HOME=/usr/local/opt/android-sdk
 #export HOMEBREW_GITHUB_API_TOKEN=SECRET:12d1bec63b6258041b213adffe8d797d91668e52:SECRET
 
 # some python stuff here... pyenv is a slick mechanism for having different
@@ -327,19 +344,6 @@ export ANDROID_HOME=/usr/local/opt/android-sdk
 export PYENV_ROOT=/usr/local/var/pyenv
 qtype pyenv && eval "$(pyenv init -)"
 qtype pyenv-virtualenv-init && eval "$(pyenv virtualenv-init -)"
-
-# clean up the PATH (get rid of duplicates, missing dirs, and blank entries)
-PATH=`perl -e '
-  $path = $ENV{PATH};
-  @path_elements = split(m/:/, $path);
-  foreach $element (@path_elements) {
-    next if $element eq "";
-    next unless -d $element;
-    push(@new_path, $element);
-  }
-  $newpath = join(":", @new_path);
-  print "$newpath\n"; '`
-export PATH
 
 # more pyenv stuff for verisys
 PATH=/usr/local/share/python:$PATH
@@ -363,6 +367,19 @@ elif [[ -r /usr/bin/virtualenvwrapper.sh ]]; then
 elif qtype virtualenvwrapper.sh; then
   . `which -p virtualenvwrapper.sh`
 fi
+
+# clean up the PATH (get rid of duplicates, missing dirs, and blank entries)
+PATH=`perl -e '
+  $path = $ENV{PATH};
+  @path_elements = split(m/:/, $path);
+  foreach $element (@path_elements) {
+    next if $element eq "";
+    next unless -d $element;
+    push(@new_path, $element);
+  }
+  $newpath = join(":", @new_path);
+  print "$newpath\n"; '`
+export PATH
 
 # dump path to temp file for other apps to pick up
 echo $PATH > ~/.mypath
