@@ -177,7 +177,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(display-time-mode t)
- '(package-selected-packages (quote (csv-mode terraform-mode)))
+ '(package-selected-packages (quote (groovy-mode csv csv-mode terraform-mode)))
  '(py-continuation-offset 4)
  '(scroll-bar-mode (quote right))
  '(sh-basic-offset 2)

@@ -15,7 +15,8 @@ Host *.ro.internal
   IdentityFile ~/.ssh/centos_id_rsa
   User centos
 
-Host 10.214.66.62
+#-# Forcepoint Mac
+Host 10.214.66.65
   User Jan.Peterson
   
 Host *.jay-one.org !jay2.jay-one.org

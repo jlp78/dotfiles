@@ -207,8 +207,10 @@ export EDITOR MORE LESS MANPATH NETHACKOPTIONS NNTPSERVER PAGER PRINTER
 export REMOTE XSHELL KEYMAP PGPPATH IMM_IMAGE_DIR DISPLAY_GAMMA FETCH_CMD
 export PILOTRATE PILOTPORT MM_CHARSET LANG
 
-# do we have keybase?
-if qtype keybase; then
+# do we have keybase?  (can't use qtype here because we haven't loaded
+# our .bash_funs yet... and we don't want to load them until after we
+# have set up MEMORY_FILE)
+if type keybase >/dev/null 2>&1; then
   KB_USER=`keybase status | grep ^Username | awk '{print $NF}'`
 fi
 
@@ -390,3 +392,11 @@ for base in "" "/usr/local"; do
     . ${base}/etc/bash_completion
   fi
 done
+
+# Okta AWS authentication
+if [[ -f "$HOME/.okta/bash_functions" ]]; then
+  . "$HOME/.okta/bash_functions"
+fi
+if [[ -d "$HOME/.okta/bin" && ":$PATH:" != *":$HOME/.okta/bin:"* ]]; then
+  PATH="$HOME/.okta/bin:$PATH"
+fi

@@ -32,7 +32,7 @@ In the second example, the message is passed as multiple arguments.  The
 arguments will be combined into one space separated string and used as
 the log message.
 
-In the third argument, the message to be added is passed in via standard
+In the third example, the message to be added is passed in via standard
 input.  This method will also be used if no additional arguments are
 given.  If this method is used, the leading "*" character (interpretted
 as a bullet symbol by confluence) will be suppressed.  Use this method
