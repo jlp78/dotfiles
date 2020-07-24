@@ -17,17 +17,27 @@ done < /tmp/bounce_network.$$
 # Thunderbolt Ethernet Slot 1
 # Wi-Fi
 
-tb_state () {
-  osascript -e 'tell application "Tunnelblick.app"' \
-            -e 'get state of first configuration where name = "lendio"' \
-            -e 'end tell'
-}
+# do we have Tunnelblick?
+if [ -e /Applications/Tunnelblick.app ]; then
+  tb_ct=`ps guaxww | grep -i tunnelblick | grep -v grep | wc -l`
+else
+  tb_ct=0
+fi
 
+tb_state () {
+  If [ "$tb_ct" -gt 0 ]; then
+    osascript -e 'tell application "Tunnelblick.app"' \
+              -e 'get state of first configuration where name = "lendio"' \
+              -e 'end tell'
+  else
+    echo NOTRUNNING
+  fi
+}
 
 # get tunnelblick state
 state=$(tb_state)
 
-if [ $state = "CONNECTED" ]; then
+if [ "$state" = "CONNECTED" ]; then
   echo "closing tunnel"
   osascript -e 'tell application "Tunnelblick.app"' \
             -e 'disconnect "lendio"' \
@@ -59,7 +69,7 @@ if [ "$wifi" ]; then
   networksetup -setdhcp "$wifi"
 fi
 
-if [ $state = "CONNECTED" ]; then
+if [ "$state" = "CONNECTED" ]; then
   echo "reconnecting tunnel"
   osascript -e 'tell application "Tunnelblick.app"' \
             -e 'connect "lendio"' \

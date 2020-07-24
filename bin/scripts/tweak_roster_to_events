@@ -1,0 +1,55 @@
+#! /usr/bin/perl
+
+@header = ('EVENT NAME', 'VENUE NAME', 'ORGANIZER NAME', 'EVENT START DATE',
+           'EVENT START TIME', 'EVENT END DATE', 'EVENT END TIME',
+           'ALL DAY EVENT', 'EVENT SHOW MAP LINK', 'EVENT SHOW MAP',
+           'EVENT DESCRIPTION');
+
+%mon = ('Jan' => 1, 'Feb' => 2, 'Mar' => 3, 'Apr' => 4,
+        'May' => 5, 'Jun' => 6, 'Jul' => 7, 'Aug' => 8,
+        'Sep' => 9, 'Oct' => 10, 'Nov' => 11, 'Dec', => 12);
+
+sub numeric {
+    $a <=> $b;
+}
+
+$event_name = "Sunday Net";
+$venue_name = "Ensign Peak Repeater";
+$organizer_name = "Jan (KD7ZWV)";
+$all_day_event = "FALSE";
+$event_show_map_link = "FALSE";
+$event_show_map = "FALSE";
+
+$event_start_time = "8:00 PM";
+$event_end_time = "9:00 PM";
+$year = 2020;
+@indexes = ();
+%lines = ();
+
+while (<>) {
+    chomp;
+    ($first_name, $callsign, $date) = split(m/\t+/, $_);
+    ($day, $mon) = split(m/-/, $date);
+    $mon = $mon{$mon};
+    $start_date = join('/', $mon, $day, $year);
+    $end_date = $start_date;
+    $index = $mon * 100 + $day;
+
+    $descr = "General club check-in and any topics of interest to all.<p>";
+    $descr .= "Net Control this week is " . $first_name . " (" . $callsign;
+    $descr .= ")";
+
+    $line = join(',', $event_name, $venue_name, $organizer_name,
+                 $start_date, $event_start_time, $end_date, $event_end_time,
+                 $all_day_event, $event_show_map_link, $event_show_map,
+                 $descr) . "\n";
+
+    $lines{$index} = $line;
+    push(@indexes, $index);
+}
+
+print join(',', @header), "\n";
+for $index (sort numeric @indexes) {
+    print $lines{$index};
+}
+

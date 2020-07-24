@@ -1,0 +1,22 @@
+#! /usr/bin/perl
+
+use POSIX qw( strftime );
+
+$arg = shift;
+
+$arg = time unless defined($arg);
+
+die "argument $arg doesn't look like a timestamp\n"
+  unless $arg =~ m/^\d+$/;
+
+print $arg, "\n";
+print scalar(gmtime($arg)), " UTC\n";
+print scalar(localtime($arg)), " ", strftime("%Z", localtime($arg)),
+    " local", "\n";
+foreach $zone ("America/Denver", "America/New_York", "America/Los_Angeles",
+	       "Europe/Dublin") {
+    $ENV{TZ} = $zone;
+    print scalar(localtime($arg)), " ", strftime("%Z", localtime($arg)),
+	" ", $zone, "\n";
+}
+    

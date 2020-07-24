@@ -1,0 +1,4 @@
+#! /bin/sh
+
+ps guaxww | grep -v grep | grep pulseaudio ||
+  pulseaudio --load=module-native-protocol-tcp --exit-idle-time=-1 --daemon

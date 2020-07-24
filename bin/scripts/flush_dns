@@ -1,0 +1,47 @@
+#! /bin/sh
+
+os=`uname -s | tr "[A-Z]" "[a-z]"`
+
+case "x$os" in
+  xdarwin)
+    os_vers=`sw_vers | awk '/^ProductVersion/ {print $2}'`
+    case "x$os_vers" in
+      x10.10.0|x10.10.1|x10.10.2|x10.10.3)
+	# Yosemite 10.10 through 10.10.3
+	sudo discoveryutil mdnsflushcache
+	;;
+      x10.15.*|x10.14.*|x10.13.*|x10.12.*|x10.11.*|x10.10.*)
+	# Yosemite 10.10.4 and later
+	sudo killall -HUP mDNSResponder
+	;;
+      x10.9*|x10.8*|x10.7*)
+	# Mavericks, Mountain Lion, Lion
+	sudo killall -HUP mDNSResponder
+	;;
+      x10.6*)
+	# Snow Leopard
+	sudo dscacheutil -flushcache
+	;;
+      *)
+	echo "I don't know this version of MacOS X ($os_vers)"
+    esac
+    ;;
+  xlinux)
+    if ps guaxww | grep -sq systemd-resolved; then
+      # has systemd
+      sudo systemctl restart systemd-resolved.service
+    elif [ -e /etc/init.d/nscd ]; then
+      # ns cache daemon
+      sudo /etc/init.d/nscd restart
+    else
+      echo "I don't know how to clear the cache on this Linux"
+    fi
+    ;;
+  *)
+    echo "I don't know this OS ($os)"
+    ;;
+esac
+
+    
+      
+	
