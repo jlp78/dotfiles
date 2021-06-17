@@ -7,3 +7,6 @@
 [submodule "lib/emacs/web-mode"]
 	path = lib/emacs/web-mode
 	url = https://github.com/fxbois/web-mode.git
+[submodule "lib/emacs/pyenv-mode"]
+	path = lib/emacs/pyenv-mode
+	url = https://github.com/pythonic-emacs/pyenv-mode.git

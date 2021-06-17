@@ -11,7 +11,7 @@ if [ -x $uname ]; then
   case "$hostout" in
     *darwin*)
       MACH_TYPE=macosx
-      X11=/usr/X11/bin
+      X11=/opt/X11/bin
       LOCALBIN=/usr/local/bin:/usr/local/sbin
       LOCALBIN=$LOCALBIN:$(brew --prefix coreutils)/libexec/gnubin
       LOCALBIN=$LOCALBIN:/sbin:/usr/sbin:/sw/bin:/sw/sbin

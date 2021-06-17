@@ -18,6 +18,11 @@ Host *.ro.internal
 #-# Forcepoint Mac
 Host 10.214.66.65
   User Jan.Peterson
+
+Host 10.214.66.82
+  User jlp
+  ForwardX11 yes
+  XAuthLocation /opt/X11/bin/xauth
   
 Host *.jay-one.org !jay2.jay-one.org
   ProxyCommand ssh -p 443 jay2.jay-one.org -W %h:%p

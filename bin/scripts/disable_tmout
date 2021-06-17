@@ -1,3 +1,4 @@
+#! /bin/sh
 # Disable the stupid auto-logout
 unset TMOUT > /dev/null 2>&1
 if [ $? -ne 0 ]; then
