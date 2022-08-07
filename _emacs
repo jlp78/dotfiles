@@ -22,6 +22,8 @@
 	  (setq Ever '26))
       (if (string= (substring emacs-version 0 2) "27")
 	  (setq Ever '27))
+      (if (string= (substring emacs-version 0 2) "28")
+	  (setq Ever '28))
       t)
      (setq Ever 'unknown))
 
@@ -71,7 +73,7 @@
 (garbage-collect)
 
 
-(if (or (eq Ever '19) (eq Ever '20) (eq Ever '21) (eq Ever '22) (eq Ever '23) (eq Ever '24) (eq Ever '25) (eq Ever '26) (eq Ever '27))
+(if (or (eq Ever '19) (eq Ever '20) (eq Ever '21) (eq Ever '22) (eq Ever '23) (eq Ever '24) (eq Ever '25) (eq Ever '26) (eq Ever '27) (eq Ever '28))
     (progn
       
 ;      (setq load-path (cons (expand-file-name "~/dev/android/android-mode/")
@@ -217,7 +219,8 @@
   (global-set-key (vector (list 'control mouse-wheel-up-event))
 		  'zoom-out))
 
-(setq python-mode-dir (expand-file-name "~/lib/emacs/python-mode/"))
+(setq python-mode-dir
+      (car (file-expand-wildcards "~/lib/emacs/python-mode*" t)))
 (add-to-list 'load-path python-mode-dir)
 (setq py-install-directory python-mode-dir)
 (require 'python-mode)
