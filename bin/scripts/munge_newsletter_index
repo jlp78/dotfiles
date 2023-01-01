@@ -1,0 +1,22 @@
+#! /bin/sh
+
+n=$1
+d=$HOME/htdocs/peterson-tech.com/grant_ward
+
+if [ ! -d "$d" ]; then
+  echo "newsletter directory $d not found"
+  exit
+fi
+
+cd "$d"
+
+if [ ! -f "$n" ]; then
+  echo "newsletter $n not found in newsletter directory $d"
+  exit
+fi
+
+sed -i.bak \
+    -e '/^<!--/d' \
+    -e "/$n/a\
+<!--\
+" index.html

@@ -10,3 +10,6 @@
 [submodule "lib/emacs/pyenv-mode"]
 	path = lib/emacs/pyenv-mode
 	url = https://github.com/pythonic-emacs/pyenv-mode.git
+[submodule "lib/emacs/terraform-mode"]
+	path = lib/emacs/terraform-mode
+	url = git@github.com:emacsorphanage/terraform-mode.git

@@ -1,0 +1,41 @@
+#! /bin/sh
+
+usage () {
+  me=`basename $0`
+  echo "usage:  $me \"Newsletter YYYY.DD.pdf\""
+}
+
+wd="$HOME/Dropbox/Documents/Newsletter"
+dh="jlp@jay1.jay-one.org"
+dd="htdocs/peterson-tech.com/grant_ward"
+
+nl=$1
+
+case "x$nl" in
+  x)
+    usage
+    exit
+    ;;
+  xhelp)
+    usage
+    echo ""
+    echo "copies the named newsletter file to the newsletter repository"
+    echo "then edits the index file to include the new newsletter"
+    exit
+    ;;
+esac
+
+cd "$wd"
+nl=`basename "$nl"`
+if [ ! -f "$nl" ]; then
+  echo "$nl not found in $wd"
+  exit
+fi
+
+dl=`echo "$nl" | tr " " "_"`
+
+# upload the file
+scp "$nl" $dh:$dd/$dl
+
+# update the index.html file
+ssh $dh "cd $dd; munge_newsletter_index $dl"

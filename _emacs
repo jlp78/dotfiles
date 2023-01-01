@@ -181,9 +181,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(display-time-mode t)
- '(package-selected-packages (quote (groovy-mode csv csv-mode terraform-mode)))
+ '(package-selected-packages
+   '(json-mode hcl-mode go-mode groovy-mode csv csv-mode terraform-mode))
  '(py-continuation-offset 4)
- '(scroll-bar-mode (quote right))
+ '(scroll-bar-mode 'right)
  '(sh-basic-offset 2)
  '(sh-indentation 2)
  '(show-paren-mode t))
@@ -260,3 +261,5 @@
 (set-face-attribute 'default nil :height 180)
 
 (global-eldoc-mode -1)
+
+(add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)

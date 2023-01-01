@@ -117,10 +117,10 @@ fi
 # don't dump any cores (doesn't work on HP/UX?)
 case $MACH_TYPE in
   hp)
-	;;
+        ;;
   *)
-	ulimit -c 0
-	;;
+        ulimit -c 0
+        ;;
 esac
 
 # miscellaneous env vars:
@@ -211,6 +211,22 @@ export PILOTRATE PILOTPORT MM_CHARSET LANG
 # our .bash_funs yet... and we don't want to load them until after we
 # have set up MEMORY_FILE)
 if type keybase >/dev/null 2>&1; then
+  if keybase status 2>&1 | grep -sq "connect: no such file or directory"; then
+    echo -n "waiting up to 30 seconds for keybase"
+    ct=0
+    while [ $ct -lt 30 ]; do
+      if keybase status 2>&1 |
+          grep -sq "connect: no such file or directory"; then
+        :
+      else
+        break
+      fi
+      ct=`expr $ct + 1`
+      sleep 1
+      echo -ne "\rwaiting up to 30 seconds for keybase $ct"
+    done
+  fi
+    
   KB_USER=`keybase status | grep ^Username | awk '{print $NF}'`
 fi
 
@@ -343,31 +359,52 @@ fi
 
 # some python stuff here... pyenv is a slick mechanism for having different
 # python builds installed that you can use with different projects.
-export PYENV_ROOT=/usr/local/var/pyenv
+export PYENV_ROOT=$HOME/.pyenv
+mkdir -p "$PYENV_ROOT"
 qtype pyenv && eval "$(pyenv init -)"
 qtype pyenv-virtualenv-init && eval "$(pyenv virtualenv-init -)"
 
+# pyenv completion from
+# https://github.com/pyenv/pyenv/blob/master/completions/pyenv.bash
+_pyenv() {
+  COMPREPLY=()
+  local word="${COMP_WORDS[COMP_CWORD]}"
+
+  if [ "$COMP_CWORD" -eq 1 ]; then
+    COMPREPLY=( $(compgen -W "$(pyenv commands)" -- "$word") )
+  else
+    local words=("${COMP_WORDS[@]}")
+    unset words[0]
+    unset words[$COMP_CWORD]
+    local completions=$(pyenv completions "${words[@]}")
+    COMPREPLY=( $(compgen -W "$completions" -- "$word") )
+  fi
+}
+complete -F _pyenv pyenv
+
 # more pyenv stuff for verisys
-PATH=/usr/local/share/python:$PATH
-export WORKON_HOME=$HOME/.virtualenvs
-if [[ -x /usr/local/bin/python2.7 ]]; then
-  export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
-elif [[ -x /usr/bin/python2.7 ]]; then
-  export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python2.7
-elif qtype python2.7; then
-  export VIRTUALENVWRAPPER_PYTHON=`which -p python2.7`
-fi
-export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
-# we handle the prompt in our prompt_update function
-export VIRTUAL_ENV_DISABLE_PROMPT=t
-export PIP_VIRTUALENV_BASE=$WORKON_HOME
-export PIP_RESPECT_VIRTUALENV=true
-if [[ -r /usr/local/bin/virtualenvwrapper.sh ]]; then
-  . /usr/local/bin/virtualenvwrapper.sh
-elif [[ -r /usr/bin/virtualenvwrapper.sh ]]; then
-  . /usr/bin/virtualenvwrapper.sh
-elif qtype virtualenvwrapper.sh; then
-  . `which -p virtualenvwrapper.sh`
+if [ "$VERISYS_CONFIG" ]; then
+  PATH=/usr/local/share/python:$PATH
+  export WORKON_HOME=$HOME/.virtualenvs
+  if [[ -x /usr/local/bin/python2.7 ]]; then
+    export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
+  elif [[ -x /usr/bin/python2.7 ]]; then
+    export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python2.7
+  elif qtype python2.7; then
+    export VIRTUALENVWRAPPER_PYTHON=`which -p python2.7`
+  fi
+  export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
+  # we handle the prompt in our prompt_update function
+  export VIRTUAL_ENV_DISABLE_PROMPT=t
+  export PIP_VIRTUALENV_BASE=$WORKON_HOME
+  export PIP_RESPECT_VIRTUALENV=true
+  if [[ -r /usr/local/bin/virtualenvwrapper.sh ]]; then
+    . /usr/local/bin/virtualenvwrapper.sh
+  elif [[ -r /usr/bin/virtualenvwrapper.sh ]]; then
+    . /usr/bin/virtualenvwrapper.sh
+  elif qtype virtualenvwrapper.sh; then
+    . `which -p virtualenvwrapper.sh`
+  fi
 fi
 
 # clean up the PATH (get rid of duplicates, missing dirs, and blank entries)
@@ -387,9 +424,14 @@ export PATH
 echo $PATH > ~/.mypath
 
 # bash completion
-for base in "" "/usr/local"; do
+for base in "" "/usr/local" "/opt/homebrew"; do
   if [ -e ${base}/etc/bash_completion ]; then
     . ${base}/etc/bash_completion
+  fi
+  if [ -e ${base}/etc/bash_completion.d ]; then
+    for f in ${base}/etc/bash_completion.d/*; do
+      . $f
+    done
   fi
 done
 
@@ -400,3 +442,11 @@ fi
 if [[ -d "$HOME/.okta/bin" && ":$PATH:" != *":$HOME/.okta/bin:"* ]]; then
   PATH="$HOME/.okta/bin:$PATH"
 fi
+
+# Chartbeat
+# pants wants a lot of open files
+ulimit -n 17000
+# direnv setup
+eval "$(direnv hook bash)"
+
+

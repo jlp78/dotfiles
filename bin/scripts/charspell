@@ -1,0 +1,29 @@
+#! /usr/bin/perl
+
+%special = (
+  '0' => 'zero',
+  '1' => 'one',
+  '5' => 'five',
+  'l' => 'ell',
+  'O' => 'oh',
+  'S' => 'ess',
+);
+
+$s = shift(@ARGV);
+if (!defined($s)) {
+  print "Enter string: ";
+  $s = <>;
+  chomp($s);
+}
+
+for $c (split('', $s)) {
+  if (defined($special{$c})) {
+    push(@out, $accum, ' ', $special{$c}, ' ');
+    $accum = '';
+  } else {
+    $accum .= $c;
+  }
+}
+push(@out, ' ') if (@out);
+push(@out, $accum);
+print @out, "\n";

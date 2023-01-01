@@ -72,6 +72,7 @@
 	("\\.html$"               . html-helper-mode)
 	("/.Mail/drafts/[0-9]*$"  . my-mh-draft-mode)
 	("\\.md$"                 . gfm-mode) ;usually editing for github
+	("\\.re?st$"              . rst-mode)
 	))
 
 (setq mail-archive-file-name "|/usr/local/lib/mh/rcvstore -create +outbox")
@@ -223,12 +224,12 @@
 ; for cperl-mode
 (setq cperl-tab-always-indent nil)
 (setq cperl-indent-left-aligned-comments t)
-(setq cperl-indent-level 4)
-(setq cperl-continued-statement-offset 4)
-(setq cperl-continued-brace-offset 4)
+(setq cperl-indent-level 2)
+(setq cperl-continued-statement-offset 2)
+(setq cperl-continued-brace-offset 2)
 (setq cperl-brace-offset 0)
 (setq cperl-brace-imaginary-offset 0)
-(setq cperl-label-offset -2)
+(setq cperl-label-offset -1)
 (setq cperl-min-label-indent 1)
 
 (defmacro join (join-char &rest others)

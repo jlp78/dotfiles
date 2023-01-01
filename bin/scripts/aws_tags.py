@@ -23,4 +23,4 @@ for i in instances:
     instance_name = find_tag(i, "Name")
     if instance_name is None:
         instance_name = i.private_ip_address
-    print "{} [{}] {}".format(instance_name, i.private_ip_address, i.instance_id)
+    print("{} [{}] {}".format(instance_name, i.private_ip_address, i.instance_id))

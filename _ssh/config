@@ -34,3 +34,8 @@ Host jay2.jay-one.org
 ### for Teal Drones
 Host 10.73.41.*
   User jan
+
+# Chartbeat
+Host dev
+	User		jan
+	ForwardAgent	yes
