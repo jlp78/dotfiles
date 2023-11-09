@@ -431,7 +431,9 @@ fi
 # pants wants a lot of open files
 ulimit -n 17000
 # direnv setup
-eval "$(direnv hook bash)"
+if qtype direnv; then
+  eval "$(direnv hook bash)"
+fi
 
 # clean up the PATH (get rid of duplicates, missing dirs, and blank entries)
 PATH=`perl -e '

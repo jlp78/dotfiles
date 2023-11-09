@@ -24,6 +24,8 @@
 	  (setq Ever '27))
       (if (string= (substring emacs-version 0 2) "28")
 	  (setq Ever '28))
+      (if (string= (substring emacs-version 0 2) "29")
+	  (setq Ever '29))
       t)
      (setq Ever 'unknown))
 
@@ -73,7 +75,18 @@
 (garbage-collect)
 
 
-(if (or (eq Ever '19) (eq Ever '20) (eq Ever '21) (eq Ever '22) (eq Ever '23) (eq Ever '24) (eq Ever '25) (eq Ever '26) (eq Ever '27) (eq Ever '28))
+(if (or (eq Ever '19)
+	(eq Ever '20)
+	(eq Ever '21)
+	(eq Ever '22)
+	(eq Ever '23)
+	(eq Ever '24)
+	(eq Ever '25)
+	(eq Ever '26)
+	(eq Ever '27)
+	(eq Ever '28)
+	(eq Ever '29)
+	)
     (progn
       
 ;      (setq load-path (cons (expand-file-name "~/dev/android/android-mode/")

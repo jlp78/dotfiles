@@ -2,7 +2,7 @@
 
 usage () {
   me=`basename $0`
-  echo "usage:  $me \"Newsletter YYYY.DD.pdf\""
+  echo "usage:  $me \"Newsletter YYYY.MM.pdf\""
   echo "        $me help"
 }
 

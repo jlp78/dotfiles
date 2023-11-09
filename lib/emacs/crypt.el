@@ -465,8 +465,8 @@ Line editing keys are:
   (setq write-file-hooks (append write-file-hooks
 				 (list 'write-crypt-file-hook))
 	find-file-hooks (cons 'find-crypt-file-hook find-file-hooks)
-	find-file-not-found-hooks (cons 'find-crypt-file-hook
-					find-file-not-found-hooks)
+	find-file-not-found-functions (cons 'find-crypt-file-hook
+					find-file-not-found-functions)
 	minor-mode-alist (nconc (list '(buffer-save-encrypted " Crypt")
 				      '(buffer-save-compacted " Compact")
 				      '(buffer-save-compressed " Compress"))
