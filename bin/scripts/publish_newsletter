@@ -3,11 +3,14 @@
 usage () {
   me=`basename $0`
   echo "usage:  $me \"Newsletter YYYY.DD.pdf\""
+  echo "        $me help"
 }
 
 wd="$HOME/Dropbox/Documents/Newsletter"
 dh="jlp@jay1.jay-one.org"
-dd="htdocs/peterson-tech.com/grant_ward"
+dd="htdocs/jay-one.org/grant_ward"
+pw_file="htdocs/grant_ward.htpasswd"
+dictionaries="/usr/share/dict/words /usr/dict/words /usr/share/words"
 
 nl=$1
 
@@ -21,6 +24,7 @@ case "x$nl" in
     echo ""
     echo "copies the named newsletter file to the newsletter repository"
     echo "then edits the index file to include the new newsletter"
+    echo "also sets a new password for the archive directory"
     exit
     ;;
 esac
@@ -34,8 +38,72 @@ fi
 
 dl=`echo "$nl" | tr " " "_"`
 
+# generate a new password for the web site
+for d in $dictionaries; do
+  if [ -e "$d" ]; then
+    dict="$d"
+    break
+  fi
+done
+if [ -z "$dict" ]; then
+  echo "unable to find a dictionary, please enter a new password"
+  echo -n "for the newsletter site:  "
+  read new_password
+else
+  # pick a four letter word and a three letter word from the dictionary
+  # join them with a hyphen (-)
+  trap "rm -f /tmp/words.$$" 0
+
+  # pick a four letter word
+  LANG=C grep '^[a-z][a-z][a-z][a-z]$' $dict > /tmp/words.$$
+  ct=`wc -l < /tmp/words.$$`
+  pick=`awk "BEGIN { srand(); print int(rand() * $ct) }"`
+  word1=`sed -ne "$pick p" /tmp/words.$$`
+
+  # pick a three letter word
+  LANG=C grep '^[a-z][a-z][a-z]$' $dict > /tmp/words.$$
+  ct=`wc -l < /tmp/words.$$`
+  pick=`awk "BEGIN { srand(); print int(rand() * $ct) }"`
+  word2=`sed -ne "$pick p" /tmp/words.$$`
+  
+  new_password="${word1}-${word2}"
+fi
+echo "The new password is $new_password"
+
+# set the new password
+ssh $dh "htpasswd -b $pw_file grant $new_password"
+echo "The new password has been set."
+
 # upload the file
-scp "$nl" $dh:$dd/$dl
+scp -q "$nl" $dh:$dd/$dl
+echo "The file has been uploaded to the site."
 
 # update the index.html file
 ssh $dh "cd $dd; munge_newsletter_index $dl"
+echo "Site index page has been updated."
+
+echo "Message Text for the E-mail:"
+echo ""
+
+# calculate month, next_month, and due_date
+# dl looks like Newsletter_2023.07.pdf
+month=`newsletter_date_calc $dl | sed -ne 1p`
+next_month=`newsletter_date_calc $dl | sed -ne 2p`
+due_date=`newsletter_date_calc $dl | sed -ne 3p`
+
+cat <<EOL
+The ${month} newsletter has been published at
+https://grant:${new_password}@www.jay-one.org/grant_ward/${dl}
+
+If your browser has trouble opening the above URL, try using the following:
+https://www.jay-one.org/grant_ward/${dl}
+and when prompted, use the username "grant" and the password "${new_password}".  Do not include the quotes, and make sure you use only lowercase letters when typing the username and password.
+
+Please do not share this password outside of the ward.  You are welcome to print copies of the newsletter for your ministering families that do not have access to the internet.
+
+Articles for the ${next_month} newsletter are due on ${due_date}.
+
+Thank you for your support.
+
+- Bro. and Sis. Peterson
+EOL

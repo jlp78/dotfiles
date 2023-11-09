@@ -73,6 +73,7 @@
 	("/.Mail/drafts/[0-9]*$"  . my-mh-draft-mode)
 	("\\.md$"                 . gfm-mode) ;usually editing for github
 	("\\.re?st$"              . rst-mode)
+	("\\.tf$"                 . terraform-mode)
 	))
 
 (setq mail-archive-file-name "|/usr/local/lib/mh/rcvstore -create +outbox")

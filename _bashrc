@@ -407,22 +407,6 @@ if [ "$VERISYS_CONFIG" ]; then
   fi
 fi
 
-# clean up the PATH (get rid of duplicates, missing dirs, and blank entries)
-PATH=`perl -e '
-  $path = $ENV{PATH};
-  @path_elements = split(m/:/, $path);
-  foreach $element (@path_elements) {
-    next if $element eq "";
-    next unless -d $element;
-    push(@new_path, $element);
-  }
-  $newpath = join(":", @new_path);
-  print "$newpath\n"; '`
-export PATH
-
-# dump path to temp file for other apps to pick up
-echo $PATH > ~/.mypath
-
 # bash completion
 for base in "" "/usr/local" "/opt/homebrew"; do
   if [ -e ${base}/etc/bash_completion ]; then
@@ -449,4 +433,19 @@ ulimit -n 17000
 # direnv setup
 eval "$(direnv hook bash)"
 
+# clean up the PATH (get rid of duplicates, missing dirs, and blank entries)
+PATH=`perl -e '
+  $path = $ENV{PATH};
+  @path_elements = split(m/:/, $path);
+  foreach $element (@path_elements) {
+    next if $element eq "";
+    next unless -d $element;
+    push(@new_path, $element);
+  }
+  $newpath = join(":", @new_path);
+  print "$newpath\n"; '`
+export PATH
+
+# dump path to temp file for other apps to pick up
+echo $PATH > ~/.mypath
 

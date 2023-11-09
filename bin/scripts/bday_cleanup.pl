@@ -21,6 +21,9 @@ sub process_month {
 
   $line = 1;
   while ($_ = &read_line()) {
+    # input line looks like this:
+    # dd mmm{tab}lastname, firstname{whitespace}age and other data
+    # we match the day, month, and non digits up to the age
     m/^(\d+) (\w+)\s+(\D+)/ or next;
     ($bday, $mon, $name) = ($1, $2, $3); # only get lines with bday and name
     $name =~ s/\s*$//;                   # strip trailing white space
@@ -30,13 +33,16 @@ sub process_month {
     last if $current_month and $current_month ne $mon;
     $current_month = $mon;
 
+    # some people do not want to be included in the birthday list
     next if grep(m/^$name$/, @ignore_names);
+
     $rec = join(':', $line++, $bday, $name);
     $len = length($rec) unless length($rec) < $len;
     push(@lines, $rec);
   }
 
-  # dump each line
+  # dump each line, leave a blank line halfway through the list
+  # for column separation
   for $l (@lines) {
     ($lineno, $bday, $name) = split(m/:/, $l);
     printf("%-8s %-*s %d\n", $bday, $len, $name, $lineno);

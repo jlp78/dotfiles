@@ -25,9 +25,9 @@ else
 fi
 
 tb_state () {
-  If [ "$tb_ct" -gt 0 ]; then
+  if [ "$tb_ct" -gt 0 ]; then
     osascript -e 'tell application "Tunnelblick.app"' \
-              -e 'get state of first configuration where name = "lendio"' \
+              -e 'get state of first configuration where name = "Chartbeat"' \
               -e 'end tell'
   else
     echo NOTRUNNING
@@ -40,9 +40,9 @@ state=$(tb_state)
 if [ "$state" = "CONNECTED" ]; then
   echo "closing tunnel"
   osascript -e 'tell application "Tunnelblick.app"' \
-            -e 'disconnect "lendio"' \
-            -e 'end tell'
-  while [ $(tb_state) = "CONNECTED" ]; do
+            -e 'disconnect "Chartbeat"' \
+            -e 'end tell' >/dev/null 2>&1
+  while [ `tb_state` = "CONNECTED" ]; do
     sleep 1
   done
 fi
@@ -72,6 +72,6 @@ fi
 if [ "$state" = "CONNECTED" ]; then
   echo "reconnecting tunnel"
   osascript -e 'tell application "Tunnelblick.app"' \
-            -e 'connect "lendio"' \
-            -e 'end tell'
+            -e 'connect "Chartbeat"' \
+            -e 'end tell' >/dev/null 2>&1
 fi

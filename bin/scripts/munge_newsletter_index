@@ -1,7 +1,12 @@
 #! /bin/sh
 
+# the index file includes links to past and future newsletters
+# links to future newsletters are commented out with <!-- -->
+# this script moves the comment start until after the specified
+# newly posted newsletter
+
 n=$1
-d=$HOME/htdocs/peterson-tech.com/grant_ward
+d=$HOME/htdocs/jay-one.org/grant_ward
 
 if [ ! -d "$d" ]; then
   echo "newsletter directory $d not found"

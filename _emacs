@@ -182,7 +182,7 @@
  ;; If there is more than one, they won't work right.
  '(display-time-mode t)
  '(package-selected-packages
-   '(json-mode hcl-mode go-mode groovy-mode csv csv-mode terraform-mode))
+   '(lsp-sonarlint json-mode hcl-mode go-mode groovy-mode csv csv-mode terraform-mode))
  '(py-continuation-offset 4)
  '(scroll-bar-mode 'right)
  '(sh-basic-offset 2)

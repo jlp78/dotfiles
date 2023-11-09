@@ -12,7 +12,7 @@ if [ -x $uname ]; then
     *darwin*)
       MACH_TYPE=macosx
       X11=/opt/X11/bin
-      LOCALBIN=/usr/local/bin:/usr/local/sbin:/opt/homebrew/bin
+      LOCALBIN=/usr/local/bin:/usr/local/sbin:/opt/homebrew/bin:/opt/homebrew/sbin
       LOCALBIN=$LOCALBIN:$(/opt/homebrew/bin/brew --prefix coreutils)/libexec/gnubin
       LOCALBIN=$LOCALBIN:/sbin:/usr/sbin:/sw/bin:/sw/sbin
       MANPATH=$(/opt/homebrew/bin/brew --prefix coreutils)/gnuman:$MANPATH
