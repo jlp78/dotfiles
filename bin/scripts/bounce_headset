@@ -1,3 +1,17 @@
 #! /bin/sh
 
-open /Applications/reset_headset.app
+case "$MACH_TYPE" in
+  macosx)
+    open /Applications/reset_headset.app
+    ;;
+  linux)
+    bluetoothctl <<-EOF
+	remove 04:5D:4B:66:2F:61
+	scan on
+	pair 04:5D:4B:66:2F:61
+	connect 04:5D:4B:66:2F:61
+	scan off
+	trust 04:5D:4B:66:2F:61
+	EOF
+    ;;
+esac

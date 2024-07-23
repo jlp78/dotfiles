@@ -92,6 +92,8 @@ next_month=`newsletter_date_calc $dl | sed -ne 2p`
 due_date=`newsletter_date_calc $dl | sed -ne 3p`
 
 cat <<EOL
+Subject:  Grant Ward Newsletter Published
+
 The ${month} newsletter has been published at
 https://grant:${new_password}@www.jay-one.org/grant_ward/${dl}
 

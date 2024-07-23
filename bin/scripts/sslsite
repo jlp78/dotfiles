@@ -1,7 +1,6 @@
 #! /bin/sh
 
 s="$1"
-shift
 
 usage () {
   echo "usage: $0 {www.somesite.com[:port]}"
@@ -12,6 +11,8 @@ case "x$s" in
      exit 1
      ;;
 esac
+
+shift
 
 case "$s" in
   *:*)

@@ -39,3 +39,12 @@ Host 10.73.41.*
 Host dev
 	User		jan
 	ForwardAgent	yes
+
+Host pi-star
+	User pi-star
+
+Host pi4
+	User pi
+
+Host inovato
+	User quadra

@@ -204,6 +204,7 @@
 
 (add-to-list 'load-path (expand-file-name "~/lib/emacs/color-theme"))
 (add-to-list 'load-path (expand-file-name "~/lib/emacs/emacs-color-theme-solarized"))
+(require 'color-theme)
 (require 'color-theme-solarized)
 (color-theme-solarized-dark)
 

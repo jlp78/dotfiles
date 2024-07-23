@@ -233,9 +233,10 @@ fi
 # got a Dropbox or keybase mounted?  use that for persistent memory
 # storage. otherwise use a local file.
 for db in "/Volumes/Keybase ($USER)/private/$KB_USER" \
-	    "/keybase/private/$KB_USER" \
-	    "Dropbox (Personal)" \
-	    "Dropbox"; do
+          "/run/user/`id -u`/keybase/kbfs/private/$KB_USER" \
+	  "/keybase/private/$KB_USER" \
+	  "Dropbox (Personal)" \
+	  "Dropbox"; do
   case "$db" in
     /*) ;;
     *)  db="$HOME/$db" ;;
@@ -414,6 +415,13 @@ for base in "" "/usr/local" "/opt/homebrew"; do
   fi
   if [ -e ${base}/etc/bash_completion.d ]; then
     for f in ${base}/etc/bash_completion.d/*; do
+      # patch for bash completion, missing "have" command, this gets
+      # unset by /usr/share/bash-completion/bash_completion, then
+      # gets used when we source the completion files here
+      have () {
+        unset -v have
+        _have $1 && have=yes
+      }
       . $f
     done
   fi
