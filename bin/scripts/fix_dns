@@ -1,7 +1,51 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
-dns_servers="10.56.0.155 192.168.1.1"
+set -e
+
+#dns_servers="10.141.224.235 10.1.31.11 10.145.235.80"
+declare -A dns_servers
+declare -A dns_search
+
+dns_servers[vivint]="10.1.31.11 10.1.31.12 172.30.11.102 1.1.1.1"
+dns_search[vivint]="vivint.com vivintsky.com tp.vivint.com iad.vivint.com nrgenergy.com"
+
+dns_servers[nrg]="10.141.220.46 10.145.220.12"
+dns_search[vivint]="vivint.com vivintsky.com tp.vivint.com iad.vivint.com nrgenergy.com"
+
+dns_servers[home]="192.168.50.1"
+dns_search[home]="peterson.inet"
+
+dns_servers[aredn_hap]="10.225.133.161"
+dns_search[aredn_hap]="local.mesh peterson.inet"
+
+dns_servers[aredn_gl]="10.178.181.105"
+dns_search[aredn_gl]="local.mesh"
+
 resolv_files="/etc/resolv.conf /var/run/resolv.conf"
+default=vivint
+
+if [ $(id -u) != 0 ]; then
+  echo "root privs required"
+  exec sudo "$0" "$1"
+fi
+
+case "x$1" in
+  x)
+    d=$default
+    ;;
+  x*)
+    d=$1
+    case "x$d" in
+      x)
+	echo "dns server set $d not found"
+	exit 1
+	;;
+    esac 
+    ;;
+esac
+
+dns=${dns_servers[$d]}
+echo "dns server set $d selected ($dns)"
 
 # get service
 service=$(echo "show State:/Network/Global/IPv4" | scutil |
@@ -12,7 +56,7 @@ service_dns=$(echo "show State:/Network/Service/$service/DNS" | scutil |
 		grep -oE '([0-9]{1,3}[\.]){3}[0-9]{1,3}' | xargs)
 echo old DNS servers $service_dns
 
-echo setting new DNS to $dns_servers
+echo setting new DNS to $dns
 sudo scutil <<-EOL
   open
   get State:/Network/Service/$service/DNS
@@ -53,7 +97,7 @@ sudo perl -Tpi -e '
 
   $_ = "" if m/^nameserver /;             # remove old name servers
   print_dns_servers() if m/^search /;     # add new name servers
-  ' $dns_servers -- $resolv_files
+  ' $dns -- $resolv_files
 
 echo flushing resolver
 sudo killall -HUP mDNSResponder
