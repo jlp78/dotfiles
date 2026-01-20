@@ -1,15 +1,15 @@
 [submodule "lib/emacs/emacs-color-theme-solarized"]
-	path = lib/emacs/emacs-color-theme-solarized
+	path = lib/emacs/legacy/emacs-color-theme-solarized
 	url = https://github.com/sellout/emacs-color-theme-solarized.git
 [submodule "lib/emacs/ws-butler"]
-	path = lib/emacs/ws-butler
+	path = lib/emacs/legacy/ws-butler
 	url = https://github.com/lewang/ws-butler.git
 [submodule "lib/emacs/web-mode"]
-	path = lib/emacs/web-mode
+	path = lib/emacs/legacy/web-mode
 	url = https://github.com/fxbois/web-mode.git
 [submodule "lib/emacs/pyenv-mode"]
-	path = lib/emacs/pyenv-mode
+	path = lib/emacs/legacy/pyenv-mode
 	url = https://github.com/pythonic-emacs/pyenv-mode.git
 [submodule "lib/emacs/terraform-mode"]
-	path = lib/emacs/terraform-mode
+	path = lib/emacs/legacy/terraform-mode
 	url = git@github.com:emacsorphanage/terraform-mode.git
