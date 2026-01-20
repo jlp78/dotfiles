@@ -413,6 +413,9 @@ for base in "" "/usr/local" "/opt/homebrew"; do
   if [ -e ${base}/etc/bash_completion ]; then
     . ${base}/etc/bash_completion
   fi
+  if [ -e ${base}/etc/profile.d/bash_completion.sh ]; then
+    . ${base}/etc/profile.d/bash_completion.sh
+  fi
   if [ -e ${base}/etc/bash_completion.d ]; then
     for f in ${base}/etc/bash_completion.d/*; do
       # patch for bash completion, missing "have" command, this gets
@@ -422,10 +425,35 @@ for base in "" "/usr/local" "/opt/homebrew"; do
         unset -v have
         _have $1 && have=yes
       }
+      # patch to silence _comp_deprecate_{func,var} if not available
+#      if qtype _comp_deprecate_func; then
+#	:
+#      else
+#	_comp_deprecate_func () {
+#	  :
+#	}
+#      fi
+#      if qtype _comp_deprecate_var; then
+#	:
+#      else
+#	_comp_deprecate_var () {
+#	  :
+#	}
+#      fi
       . $f
     done
   fi
 done
+
+# kube-ps1 puts k8s context and namespace info in the prompt
+if [ -e ${base}/share/kube-ps1.sh ]; then
+  source ${base}/share/kube-ps1.sh
+fi
+
+if qtype __kubectl_init_completion && qtype k; then
+  complete -o default -F __start_kubectl k
+fi
+
 
 # Okta AWS authentication
 if [[ -f "$HOME/.okta/bash_functions" ]]; then
@@ -459,3 +487,5 @@ export PATH
 # dump path to temp file for other apps to pick up
 echo $PATH > ~/.mypath
 
+
+export PATH=/Users/jan.peterson/.groundcover/bin:${PATH}

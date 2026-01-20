@@ -50,3 +50,6 @@ fi
 
 # shortcut to pyenv
 alias ve='pyenv-virtualenv'
+
+# k8s
+alias k='kubectl'

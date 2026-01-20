@@ -210,46 +210,46 @@ memory () {
 }
 
 ## functions for bluehost/EIG
-k () {
-  ssh keyserv.unifiedlayer.com "$1"
-}
+# k () {
+#   ssh keyserv.unifiedlayer.com "$1"
+# }
 
 ## functions for Verisys
-deploy () {
-  if [ -d .git ]; then
-    if git branch --list -a | grep -sq remotes/origin/deploy; then
-      local orig_branch
-      local project
+# deploy () {
+#   if [ -d .git ]; then
+#     if git branch --list -a | grep -sq remotes/origin/deploy; then
+#       local orig_branch
+#       local project
 
-      # NOTE: this depends on the remote url looking something like
-      #       git@github.com:verisys/<project>.git
-      project=`git config remote.origin.url | 
-               sed -e 's/^git\@github.com:verisys\///; s/\.git$//'`
+#       # NOTE: this depends on the remote url looking something like
+#       #       git@github.com:verisys/<project>.git
+#       project=`git config remote.origin.url | 
+#                sed -e 's/^git\@github.com:verisys\///; s/\.git$//'`
 
-      orig_branch=`git symbolic-ref --short HEAD`
+#       orig_branch=`git symbolic-ref --short HEAD`
 
-      git checkout master
-      git pull && git checkout deploy && git merge --ff-only master && git push
-      git checkout "$orig_branch"
+#       git checkout master
+#       git pull && git checkout deploy && git merge --ff-only master && git push
+#       git checkout "$orig_branch"
 
-      Mail -s "please deploy $project" itsupport@verisys.com <<EOL
-Code has been merged to the deploy branch of $project.  Please
-activate the deployment process at your earliest convenience.
+#       Mail -s "please deploy $project" itsupport@verisys.com <<EOL
+# Code has been merged to the deploy branch of $project.  Please
+# activate the deployment process at your earliest convenience.
 
-Thank you.
-EOL
-    else
-      echo "there is no remote 'deploy' branch in this repo.  it is"
-      echo "unlikely that we will be able to deploy it.  sorry."
-    fi
-  else
-    echo "this doesn't look like a repo..."
-    echo "please run deploy from within a repo working dir"
-  fi
-}
+# Thank you.
+# EOL
+#     else
+#       echo "there is no remote 'deploy' branch in this repo.  it is"
+#       echo "unlikely that we will be able to deploy it.  sorry."
+#     fi
+#   else
+#     echo "this doesn't look like a repo..."
+#     echo "please run deploy from within a repo working dir"
+#   fi
+# }
 
 # from https://github.com/paoloantinori/hhighlighter
-h() {
+h () {
 
     _usage() {
         echo "usage: YOUR_COMMAND | h [-idn] args...
@@ -398,23 +398,26 @@ extract () {
 # this doesn't appear to work any more... maybe weatherunderground
 # is requiring a key of some kind for their api access.  It appears
 # to work from my browser, but not from curl.
-weather() {
-    wu="http://api.wunderground.com/auto/wui/geo/ForcastXML/index.xml"
-    curl -s "$wu?query=${@:-84123}" |
-    gunzip |
-    perl -ne 's/&amp;deg;/°/g;
-              /<title>([^<]+)/ && printf "%s: ", $1;
-              /<fcttext>([^<]+)/ && print $1, "\n"'
-}
+# UPDATE:  no longer works from the browser, either :(
+# weather() {
+#     wu="http://api.wunderground.com/auto/wui/geo/ForcastXML/index.xml"
+#     curl -s "$wu?query=${@:-84123}" |
+#     gunzip |
+#     perl -ne 's/&amp;deg;/°/g;
+#               /<title>([^<]+)/ && printf "%s: ", $1;
+#               /<fcttext>([^<]+)/ && print $1, "\n"'
+# }
 
-define() {
-  curl -s "http://www.collinsdictionary.com/dictionary/english/$*" |
-    sed -n '/class="def"/p' |
-    awk '{gsub(/.*<span class="def">|<\/span>.*/,"");print}' |
-    sed "s/<[^>]\+>//g" |
-    par
-}
+# this one doesn't appear to work any more, either.
+# define() {
+#   curl -s "http://www.collinsdictionary.com/dictionary/english/$*" |
+#     sed -n '/class="def"/p' |
+#     awk '{gsub(/.*<span class="def">|<\/span>.*/,"");print}' |
+#     sed "s/<[^>]\+>//g" |
+#     par
+# }
 
+# TODO:  port this to darwin's version of date(1)
 epoch() {
   TESTREG="[\d{10}]"
   if [[ "$1" =~ $TESTREG ]]; then
@@ -601,9 +604,9 @@ _rule () {
       # we can confirm that we have a UTF-8 character set first.
       if _in_mosh_session; then
         case "$LANG" in
-      *UTF-8*)
-          _lc="\0342\0224\0200"
-          ;;
+	  *UTF-8*)
+            _lc="\0342\0224\0200"
+            ;;
         esac
       fi
     fi
@@ -629,6 +632,12 @@ rulem () {
 
 # generate my prompt string... this is evolving
 prompt_update () {
+  local venv
+  local _ts
+  local hrule
+  local hpa2
+  local kube
+
   case "$interactive" in
     true)
       :
@@ -642,14 +651,7 @@ prompt_update () {
   # update the history... this keeps a common history between
   # all shells on the same machine.  this takes some getting used
   # to unless you're familiar with ksh that does this by default.
-  history -a; history -c; history -r #nkill -s USR1 bash
-
-  # virtual env active?
-  if [ "$VIRTUAL_ENV" ]; then
-    venv="(`basename \"$VIRTUAL_ENV\"`) "
-  else
-    venv=""
-  fi
+  history -a; history -c; history -r #; nkill -s USR1 bash
 
   # set the title bar/status line if we can
   if [ -z "$_tb_override" ]; then
@@ -662,14 +664,30 @@ prompt_update () {
   hrule=$(_rule)
   hpa2=$(tput hpa 2)
 
+  # virtual env context
+  if [ "$VIRTUAL_ENV" ]; then
+    venv=" (`basename \"$VIRTUAL_ENV\"`)"
+  else
+    venv=""
+  fi
+
+  # k8s context and namespace
+  if qtype kube_ps1; then
+    kube=" $(kube_ps1)"
+  else
+    kube=""
+  fi
+
+  # git context
+  if qtype __git_ps1; then
+    # __git_ps1 automatically prefixes with a space
+    git="$(__git_ps1)"
+  else
+    git=""
+  fi
+
   # pay no attention to the millions of backslashes to follow...
-
-  # default in case __git_ps1 isn't there
-  PS1="${hrule}\r${hpa2} ${venv}\u@\h:\w \n\! bash\\\$ "
-
-  # use __get_ps1 to set up the PS1 if available
-  qtype __git_ps1 && \
-    __git_ps1 "${hrule}\r${hpa2} ${venv}\u@\h:\w" " \n\! bash\\\$ "
+  PS1="${hrule}\r${hpa2} \u@\h:\w${kube}${git}${venv} \n\! bash\\\$ "
 }
 
 
