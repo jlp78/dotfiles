@@ -17,16 +17,16 @@ $version = '$Id: subnetter,v 1.3 2003/02/08 05:40:04 jp78 Exp $';
 #
 # If you make modifications that you think others would like, please
 # send diffs of your changes to the author at
-# <jlp+sourceforge@peterson.ath.cx>.
+# <jlp+sourceforge@peterson-tech.com>.
 
 use Socket;
 use Tcl::pTk;
-use Tk::Dialog;
+#use Tk::Dialog;		# not needed with Tcl::pTk
 use POSIX;
 
 # CPAN support
 
-my $VERSION = 2.0;
+my $VERSION = 3.0;
 
 =head1 NAME
 
@@ -60,13 +60,17 @@ Networking
 
 # constants
 
+%fg = (-foreground => 'black');
+%fgo = (-outline => 'black');
+%fgf = (-fill => 'black');
+%fgc = (-color => 'black');
 %bg = (-background => 'alice blue');
 %hilight = (-background => 'light steel blue');
 %sel_bg = (-background => 'dodger blue');
 %lbl_font = (-font => '-misc-fixed-medium-*-*-*-15-*-*-*-*-*-*-*');
 %hdr_font = (-font => '-*-fixed-bold-r-*-*-15-*-*-*-*-*-*-*');
-%lbo = (%bg, %lbl_font);
-%lbh = (%bg, %hdr_font);
+%lbo = (%bg, %fg, %lbl_font);
+%lbh = (%bg, %fg, %hdr_font);
 %can_font = (-font => '-misc-fixed-medium-*-*-*-12-*-*-*-*-*-*-*');
 %can_bfont = (-font => '-misc-fixed-bold-*-*-*-12-*-*-*-*-*-*-*');
 %slide_font = (-font => '-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*');
@@ -106,7 +110,7 @@ paste them into an xterm (for example).
 Any comments or suggestions should be sent to the author at the e-mail
 address listed below.
 
-	<jlp+sourceforge\@peterson.ath.cx>
+	<jlp+sourceforge\@peterson-tech.com>
 
 This code is Copyright (c) 1998 by Jan L. Peterson.  All rights are
 reserved.  Please see the source code for licensing restrictions.
@@ -241,7 +245,7 @@ sub about_post {
     $about = $main->Toplevel(-title => 'About Subnet Calculator', %bg);
     my $fl = $about->Frame(%bg)
 	->pack(-side => 'left', -expand => 'yes', -fill => 'both');
-    $fl->Label(-bitmap => 'info', %bg)
+    $fl->Label(-bitmap => 'info', %bg, %fg)
 	->pack(-side => 'top', -expand => 'yes', -padx => 50, -fill => 'both');
     $fl->Button(-text => 'Dismiss', -command => [\&about_unpost], %bg)
 	->pack(-side => 'bottom');
@@ -434,13 +438,13 @@ sub initialize {
     my $f1 = $main->Frame(%bg)->pack(-expand => 'yes', -fill => 'x');
     $f1->Button(-text => 'Exit', %bg, -command => [\&do_exit])
 	->pack(-side => 'left');
-    $f1->Label(%lbh)->pack(-side => 'left', -expand => 'yes', -fill => 'x');
-    $f1->Label(-text => 'IP Address:  ', %lbh, -anchor => 'e')
+    $f1->Label(%lbh, %fg)->pack(-side => 'left', -expand => 'yes', -fill => 'x');
+    $f1->Label(-text => 'IP Address:  ', %lbh, %fg, -anchor => 'e')
 	->pack(-side => 'left');
     $f1->Button(-text => 'About', %bg, -command => [\&about_post])
 	->pack(-side => 'right');
-    $f1->Label(%lbh)->pack(-side => 'right', -expand => 'yes', -fill => 'x');
-    $ip_entry = $f1->Entry(%bg)->pack(-side => 'right');
+    $f1->Label(%lbh, %fg)->pack(-side => 'right', -expand => 'yes', -fill => 'x');
+    $ip_entry = $f1->Entry(%bg, %fg)->pack(-side => 'right');
 
     my $f2 = $main->Frame(%bg)->pack(-expand => 'yes', -fill => 'both');
     $can = $f2->Canvas(-width => '19.5c', -height => '4.5c', %bg)
@@ -448,23 +452,23 @@ sub initialize {
 
     my $f3 = $main->Frame(%bg)->pack;
     my $f3a = $f3->Frame(%bg)->pack(-side => 'left');
-    $f3a->Label(%lbh, -text => 'Subnet Mask: ', -anchor => 'e',
+    $f3a->Label(%lbh, %fg, -text => 'Subnet Mask: ', -anchor => 'e',
 		-width => 15)->pack;
-    $f3a->Label(%lbh, -text => 'Cisco Mask: ', -anchor => 'e',
+    $f3a->Label(%lbh, %fg, -text => 'Cisco Mask: ', -anchor => 'e',
 		-width => 15)->pack;
     my $f3b = $f3->Frame(%bg)->pack(-side => 'left');
     $snm_label = $f3b->
-	Label(%lbo, -text => '', -anchor => 'w',
+	Label(%lbo, %fg, -text => '', -anchor => 'w',
 	      -width => 15)->pack;
     $cism_label = $f3b->
-	Label(%lbo, -text => '', -anchor => 'w',
+	Label(%lbo, %fg, -text => '', -anchor => 'w',
 	      -width => 15)->pack;
     my $f3c = $f3->Frame(%bg)->pack(-side => 'left');
     $snmx_label = $f3c->
-	Label(%lbo, -text => '', -anchor => 'w',
+	Label(%lbo, %fg, -text => '', -anchor => 'w',
 	      -width => 10)->pack;
     $snct_label = $f3c->
-	Label(%lbo, -text => '', -anchor => 'w')->pack;
+	Label(%lbo, %fg, -text => '', -anchor => 'w')->pack;
 
     my $f4 = $main->Frame(%bg)->pack;
 
@@ -474,11 +478,11 @@ sub initialize {
     my $f4d = $f4->Frame(%bg)->pack(-side => 'left');
     my $f4e = $f4->Frame(%bg)->pack(-side => 'left', -fill => 'y', -expand => 1);
 
-    $f4a->Label(%lbo, -text => ' ')->pack;
-    $f4b->Label(%lbh, -text => 'Network', -anchor => 'w')->pack;
-    $f4c->Label(%lbh, -text => 'Broadcast', -anchor => 'w')->pack;
-    $f4d->Label(%lbh, -text => 'Valid Hosts Range')->pack;
-    $f4e->Label(%lbo, -text => ' ')->pack;
+    $f4a->Label(%lbo, %fg, -text => ' ')->pack;
+    $f4b->Label(%lbh, %fg, -text => 'Network', -anchor => 'w')->pack;
+    $f4c->Label(%lbh, %fg, -text => 'Broadcast', -anchor => 'w')->pack;
+    $f4d->Label(%lbh, %fg, -text => 'Valid Hosts Range')->pack;
+    $f4e->Label(%lbo, %fg, -text => ' ')->pack;
 
     my $f4d1 = $f4d->Frame(%bg)->pack(-side => 'left');
     my $f4d2 = $f4d->Frame(%bg)->pack(-side => 'left');
@@ -504,18 +508,18 @@ static char blank_bits[] = {
     my $i, $j, $tf;
     for ($i = 0; $i < 10; $i++) {
 	$tf = $f4a->Frame(%bg)->pack;
-	$tf->Label(%lbo, -text => ' ')->pack(-side => 'left');
-	$tb{$i,'arrow'} = $tf->Label(%bg, -image => 'blank', -width => 15)
+	$tf->Label(%lbo, %fg, -text => ' ')->pack(-side => 'left');
+	$tb{$i,'arrow'} = $tf->Label(%bg, %fg, -image => 'blank', -width => 15)
 	    ->pack(-side => 'left');
 	$tb{$i,'network'} = $f4b->
-	    Label(%lbo, -width => 15, -anchor => 'w')->pack;
+	    Label(%lbo, %fg, -width => 15, -anchor => 'w')->pack;
 	$tb{$i,'broadcast'} = $f4c->
-	    Label(%lbo, -width => 15, -anchor => 'w')->pack;
+	    Label(%lbo, %fg, -width => 15, -anchor => 'w')->pack;
 	$tb{$i,'first'} = $f4d1->
-	    Label(%lbo, -width => 15, -anchor => 'e')->pack;
-	$tb{$i,'hyphen'} = $f4d2->Label(%lbo, -width => 3)->pack;
+	    Label(%lbo, %fg, -width => 15, -anchor => 'e')->pack;
+	$tb{$i,'hyphen'} = $f4d2->Label(%lbo, %fg, -width => 3)->pack;
 	$tb{$i,'last'} = $f4d3->
-	    Label(%lbo, -width => 15, -anchor => 'w')->pack;
+	    Label(%lbo, %fg, -width => 15, -anchor => 'w')->pack;
     }
 
     $sb = $f4e->Scrollbar(-command => [ \&do_scroll ])
@@ -525,11 +529,11 @@ static char blank_bits[] = {
     my $bit, $x1, $x2, $xs, $xt, $titem, $tx, $tb;
     for ($i = 1, $bit = 0; $i <= 15; $i += 4.5, $bit--) {
 	($x1, $x2) = ($i, $i + 4);
-	$can->create('line', "${x1}c", "2c", "${x2}c", "2c");
-	$can->create('line', "${x1}c", "2.5c", "${x2}c", "2.5c");
+	$can->create('line', "${x1}c", "2c", "${x2}c", "2c", %fgf);
+	$can->create('line', "${x1}c", "2.5c", "${x2}c", "2.5c", %fgf);
 	for ($j = 0; $j <= 8; $j++, $bit++) {
 	    $xs = $j * 0.5 + $i;
-	    $titem = $can->create('line', "${xs}c", "2c", "${xs}c", "2.5c");
+	    $titem = $can->create('line', "${xs}c", "2c", "${xs}c", "2.5c", %fgf);
 	    ($tx, $ty) = $can->coords($titem);
 	    if (($j < 8 && $i == 1)
 		|| ($j > 0 && $i == 14.5)
@@ -538,13 +542,13 @@ static char blank_bits[] = {
 	    }
 	    $xt = $j * 0.5 + $i + 0.25;
 	    $can->create('text', "${xt}c", "2.25c", -anchor => 'center',
-			 -tags => "bit$bit", %can_font)
+			 -tags => "bit$bit", %can_font, %fgf)
 		unless $j == 8;
 	}
 	if ($i <= 10) {
 	    $xt = $i + 4.25;
 	    $titem = $can->create('text', "${xt}c", "2.25c", %can_bfont,
-				  -anchor => 'center', -text => '.');
+				  -anchor => 'center', -text => '.', %fgf);
 	    ($tx, $ty) = $can->coords($titem);
 	    $bit_xs[$tb++] = int($tx);
 	}
@@ -558,7 +562,7 @@ static char blank_bits[] = {
     $can->CanvasBind('<B1-ButtonRelease>' => [\&can_release_selected]);
     $ip_entry->bind('<Return>' => [\&do_gen]);
     $main->bind('<MouseWheel>' => [\&do_mouse_scroll, Ev('D')]);
-    # support scrolling on X11
+    # support old scrolling on X11
     $main->bind('<4>' => [\&do_mouse_scroll, 1]);
     # $main->bind('Double-Button-4>' => [\&do_mouse_scroll, 2]);
     # $main->bind('Triple-Button-4>' => [\&do_mouse_scroll, 3]);
@@ -567,6 +571,8 @@ static char blank_bits[] = {
     # $main->bind('Double-Button-5>' => [\&do_mouse_scroll, -2]);
     # $main->bind('Triple-Button-5>' => [\&do_mouse_scroll, -3]);
     # $main->bind('Quadruple-Button-5>' => [\&do_mouse_scroll, -4]);
+    # support new TouchpadScroll events
+    $main->bind('<TouchpadScroll>' => [\&do_mouse_scroll, Ev('D')]);
 
     $snm_label->bind('<1>' => [\&make_selection, Ev('W')]);
     $snmx_label->bind('<1>' => [\&make_selection, Ev('W')]);
@@ -680,7 +686,7 @@ sub create_tri {
     my $bcy = 2.25 + $end;
 
     $can->create('polygon', "${ax}c", "${ay}c", "${bx}c", "${bcy}c",
-		 "${cx}c", "${bcy}c", -tags => $tag);
+		 "${cx}c", "${bcy}c", -tags => $tag, %fgo);
 
     my $tx = $ax;
     my $ty = 2.25 + ($apex * 2);
@@ -688,7 +694,7 @@ sub create_tri {
     $can->create('text', "${tx}c", "${ty}c", %slide_font,
 		 -anchor => ($apex > 0) ? 'n' : 's',
 		 -justify => 'center', -tags => $tag,
-		 -text => $label);
+		 -text => $label, %fgf);
 }
 
 sub can_draw_class {
