@@ -69,6 +69,7 @@ else
   new_password="${word1}-${word2}"
 fi
 echo "The new password is $new_password"
+echo $(date) "$new_password" >> $wd/password.log
 
 # set the new password
 ssh $dh "htpasswd -b $pw_file grant $new_password"
@@ -82,14 +83,14 @@ echo "The file has been uploaded to the site."
 ssh $dh "cd $dd; munge_newsletter_index $dl"
 echo "Site index page has been updated."
 
-echo "Message Text for the E-mail:"
-echo ""
-
 # calculate month, next_month, and due_date
 # dl looks like Newsletter_2023.07.pdf
 month=`newsletter_date_calc $dl | sed -ne 1p`
 next_month=`newsletter_date_calc $dl | sed -ne 2p`
 due_date=`newsletter_date_calc $dl | sed -ne 3p`
+
+echo "Message Text for the E-mail:"
+echo ""
 
 cat <<EOL
 Subject:  Grant Ward Newsletter Published

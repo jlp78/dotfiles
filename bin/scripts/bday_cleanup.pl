@@ -24,7 +24,7 @@ sub process_month {
     # input line looks like this:
     # dd mmm{tab}lastname, firstname{whitespace}age and other data
     # we match the day, month, and non digits up to the age
-    m/^(\d+) (\w+)\s+(\D+)/ or next;
+    m/^(\d+) (\w+)\s+([^0-9\(\+]+)/ or next;
     ($bday, $mon, $name) = ($1, $2, $3); # only get lines with bday and name
     $name =~ s/\s*$//;                   # strip trailing white space
     $bday = join(" ", $bday, $mon);
